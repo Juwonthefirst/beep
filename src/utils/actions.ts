@@ -1,7 +1,13 @@
 "use server";
 
-import axios from "axios";
-import { CurrentUser } from "./types";
+import axios, { isAxiosError } from "axios";
+import { cookies } from "next/headers";
+
+import type {
+  AuthErrorResponse,
+  AuthResponse,
+  AuthSuccessResponse,
+} from "./types";
 
 const api = axios.create({
   baseURL: process.env.BACKEND_URL,
@@ -9,42 +15,77 @@ const api = axios.create({
   withCredentials: true,
 });
 
-export const login = async (formData: FormData) => {
-  const identification = formData.get("username/email");
+export const login = async (
+  prevState: AuthResponse | undefined,
+  formData: FormData
+) => {
+  const identification = formData.get("identification");
   const password = formData.get("password");
 
   if (!identification) return { error: "Enter a username or email" };
   else if (!password) return { error: "Enter your password" };
-  return api
-    .post<CurrentUser>("/login/", { identification, password })
-    .then((res) => res.data);
+  try {
+    const res = await api.post<AuthSuccessResponse>("/auth/login/", {
+      identification,
+      password,
+    });
+    return res.data;
+  } catch (e: unknown) {
+    if (isAxiosError<AuthErrorResponse>(e)) {
+      return { error: e.response?.data?.error || e.message };
+    }
+  }
 };
 
-export const getOtp = async (formData: FormData) => {
+export const getOtp = async (
+  prevState: AuthResponse | undefined,
+  formData: FormData
+) => {
   const email = formData.get("email");
   if (!email) return { error: "Enter a valid email" };
-  return api
-    .post<{ session_id: string }>("/auth/get-otp/", { email })
-    .then((res) => res.data);
+  try {
+    const res = await api.post<AuthSuccessResponse>("/auth/get-otp/", {
+      email,
+    });
+    return res.data;
+  } catch (e: unknown) {
+    if (isAxiosError<AuthErrorResponse>(e)) {
+      return { error: e.response?.data?.error || e.message };
+    }
+  }
 };
 
-export const verifyOtp = async (formData: FormData) => {
+export const verifyOtp = async (
+  prevState: AuthResponse | undefined,
+  formData: FormData
+) => {
   const otp = formData.get("otp");
-  const session_id = formData.get("session_id");
 
   if (!otp) return { error: "Enter the otp sent to your mail" };
-  return api
-    .post<{ session_id: string }>("/auth/verify-otp/", { otp, session_id })
-    .then((res) => res.data);
+  try {
+    const res = await api.post<AuthSuccessResponse>("/auth/verify-otp/", {
+      otp,
+    });
+    return res.data;
+  } catch (e: unknown) {
+    if (isAxiosError<AuthErrorResponse>(e)) {
+      return { error: e.response?.data?.error || e.message };
+    }
+  }
 };
 
-export const signup = async (formData: FormData) => {
+export const signup = async (
+  prevState: AuthResponse | undefined,
+  formData: FormData
+) => {
   if (!formData.has("username")) return { error: "Enter a username" };
-  const username = formData.get("username");
-  const password = formData.get("password");
-  const profilePicture = formData.get("username");
-
-  return api
-    .post<CurrentUser>("/auth/signup/", formData)
-    .then((res) => res.data);
+  if (!formData.has("password")) return { error: "Enter a password" };
+  try {
+    const res = await api.post<AuthSuccessResponse>("/auth/signup/", formData);
+    return res.data;
+  } catch (e: unknown) {
+    if (isAxiosError<AuthErrorResponse>(e)) {
+      return { error: e.response?.data?.error || e.message };
+    }
+  }
 };
