@@ -1,7 +1,6 @@
 "use server";
 
 import axios, { isAxiosError } from "axios";
-import { cookies } from "next/headers";
 
 import type {
   AuthErrorResponse,
@@ -59,7 +58,8 @@ export const verifyOtp = async (
   prevState: AuthResponse | undefined,
   formData: FormData
 ) => {
-  const otp = formData.get("otp");
+  const otp = formData.get("otp-0");
+  console.log(formData);
 
   if (!otp) return { error: "Enter the otp sent to your mail" };
   try {

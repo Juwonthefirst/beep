@@ -1,40 +1,32 @@
-import { useActionState } from "react";
+"use client";
+
+import { useCallback, useState } from "react";
 
 import InputField from "@/components/form/input";
 import { getOtp } from "@/utils/actions";
-import { AuthErrorResponse } from "@/utils/types";
+import type { SignupStepsProps } from "@/utils/types";
 import SubmitBtn from "@/components/form/submit-btn";
-import { LoaderCircle } from "lucide-react";
+import AuthForm from "@/components/form/form";
 
-interface Prop {
-  onSuccess: () => void;
-  initialState: AuthErrorResponse;
-}
+const SignupStep1 = ({ emailRef, onSuccess }: SignupStepsProps) => {
+  const [email, setEmail] = useState("");
+  const onSignupSuccess = useCallback(() => {
+    onSuccess();
+    emailRef.current = email;
+  }, [onSuccess, emailRef, email]);
 
-const SignupStep1 = ({ onSuccess, initialState }: Prop) => {
-  const [state, formAction, isSubmitting] = useActionState(
-    getOtp,
-    initialState
-  );
-  if (state && "status" in state && state.status === "sent") onSuccess();
   return (
-    <>
-      <form
-        action={formAction}
-        className="flex flex-col gap-6 max-w-3xs mx-auto mt-24 text-black"
-      >
-        <InputField
-          label="Email"
-          name="email"
-          placeholder="Enter an email here"
-          inputType="email"
-          error={state && "error" in state ? state.error : ""}
-        />
-        <SubmitBtn disabled={isSubmitting}>
-          {isSubmitting ? <LoaderCircle className="animate-spin" /> : "Submit"}
-        </SubmitBtn>
-      </form>
-    </>
+    <AuthForm className="mt-24" action={getOtp} onSuccess={onSignupSuccess}>
+      <InputField
+        label="Email"
+        value={email}
+        onChange={(event) => setEmail(event.target.value)}
+        name="email"
+        placeholder="Enter an email here"
+        inputType="email"
+      />
+      <SubmitBtn>Submit</SubmitBtn>
+    </AuthForm>
   );
 };
 

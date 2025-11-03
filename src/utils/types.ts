@@ -1,3 +1,5 @@
+import type { RefObject } from "react";
+
 export interface CurrentUser {
   id: number;
   username: string;
@@ -13,3 +15,8 @@ export interface AuthErrorResponse {
 }
 
 export type AuthResponse = AuthErrorResponse | AuthSuccessResponse;
+
+export interface SignupStepsProps {
+  emailRef: RefObject<string>;
+  onSuccess: () => void;
+}

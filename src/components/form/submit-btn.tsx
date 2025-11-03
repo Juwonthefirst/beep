@@ -1,18 +1,20 @@
-import type { ReactNode } from "react";
+import { use, type ReactNode } from "react";
+import { FormContext } from "./form";
+import { LoaderCircle } from "lucide-react";
 
 interface Props {
-  disabled: boolean;
   children: ReactNode;
 }
 
-const SubmitBtn = ({ disabled, children }: Props) => {
+const SubmitBtn = ({ children }: Props) => {
+  const isSubmitting = use(FormContext);
   return (
     <button
-      className="bg-black rounded-lg text-white  px-2 py-1 flex flex-col items-center disabled:opacity-70"
+      className="bg-black rounded-lg text-white px-2 py-1 flex flex-col items-center disabled:opacity-70"
       type="submit"
-      disabled={disabled}
+      disabled={isSubmitting}
     >
-      {children}
+      {isSubmitting ? <LoaderCircle className="animate-spin" /> : children}
     </button>
   );
 };

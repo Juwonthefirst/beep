@@ -1,12 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import SignupStep1 from "./signup-step-1";
-import { AuthErrorResponse } from "@/utils/types";
+import SignupStep2 from "./signup-step-2";
 
 const Page = () => {
-  const [signupStep, setsignupStep] = useState<1 | 2 | 3>(1);
-  const initialState: AuthErrorResponse = { error: "" };
+  const [signupStep, setsignupStep] = useState<1 | 2 | 3>(2);
+  const emailRef = useRef("");
+  const onSignupStep1Success = useCallback(() => {
+    setsignupStep(2);
+  }, []);
+  const onSignupStep2Success = useCallback(() => setsignupStep(3), []);
+  //const onSignupStep1Success = useCallback(() => setsignupStep(2), []);
+
   return (
     <>
       <div className="flex justify-between hidden">
@@ -15,10 +21,10 @@ const Page = () => {
         <p>3</p>
       </div>
       {signupStep === 1 && (
-        <SignupStep1
-          initialState={initialState}
-          onSuccess={() => setsignupStep(2)}
-        />
+        <SignupStep1 emailRef={emailRef} onSuccess={onSignupStep1Success} />
+      )}
+      {signupStep === 2 && (
+        <SignupStep2 emailRef={emailRef} onSuccess={onSignupStep2Success} />
       )}
     </>
   );
