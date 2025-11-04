@@ -1,6 +1,7 @@
 "use server";
 
 import axios, { isAxiosError } from "axios";
+import { cookies } from "next/headers";
 
 import type {
   AuthErrorResponse,
@@ -13,6 +14,11 @@ const api = axios.create({
   timeout: 5000,
   withCredentials: true,
 });
+
+export const isAuthenticated = async () => {
+  const cookieStore = await cookies();
+  return { isAuthenticated: cookieStore.has("refresh_token") };
+};
 
 export const login = async (
   prevState: AuthResponse | undefined,
@@ -28,6 +34,7 @@ export const login = async (
       identification,
       password,
     });
+
     return res.data;
   } catch (e: unknown) {
     if (isAxiosError<AuthErrorResponse>(e)) {
@@ -58,9 +65,7 @@ export const verifyOtp = async (
   prevState: AuthResponse | undefined,
   formData: FormData
 ) => {
-  const otp = formData.get("otp-0");
-  console.log(formData);
-
+  const otp = formData.get("otp");
   if (!otp) return { error: "Enter the otp sent to your mail" };
   try {
     const res = await api.post<AuthSuccessResponse>("/auth/verify-otp/", {

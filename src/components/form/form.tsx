@@ -1,3 +1,5 @@
+"use client";
+
 import { AuthErrorResponse, AuthResponse } from "@/utils/types";
 import clsx from "clsx";
 import {
@@ -21,7 +23,10 @@ export const FormContext = createContext(false);
 
 const AuthForm = ({ action, onSuccess, children, className = "" }: Props) => {
   const initialState: AuthErrorResponse = { error: "" };
-  const [state, formAction, isPending] = useActionState(action, initialState);
+  const [state, formAction, isSubmitting] = useActionState(
+    action,
+    initialState
+  );
 
   useEffect(() => {
     if (state && "status" in state) {
@@ -32,12 +37,12 @@ const AuthForm = ({ action, onSuccess, children, className = "" }: Props) => {
   return (
     <form
       className={clsx(
-        "flex flex-col gap-6 max-w-3xs mx-auto text-black",
+        "flex flex-col gap-6 max-w-3xs mx-auto text-black px-2",
         className
       )}
       action={formAction}
     >
-      <FormContext value={isPending}>{children}</FormContext>
+      <FormContext value={isSubmitting}>{children}</FormContext>
     </form>
   );
 };

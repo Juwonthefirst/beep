@@ -6,7 +6,7 @@ import {
 
 const OtpInput = () => {
   return (
-    <InputOTP maxLength={6}>
+    <InputOTP name="otp" maxLength={6}>
       <InputOTPGroup className="*:h-10 *:w-10 *:border-black/40">
         <InputOTPSlot index={0} />
         <InputOTPSlot index={1} />

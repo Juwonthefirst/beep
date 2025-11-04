@@ -1,17 +1,29 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import SignupStep1 from "./signup-step-1";
 import SignupStep2 from "./signup-step-2";
+import SignupStep3 from "./signup-step-3";
 
 const Page = () => {
-  const [signupStep, setsignupStep] = useState<1 | 2 | 3>(2);
-  const emailRef = useRef("");
-  const onSignupStep1Success = useCallback(() => {
-    setsignupStep(2);
+  const [signupStep, setsignupStep] = useState<1 | 2 | 3>(3);
+  const [userEmail, setUserEmail] = useState("");
+  const [userPassword, setUserPassword] = useState("");
+
+  const goToRequestOtp = () => setsignupStep(1);
+  const goToVerifyOtp = () => setsignupStep(2);
+  const goToSignup = () => setsignupStep(3);
+
+  const onSignupStep1Success = useCallback((email?: string) => {
+    goToVerifyOtp();
+    if (email) setUserEmail(email);
   }, []);
-  const onSignupStep2Success = useCallback(() => setsignupStep(3), []);
-  //const onSignupStep1Success = useCallback(() => setsignupStep(2), []);
+  const onSignupStep2Success = useCallback(() => {
+    goToSignup();
+  }, []);
+  const onSignupStep3Success = useCallback((password?: string) => {
+    if (password) setUserPassword(password);
+  }, []);
 
   return (
     <>
@@ -20,11 +32,12 @@ const Page = () => {
         <p>2</p>
         <p>3</p>
       </div>
-      {signupStep === 1 && (
-        <SignupStep1 emailRef={emailRef} onSuccess={onSignupStep1Success} />
-      )}
+      {signupStep === 1 && <SignupStep1 onSuccess={onSignupStep1Success} />}
       {signupStep === 2 && (
-        <SignupStep2 emailRef={emailRef} onSuccess={onSignupStep2Success} />
+        <SignupStep2 email={userEmail} onSuccess={onSignupStep2Success} />
+      )}
+      {signupStep === 3 && (
+        <SignupStep3 email={userEmail} onSuccess={onSignupStep3Success} />
       )}
     </>
   );

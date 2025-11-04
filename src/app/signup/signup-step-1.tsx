@@ -8,12 +8,11 @@ import type { SignupStepsProps } from "@/utils/types";
 import SubmitBtn from "@/components/form/submit-btn";
 import AuthForm from "@/components/form/form";
 
-const SignupStep1 = ({ emailRef, onSuccess }: SignupStepsProps) => {
+const SignupStep1 = ({ onSuccess }: Omit<SignupStepsProps, "email">) => {
   const [email, setEmail] = useState("");
   const onSignupSuccess = useCallback(() => {
-    onSuccess();
-    emailRef.current = email;
-  }, [onSuccess, emailRef, email]);
+    onSuccess(email);
+  }, [onSuccess, email]);
 
   return (
     <AuthForm className="mt-24" action={getOtp} onSuccess={onSignupSuccess}>

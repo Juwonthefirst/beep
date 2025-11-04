@@ -3,7 +3,7 @@ import { Eye, EyeClosed } from "lucide-react";
 import clsx from "clsx";
 
 const className =
-  "text-sm transistion-all duration-200  rounded-lg py-1.5 px-3  outline has-focus:ring-3 has-focus:ring-offset-2 has-focus:outline-2 ring-black/20 outline-black/100 text-black placeholder:text-sm";
+  "text-sm transistion-all duration-200  rounded-md py-1.5 px-3  outline has-focus:ring-4 has-focus:ring-offset-2 has-focus:outline-2  ring-neutral-500/20 outline-black/75 has-focus:outline-black text-black *:placeholder:text-sm";
 
 interface InputFieldPropType {
   required?: boolean;
@@ -15,6 +15,9 @@ interface InputFieldPropType {
   error?: string;
   inputType?: string;
   value?: string | number;
+  validation?: (
+    value: string
+  ) => string | undefined | Promise<string | undefined>;
   onChange?: ChangeEventHandler<HTMLInputElement>;
 }
 
@@ -28,7 +31,17 @@ const InputField = ({
   onChange,
   required = true,
   error,
+  validation,
 }: InputFieldPropType) => {
+  const [isInitialValidation, setIsInitialValidation] = useState(true);
+  const [validationError, setValidationError] = useState("");
+  const validateField = async (value: string) => {
+    if (isInitialValidation) setIsInitialValidation(false);
+    const error = await validation?.(value);
+    if (error) setValidationError(error);
+    else setValidationError("");
+  };
+
   return (
     <div className="flex flex-col gap-2 ">
       <label className="font-medium" htmlFor={label + "-input"}>
@@ -48,13 +61,24 @@ const InputField = ({
           className="focus:outline-0 grow"
           type={inputType}
           value={value}
-          onChange={onChange}
+          onChange={(event) => {
+            const value = event.target.value;
+            onChange?.(event);
+            if (!isInitialValidation) validateField(value);
+          }}
           required={required}
           placeholder={placeholder}
+          onBlur={(event) => {
+            const value = event.target.value;
+            if (!value) return;
+            if (isInitialValidation) validateField(value);
+          }}
         />
       </div>
-      {error && (
-        <p className=" text-red-500 text-xs text-center -mt-1">{error}</p>
+      {(error || validationError) && (
+        <p className=" text-red-500 text-xs text-center -mt-1">
+          {error || validationError}
+        </p>
       )}
     </div>
   );
@@ -69,8 +93,17 @@ export const PasswordField = ({
   onChange,
   required = true,
   error,
+  validation,
 }: InputFieldPropType) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isInitialValidation, setIsInitialValidation] = useState(true);
+  const [validationError, setValidationError] = useState("");
+  const validateField = async (value: string) => {
+    if (isInitialValidation) setIsInitialValidation(false);
+    const error = await validation?.(value);
+    if (error) setValidationError(error);
+    else setValidationError("");
+  };
 
   return (
     <div className="flex flex-col gap-2">
@@ -90,20 +123,26 @@ export const PasswordField = ({
           value={value}
           className="focus:outline-0 grow"
           type={isVisible ? "text" : "password"}
-          onChange={onChange}
+          onChange={(event) => {
+            onChange?.(event);
+            if (!isInitialValidation) validateField(event.target.value);
+          }}
           required={required}
           placeholder={placeholder}
+          onBlur={(event) => {
+            const value = event.target.value;
+            if (!value) return;
+            if (isInitialValidation) validateField(value);
+          }}
         />
-        <button
-          className=""
-          type="button"
-          onClick={() => setIsVisible(!isVisible)}
-        >
+        <button type="button" onClick={() => setIsVisible(!isVisible)}>
           {isVisible ? <Eye size={18} /> : <EyeClosed size={18} />}
         </button>
       </div>
-      {error && (
-        <p className=" text-red-500 text-sm text-center -mt-1">{error}</p>
+      {(validationError || error) && (
+        <p className=" text-red-500 text-xs text-center -mt-1">
+          {error || validationError}
+        </p>
       )}
     </div>
   );
