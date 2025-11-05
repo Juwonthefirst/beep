@@ -18,3 +18,8 @@ export interface SignupStepsProps {
   email: string;
   onSuccess: (formValue?: string) => void;
 }
+
+export interface ValidationRequirement {
+  message: string;
+  test: (value: string) => boolean;
+}

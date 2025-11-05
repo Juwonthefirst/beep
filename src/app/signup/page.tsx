@@ -6,23 +6,27 @@ import SignupStep2 from "./signup-step-2";
 import SignupStep3 from "./signup-step-3";
 
 const Page = () => {
-  const [signupStep, setsignupStep] = useState<1 | 2 | 3>(3);
+  const [signupStep, setsignupStep] = useState<1 | 2 | 3 | 4>(3);
   const [userEmail, setUserEmail] = useState("");
   const [userPassword, setUserPassword] = useState("");
 
   const goToRequestOtp = () => setsignupStep(1);
   const goToVerifyOtp = () => setsignupStep(2);
-  const goToSignup = () => setsignupStep(3);
+  const goToCreatePassword = () => setsignupStep(3);
+  const goToSignup = () => setsignupStep(4);
 
   const onSignupStep1Success = useCallback((email?: string) => {
-    goToVerifyOtp();
     if (email) setUserEmail(email);
+    else return;
+    goToVerifyOtp();
   }, []);
   const onSignupStep2Success = useCallback(() => {
-    goToSignup();
+    goToCreatePassword();
   }, []);
   const onSignupStep3Success = useCallback((password?: string) => {
     if (password) setUserPassword(password);
+    else return;
+    goToSignup();
   }, []);
 
   return (
@@ -36,9 +40,7 @@ const Page = () => {
       {signupStep === 2 && (
         <SignupStep2 email={userEmail} onSuccess={onSignupStep2Success} />
       )}
-      {signupStep === 3 && (
-        <SignupStep3 email={userEmail} onSuccess={onSignupStep3Success} />
-      )}
+      {signupStep === 3 && <SignupStep3 onSuccess={onSignupStep3Success} />}
     </>
   );
 };
