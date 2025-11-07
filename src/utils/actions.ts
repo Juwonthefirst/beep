@@ -1,19 +1,14 @@
 "use server";
 
-import axios, { isAxiosError } from "axios";
 import { cookies } from "next/headers";
 
 import type {
   AuthErrorResponse,
   AuthResponse,
   AuthSuccessResponse,
-} from "./types";
-
-const api = axios.create({
-  baseURL: process.env.BACKEND_URL,
-  timeout: 5000,
-  withCredentials: true,
-});
+} from "./types/server-response.types";
+import { request } from "./request-client";
+import { processFile } from "./helpers";
 
 export const isAuthenticated = async () => {
   const cookieStore = await cookies();
@@ -29,18 +24,24 @@ export const login = async (
 
   if (!identification) return { error: "Enter a username or email" };
   else if (!password) return { error: "Enter your password" };
-  try {
-    const res = await api.post<AuthSuccessResponse>("/auth/login/", {
+  const response = await request<AuthSuccessResponse, AuthErrorResponse>({
+    method: "post",
+    path: "/auth/login/",
+    data: {
       identification,
       password,
-    });
+    },
+  });
 
-    return res.data;
-  } catch (e: unknown) {
-    if (isAxiosError<AuthErrorResponse>(e)) {
-      return { error: e.response?.data?.error || e.message };
-    }
+  if ("error" in response) {
+    return {
+      error:
+        typeof response.error === "string"
+          ? response.error
+          : response.error?.data?.error,
+    };
   }
+  return response.data;
 };
 
 export const getOtp = async (
@@ -49,48 +50,89 @@ export const getOtp = async (
 ) => {
   const email = formData.get("email");
   if (!email) return { error: "Enter a valid email" };
-  try {
-    const res = await api.post<AuthSuccessResponse>("/auth/get-otp/", {
+  const response = await request<AuthSuccessResponse, AuthErrorResponse>({
+    method: "post",
+    path: "/auth/get-otp/",
+    data: {
       email,
-    });
-    return res.data;
-  } catch (e: unknown) {
-    if (isAxiosError<AuthErrorResponse>(e)) {
-      return { error: e.response?.data?.error || e.message };
-    }
+    },
+  });
+
+  if ("error" in response) {
+    return {
+      error:
+        typeof response.error === "string"
+          ? response.error
+          : response.error?.data?.error,
+    };
   }
+  return response.data;
 };
 
 export const verifyOtp = async (
   prevState: AuthResponse | undefined,
   formData: FormData
 ) => {
+  const cookieStore = await cookies();
+
   const otp = formData.get("otp");
   if (!otp) return { error: "Enter the otp sent to your mail" };
-  try {
-    const res = await api.post<AuthSuccessResponse>("/auth/verify-otp/", {
+  const response = await request<AuthSuccessResponse, AuthErrorResponse>({
+    method: "post",
+    path: "/auth/verify-otp/",
+    data: {
       otp,
-    });
-    return res.data;
-  } catch (e: unknown) {
-    if (isAxiosError<AuthErrorResponse>(e)) {
-      return { error: e.response?.data?.error || e.message };
-    }
+    },
+    config: {
+      headers: {
+        "X-CSRFToken": cookieStore.get("csrftoken")?.value,
+      },
+    },
+  });
+
+  if ("error" in response) {
+    return {
+      error:
+        typeof response.error === "string"
+          ? response.error
+          : response.error?.data?.error,
+    };
   }
+  return response.data;
 };
 
 export const signup = async (
   prevState: AuthResponse | undefined,
   formData: FormData
 ) => {
+  const cookieStore = await cookies();
+
   if (!formData.has("username")) return { error: "Enter a username" };
   if (!formData.has("password")) return { error: "Enter a password" };
-  try {
-    const res = await api.post<AuthSuccessResponse>("/auth/signup/", formData);
-    return res.data;
-  } catch (e: unknown) {
-    if (isAxiosError<AuthErrorResponse>(e)) {
-      return { error: e.response?.data?.error || e.message };
-    }
+
+  const profilePicture = formData.get("profile_picture");
+  formData.delete("profile_picture");
+  if (profilePicture && profilePicture instanceof Blob)
+    formData.set("profile_picture", await processFile(profilePicture));
+
+  const response = await request<AuthSuccessResponse, AuthErrorResponse>({
+    method: "post",
+    path: "/auth/signup/",
+    data: formData,
+    config: {
+      headers: {
+        "X-CSRFToken": cookieStore.get("csrftoken")?.value,
+      },
+    },
+  });
+
+  if ("error" in response) {
+    return {
+      error:
+        typeof response.error === "string"
+          ? response.error
+          : response.error?.data?.error,
+    };
   }
+  return response.data;
 };

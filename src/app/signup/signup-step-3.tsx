@@ -2,9 +2,16 @@ import { useCallback, useState } from "react";
 
 import AuthForm from "@/components/form/form";
 import { PasswordField } from "@/components/form/input";
-import SubmitBtn from "@/components/form/submit-btn";
-import type { SignupStepsProps, ValidationRequirement } from "@/utils/types";
+import type {
+  SignupStepsProps,
+  ValidationRequirement,
+} from "@/utils/types/client.types";
 import RequirementCheckList from "@/components/form/check-list";
+import {
+  FormHeader,
+  FormDescription,
+  SubmitBtn,
+} from "@/components/form/form-sematics";
 
 const SignupStep3 = ({ onSuccess }: Omit<SignupStepsProps, "email">) => {
   const [password, setPassword] = useState("");
@@ -29,12 +36,12 @@ const SignupStep3 = ({ onSuccess }: Omit<SignupStepsProps, "email">) => {
   ];
 
   return (
-    <section className="mt-16 mx-auto">
+    <section className="mt-22 mx-auto">
       <div className="flex flex-col gap-2 items-center text-sm text-center">
-        <h1 className="font-semibold text-2xl mb-1">Create a password</h1>
-        <p className="opacity-70">
+        <FormHeader>Create a password</FormHeader>
+        <FormDescription>
           Enter your preferred password for your new account
-        </p>
+        </FormDescription>
       </div>
 
       <AuthForm

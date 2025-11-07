@@ -1,7 +1,10 @@
 "use client";
 
-import { AuthErrorResponse, AuthResponse } from "@/utils/types";
-import clsx from "clsx";
+import { cn } from "@/lib/utils";
+import {
+  AuthErrorResponse,
+  AuthResponse,
+} from "@/utils/types/server-response.types";
 import {
   createContext,
   type ReactNode,
@@ -15,7 +18,7 @@ interface Props {
     formData: FormData
   ) => Promise<AuthResponse | undefined>;
   children: ReactNode;
-  onSuccess: () => void;
+  onSuccess?: () => void;
   className?: string;
 }
 
@@ -30,19 +33,24 @@ const AuthForm = ({ action, onSuccess, children, className = "" }: Props) => {
 
   useEffect(() => {
     if (state && "status" in state) {
-      onSuccess();
+      onSuccess?.();
     }
   }, [state, onSuccess]);
 
   return (
     <form
-      className={clsx(
+      className={cn(
         "flex flex-col gap-6 max-w-3xs mx-auto text-black px-2",
         className
       )}
       action={formAction}
     >
       <FormContext value={isSubmitting}>{children}</FormContext>
+      {state && "error" in state && (
+        <p className=" text-red-500 text-sm text-center -mt-5 max-w-5/6 self-center">
+          {state.error}
+        </p>
+      )}
     </form>
   );
 };

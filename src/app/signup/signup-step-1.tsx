@@ -4,9 +4,9 @@ import { useCallback, useState } from "react";
 
 import InputField from "@/components/form/input";
 import { getOtp } from "@/utils/actions";
-import type { SignupStepsProps } from "@/utils/types";
-import SubmitBtn from "@/components/form/submit-btn";
+import type { SignupStepsProps } from "@/utils/types/client.types";
 import AuthForm from "@/components/form/form";
+import { SubmitBtn } from "@/components/form/form-sematics";
 
 const SignupStep1 = ({ onSuccess }: Omit<SignupStepsProps, "email">) => {
   const [email, setEmail] = useState("");
@@ -15,7 +15,7 @@ const SignupStep1 = ({ onSuccess }: Omit<SignupStepsProps, "email">) => {
   }, [onSuccess, email]);
 
   return (
-    <AuthForm className="mt-24" action={getOtp} onSuccess={onSignupSuccess}>
+    <AuthForm className="mt-22" action={getOtp} onSuccess={onSignupSuccess}>
       <InputField
         label="Email"
         value={email}

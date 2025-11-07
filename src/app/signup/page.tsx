@@ -4,9 +4,10 @@ import { useCallback, useState } from "react";
 import SignupStep1 from "./signup-step-1";
 import SignupStep2 from "./signup-step-2";
 import SignupStep3 from "./signup-step-3";
+import SignupStep4 from "./signup-step-4";
 
 const Page = () => {
-  const [signupStep, setsignupStep] = useState<1 | 2 | 3 | 4>(3);
+  const [signupStep, setsignupStep] = useState<1 | 2 | 3 | 4>(4);
   const [userEmail, setUserEmail] = useState("");
   const [userPassword, setUserPassword] = useState("");
 
@@ -31,16 +32,20 @@ const Page = () => {
 
   return (
     <>
-      <div className="flex justify-between hidden">
-        <p className="bg-black p-1 rounded-full">1</p>
-        <p>2</p>
-        <p>3</p>
-      </div>
       {signupStep === 1 && <SignupStep1 onSuccess={onSignupStep1Success} />}
       {signupStep === 2 && (
         <SignupStep2 email={userEmail} onSuccess={onSignupStep2Success} />
       )}
       {signupStep === 3 && <SignupStep3 onSuccess={onSignupStep3Success} />}
+      {signupStep === 4 && (
+        <SignupStep4
+          email={userEmail}
+          password={userPassword}
+          goToCreatePassword={goToCreatePassword}
+          goToRequestOtp={goToRequestOtp}
+          onSuccess={onSignupStep3Success}
+        />
+      )}
     </>
   );
 };

@@ -1,18 +1,20 @@
-"use client";
-
 import { login } from "@/utils/actions";
 import InputField, { PasswordField } from "@/components/form/input";
 import Link from "next/link";
-import SubmitBtn from "@/components/form/submit-btn";
 import AuthForm from "@/components/form/form";
+import {
+  FormDescription,
+  FormHeader,
+  SubmitBtn,
+} from "@/components/form/form-sematics";
 
 const Page = () => {
   return (
-    <AuthForm action={login} className="mt-20 px-4" onSuccess={() => {}}>
+    <AuthForm action={login} className="mt-20 px-4">
       <div className="flex flex-col gap-2 items-center self-center">
-        <h1 className="text-4xl font-medium">Beep</h1>
+        <FormHeader className="text-4xl">Beep</FormHeader>
         <p className="text-sm">
-          <span className="opacity-70">Don&apos;t have an account? </span>
+          <FormDescription>Don&apos;t have an account? </FormDescription>
           <Link
             className="text-blue-600 hover:underline font-medium"
             href="/signup/"
