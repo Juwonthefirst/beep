@@ -28,7 +28,7 @@ export const SubmitBtn = ({ disabled = false, children }: Props) => {
     <button
       className={cn(
         "bg-black rounded-md text-white px-2 py-1 flex flex-col items-center disabled:opacity-70 disabled:cursor-not-allowed w-full",
-        { "cursor-wait": isSubmitting }
+        { "cursor-wait!": isSubmitting }
       )}
       type="submit"
       disabled={disabled || isSubmitting}

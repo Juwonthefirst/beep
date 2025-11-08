@@ -40,7 +40,7 @@ const SignupStep3 = ({ onSuccess }: Omit<SignupStepsProps, "email">) => {
       <div className="flex flex-col gap-2 items-center text-sm text-center">
         <FormHeader>Create a password</FormHeader>
         <FormDescription>
-          Enter your preferred password for your new account
+          Enter a secure password for your new account and keep it safe
         </FormDescription>
       </div>
 

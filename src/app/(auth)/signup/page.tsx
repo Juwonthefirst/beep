@@ -7,7 +7,7 @@ import SignupStep3 from "./signup-step-3";
 import SignupStep4 from "./signup-step-4";
 
 const Page = () => {
-  const [signupStep, setsignupStep] = useState<1 | 2 | 3 | 4>(4);
+  const [signupStep, setsignupStep] = useState<1 | 2 | 3 | 4>(1);
   const [userEmail, setUserEmail] = useState("");
   const [userPassword, setUserPassword] = useState("");
 
@@ -41,7 +41,6 @@ const Page = () => {
         <SignupStep4
           email={userEmail}
           password={userPassword}
-          goToCreatePassword={goToCreatePassword}
           goToRequestOtp={goToRequestOtp}
           onSuccess={onSignupStep3Success}
         />

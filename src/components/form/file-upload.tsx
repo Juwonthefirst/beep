@@ -43,12 +43,12 @@ const FileUpload = ({
       {children}
       <label
         className={cn(
-          "block p-2 bg-black text-white rounded-full w-fit h-fit cursor-pointer hover:bg-neutral-800 transition-colors",
+          "block p-2 bg-white text-black shadow-md rounded-full w-fit h-fit cursor-pointer hover:bg-neutral-200 transition-colors  ",
           inputClassName
         )}
         htmlFor={name}
       >
-        <Camera strokeWidth={2.5} size={iconSize} fill="full" />
+        <Camera color="#000000" strokeWidth={2.5} size={iconSize} />
       </label>
       <input
         id={name}

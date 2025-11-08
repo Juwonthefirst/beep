@@ -91,7 +91,7 @@ const ValidateUsernameField = ({
       }}
       elementInField={
         validationState === "loading" ? (
-          <LoaderCircle size={18} className="animate-spin" />
+          <LoaderCircle size={20} className="animate-spin" />
         ) : validationState === "invalid" ? (
           <X size={20} className="text-red-500" />
         ) : validationState === "valid" ? (
