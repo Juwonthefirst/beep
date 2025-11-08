@@ -24,6 +24,10 @@ const ValidateUsernameField = ({
   const [error, setError] = useState("");
 
   const validateUsername = async (username: string, signal: AbortSignal) => {
+    if (username.length < 3 || username.length > 32) {
+      setError("");
+      return "idle";
+    }
     try {
       const response = await axios.get<UsernameExist>(
         `/api/username/${username}/exists/`,
@@ -55,8 +59,6 @@ const ValidateUsernameField = ({
   };
 
   useEffect(() => {
-    setValidityState("idle");
-    if (username.length < 3 || username.length > 32) return;
     const controller = new AbortController();
     const timeoutKey = setTimeout(() => {
       setValidityState("loading");
@@ -73,32 +75,30 @@ const ValidateUsernameField = ({
   }, [username, setValidityState]);
 
   return (
-    <div className="relative">
-      <InputField
-        label="Username"
-        name="username"
-        placeholder="Enter your new username"
-        value={username}
-        onChange={(event) => setUsername(event.target.value)}
-        error={error}
-        validation={(username) => {
-          if (!username) return "Enter a username";
-          if (username.length < 3)
-            return "Username should be at least 3 characters";
-          if (username.length > 36)
-            return "Username should not be more than 36 characters";
-        }}
-        elementInField={
-          validationState === "loading" ? (
-            <LoaderCircle size={18} className="animate-spin" />
-          ) : validationState === "invalid" ? (
-            <X size={20} className="text-red-500" />
-          ) : validationState === "valid" ? (
-            <Check size={20} className="text-green-500" />
-          ) : undefined
-        }
-      />
-    </div>
+    <InputField
+      label="Username"
+      name="username"
+      placeholder="Enter your new username"
+      value={username}
+      onChange={(event) => setUsername(event.target.value)}
+      error={error}
+      validation={(username) => {
+        if (!username) return "Enter a username";
+        if (username.length < 3)
+          return "Username should be at least 3 characters";
+        if (username.length > 36)
+          return "Username should not be more than 36 characters";
+      }}
+      elementInField={
+        validationState === "loading" ? (
+          <LoaderCircle size={18} className="animate-spin" />
+        ) : validationState === "invalid" ? (
+          <X size={20} className="text-red-500" />
+        ) : validationState === "valid" ? (
+          <Check size={20} className="text-green-500" />
+        ) : undefined
+      }
+    />
   );
 };
 

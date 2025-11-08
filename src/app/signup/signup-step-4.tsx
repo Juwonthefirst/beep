@@ -5,7 +5,7 @@ import {
   FormHeader,
   SubmitBtn,
 } from "@/components/form/form-sematics";
-import { PasswordField } from "@/components/form/input";
+import InputField, { PasswordField } from "@/components/form/input";
 import ValidateUsernameField from "@/components/validate-username-field";
 import { signup } from "@/utils/actions";
 import type {
@@ -40,33 +40,44 @@ const SignupStep4 = ({
       </div>
 
       <AuthForm
-        className="mt-10 items-center px-0"
+        className="mt-6 items-center px-0"
         action={signup}
         onSuccess={onSuccess}
       >
-        <FileUpload
-          name="profile_picture"
-          accept="image/*"
-          onUpload={(files) => setProfilePicture(files[0])}
-        >
-          {profilePicture ? (
-            <Image
-              src={URL.createObjectURL(profilePicture)}
-              alt="Profile Picture"
+        <div className="flex gap-6 flex-col items-center">
+          <FileUpload
+            name="profile_picture"
+            accept="image/*"
+            className="relative w-44 h-44"
+            inputClassName="absolute bottom-1 right-1 z-10 border border-white/50"
+            onUpload={(files) => setProfilePicture(files[0])}
+          >
+            {profilePicture ? (
+              <Image
+                src={URL.createObjectURL(profilePicture)}
+                alt="Profile Picture"
+                fill
+                sizes="176px"
+                className="rounded-full object-cover shadow-md"
+              />
+            ) : (
+              <p>Upload</p>
+            )}
+          </FileUpload>
+          <div className="flex flex-col gap-4">
+            <ValidateUsernameField
+              validationState={usernameValidationState}
+              setValidityState={setUsernameValidationState}
             />
-          ) : (
-            <p>Upload</p>
-          )}
-        </FileUpload>
-        <ValidateUsernameField
-          validationState={usernameValidationState}
-          setValidityState={setUsernameValidationState}
-        />
-        <PasswordField
-          fieldClassName="hidden"
-          name="password"
-          value={password}
-        />
+
+            <PasswordField
+              fieldClassName="hidden"
+              name="password"
+              value={password}
+            />
+          </div>
+        </div>
+
         <SubmitBtn disabled={usernameValidationState !== "valid"}>
           Signup
         </SubmitBtn>

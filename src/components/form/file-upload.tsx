@@ -25,7 +25,7 @@ const FileUpload = ({
   required,
   maxFiles,
   children,
-  iconSize = 20,
+  iconSize = 24,
 }: Props) => {
   return (
     <div
@@ -43,12 +43,12 @@ const FileUpload = ({
       {children}
       <label
         className={cn(
-          "block p-2 bg-black text-white rounded-full w-fit h-fit cursor-pointer hover:bg-black/80 transition-colors",
+          "block p-2 bg-black text-white rounded-full w-fit h-fit cursor-pointer hover:bg-neutral-800 transition-colors",
           inputClassName
         )}
         htmlFor={name}
       >
-        <Camera strokeWidth={2.5} size={iconSize} />
+        <Camera strokeWidth={2.5} size={iconSize} fill="full" />
       </label>
       <input
         id={name}
