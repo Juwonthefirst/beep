@@ -56,13 +56,16 @@ const InputField = ({
 
   return (
     <div className={cn("flex flex-col gap-2 items-center", fieldClassName)}>
-      <label className="font-medium self-start" htmlFor={label + "-input"}>
+      <label
+        className="font-medium self-start text-base"
+        htmlFor={label + "-input"}
+      >
         {label}
       </label>
       <div
         className={cn(
           className,
-          "flex w-fit items-center gap-2",
+          "flex w-full items-center gap-2",
           {
             "outline-2 outline-red-500! ring-red-500/20":
               error || validationError,

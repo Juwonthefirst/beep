@@ -1,36 +1,45 @@
 import "server-only";
 
 import axios, { AxiosRequestConfig, isAxiosError } from "axios";
-import type { ApiMethods } from "./types/client.types";
-import { getAndSetCookies } from "./helpers";
+import type { ApiMethods } from "./types/client.type";
+import { getAndSetCookies, getCookieString } from "./helpers";
 
 const api = axios.create({
   baseURL: process.env.BACKEND_URL,
-  timeout: 5000,
+  timeout: 10000,
   withCredentials: true,
 });
 
 interface RequestProp {
-  method: ApiMethods;
+  method?: ApiMethods;
   path: string;
   data?: unknown;
   config?: AxiosRequestConfig;
 }
 
-export const request = async <ResponseSuccessType, ResponseErrorType>({
-  method,
+export const request = async <
+  ResponseSuccessType,
+  ResponseErrorType = { error: string }
+>({
+  method = "post",
   path,
   data,
   config,
 }: RequestProp) => {
   try {
-    if (method === "get") {
-      const response = await api.get<ResponseSuccessType>(path, config);
-      await getAndSetCookies(response.headers["set-cookie"] || []);
-      return response;
-    }
+    const requestConfig: AxiosRequestConfig = {
+      ...config,
+      headers: {
+        Cookie: await getCookieString(),
+        ...config?.headers,
+      },
+    };
 
-    const response = await api[method]<ResponseSuccessType>(path, data, config);
+    const response =
+      method === "get"
+        ? await api.get<ResponseSuccessType>(path, requestConfig)
+        : await api[method]<ResponseSuccessType>(path, data, requestConfig);
+
     await getAndSetCookies(response.headers["set-cookie"] || []);
     return response;
   } catch (e: unknown) {

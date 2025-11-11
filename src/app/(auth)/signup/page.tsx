@@ -1,10 +1,11 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import SignupStep1 from "./signup-step-1";
-import SignupStep2 from "./signup-step-2";
-import SignupStep3 from "./signup-step-3";
-import SignupStep4 from "./signup-step-4";
+
+import SignupStep1 from "./steps/signup-step-1";
+import SignupStep2 from "./steps/signup-step-2";
+import SignupStep3 from "./steps/signup-step-3";
+import SignupStep4 from "./steps/signup-step-4";
 
 const Page = () => {
   const [signupStep, setsignupStep] = useState<1 | 2 | 3 | 4>(1);
@@ -42,7 +43,6 @@ const Page = () => {
           email={userEmail}
           password={userPassword}
           goToRequestOtp={goToRequestOtp}
-          onSuccess={onSignupStep3Success}
         />
       )}
     </>

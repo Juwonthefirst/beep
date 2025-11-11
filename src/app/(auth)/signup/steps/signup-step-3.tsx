@@ -1,17 +1,14 @@
 import { useCallback, useState } from "react";
 
-import AuthForm from "@/components/form/form";
+import AuthForm, { FormError } from "@/components/form/form";
 import { PasswordField } from "@/components/form/input";
 import type {
   SignupStepsProps,
   ValidationRequirement,
-} from "@/utils/types/client.types";
+} from "@/utils/types/client.type";
 import RequirementCheckList from "@/components/form/check-list";
-import {
-  FormHeader,
-  FormDescription,
-  SubmitBtn,
-} from "@/components/form/form-sematics";
+import { FormHeader, FormDescription } from "@/components/form/form-sematics";
+import SubmitBtn from "@/components/form/submit-btn";
 
 const SignupStep3 = ({ onSuccess }: Omit<SignupStepsProps, "email">) => {
   const [password, setPassword] = useState("");
@@ -89,6 +86,7 @@ const SignupStep3 = ({ onSuccess }: Omit<SignupStepsProps, "email">) => {
         >
           Submit
         </SubmitBtn>
+        <FormError/>
       </AuthForm>
     </section>
   );

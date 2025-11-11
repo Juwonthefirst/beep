@@ -1,14 +1,11 @@
-import AuthForm from "@/components/form/form";
+import AuthForm, { FormError } from "@/components/form/form";
 import OtpInput from "@/components/form/otp-input";
 import { verifyOtp, getOtp } from "@/utils/actions";
-import { SignupStepsProps } from "@/utils/types/client.types";
+import { SignupStepsProps } from "@/utils/types/client.type";
 import { LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
-import {
-  FormHeader,
-  FormDescription,
-  SubmitBtn,
-} from "@/components/form/form-sematics";
+import { FormHeader, FormDescription } from "@/components/form/form-sematics";
+import SubmitBtn from "@/components/form/submit-btn";
 
 const RequestOtpBtn = ({
   email,
@@ -72,7 +69,7 @@ const SignupStep2 = ({ email, onSuccess }: SignupStepsProps) => {
         <FormHeader>Verify your email</FormHeader>
         <p>
           <FormDescription>Enter the OTP sent to </FormDescription>
-          <span className="font-medium opacity-90">{email}</span>
+          <span className="font-medium">{email}</span>
         </p>
         <p className="flex gap-1 items-center">
           <FormDescription>Didn&apos;t get a code?</FormDescription>
@@ -81,12 +78,13 @@ const SignupStep2 = ({ email, onSuccess }: SignupStepsProps) => {
       </div>
 
       <AuthForm
-        className="mt-10 items-center"
+        className="mt-12 items-center"
         action={verifyOtp}
         onSuccess={onSuccess}
       >
         <OtpInput />
         <SubmitBtn>Verify</SubmitBtn>
+        <FormError />
       </AuthForm>
     </section>
   );

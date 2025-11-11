@@ -3,17 +3,11 @@
 import { cookies } from "next/headers";
 
 import type {
-  AuthErrorResponse,
   AuthResponse,
   AuthSuccessResponse,
-} from "./types/server-response.types";
+} from "./types/server-response.type";
 import { request } from "./request-client";
 import { processFile } from "./helpers";
-
-export const isAuthenticated = async () => {
-  const cookieStore = await cookies();
-  return { isAuthenticated: cookieStore.has("refresh_token") };
-};
 
 export const login = async (
   prevState: AuthResponse | undefined,
@@ -24,7 +18,7 @@ export const login = async (
 
   if (!identification) return { error: "Enter a username or email" };
   else if (!password) return { error: "Enter your password" };
-  const response = await request<AuthSuccessResponse, AuthErrorResponse>({
+  const response = await request<AuthSuccessResponse>({
     method: "post",
     path: "/auth/login/",
     data: {
@@ -50,7 +44,7 @@ export const getOtp = async (
 ) => {
   const email = formData.get("email");
   if (!email) return { error: "Enter a valid email" };
-  const response = await request<AuthSuccessResponse, AuthErrorResponse>({
+  const response = await request<AuthSuccessResponse>({
     method: "post",
     path: "/auth/get-otp/",
     data: {
@@ -77,7 +71,7 @@ export const verifyOtp = async (
 
   const otp = formData.get("otp");
   if (!otp) return { error: "Enter the otp sent to your mail" };
-  const response = await request<AuthSuccessResponse, AuthErrorResponse>({
+  const response = await request<AuthSuccessResponse>({
     method: "post",
     path: "/auth/verify-otp/",
     data: {
@@ -112,10 +106,15 @@ export const signup = async (
 
   const profilePicture = formData.get("profile_picture");
   formData.delete("profile_picture");
-  if (profilePicture && profilePicture instanceof Blob)
+  if (
+    profilePicture &&
+    profilePicture instanceof Blob &&
+    profilePicture.size &&
+    profilePicture.type
+  )
     formData.set("profile_picture", await processFile(profilePicture));
 
-  const response = await request<AuthSuccessResponse, AuthErrorResponse>({
+  const response = await request<AuthSuccessResponse>({
     method: "post",
     path: "/auth/signup/",
     data: formData,
@@ -134,5 +133,23 @@ export const signup = async (
           : response.error?.data?.error,
     };
   }
+  return response.data;
+};
+
+export const googleAuthenicate = async (code: unknown) => {
+  const response = await request<AuthSuccessResponse>({
+    path: "/auth/social/google/code/",
+    data: { code },
+  });
+
+  if ("error" in response) {
+    return {
+      error:
+        typeof response.error === "string"
+          ? response.error
+          : response.error?.data.error,
+    };
+  }
+
   return response.data;
 };

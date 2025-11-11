@@ -4,12 +4,12 @@ import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { Check, LoaderCircle, X } from "lucide-react";
 import axios, { isAxiosError } from "axios";
 
-import InputField from "./form/input";
+import InputField from "@/components/form/input";
 import type {
   AuthErrorResponse,
   UsernameExist,
-} from "@/utils/types/server-response.types";
-import type { ValidationState } from "@/utils/types/client.types";
+} from "@/utils/types/server-response.type";
+import type { ValidationState } from "@/utils/types/client.type";
 
 interface Props {
   validationState: ValidationState;

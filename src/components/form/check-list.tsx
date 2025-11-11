@@ -1,4 +1,4 @@
-import type { ValidationRequirement } from "@/utils/types/client.types";
+import type { ValidationRequirement } from "@/utils/types/client.type";
 import clsx from "clsx";
 import { Check } from "lucide-react";
 

@@ -9,14 +9,21 @@ export const processFile = async (file: File) => {
   const buffer = Buffer.from(bytes);
 
   const processedFileBuffer = await sharp(buffer)
-    .resize(350, 350)
+    .resize(350, 350, {
+      withoutEnlargement: true,
+      fit: "cover",
+    })
     .sharpen()
     .webp({ quality: 75 })
     .toBuffer();
 
-  return new Blob([new Uint8Array(processedFileBuffer)], {
-    type: "image/webp",
-  });
+  return new File(
+    [new Uint8Array(processedFileBuffer)],
+    "profile_picture.webp",
+    {
+      type: "image/webp",
+    }
+  );
 };
 
 export const getAndSetCookies = async (cookieStrings: string[]) => {
@@ -32,4 +39,18 @@ export const getAndSetCookies = async (cookieStrings: string[]) => {
       });
     }
   }
+};
+
+export const getCookieString = async () => {
+  const cookieStore = await cookies();
+  const allowedCookies = process.env.ALLOWED_COOKIES?.split(",") || [];
+  const cookieStrings = [];
+
+  for (const cookie of allowedCookies) {
+    if (cookieStore.has(cookie)) {
+      const cookieValue = cookieStore.get(cookie)?.value;
+      cookieStrings.push(`${cookie}=${cookieValue}`);
+    }
+  }
+  return cookieStrings.join("; ");
 };

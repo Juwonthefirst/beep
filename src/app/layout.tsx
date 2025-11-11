@@ -1,9 +1,8 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
 
-import QueryProvider from "@/components/query-provider";
-
 const inter = Inter({
+  subsets: ["latin"],
   weight: ["400", "500"],
 });
 
@@ -14,9 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased`}>
-        <QueryProvider>{children}</QueryProvider>
-      </body>
+      <body className={`${inter.className} antialiased`}>{children}</body>
     </html>
   );
 }

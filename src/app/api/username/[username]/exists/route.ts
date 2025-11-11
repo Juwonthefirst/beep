@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { request } from "@/utils/request-client";
-import type { AuthErrorResponse } from "@/utils/types/server-response.types";
+import type { AuthErrorResponse } from "@/utils/types/server-response.type";
 
 export async function GET(
   req: Request,

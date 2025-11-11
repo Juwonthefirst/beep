@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@react-oauth/google": "^0.12.2",
     "@tanstack/react-query": "^5.90.5",
     "axios": "^1.13.0",
     "class-variance-authority": "^0.7.1",
@@ -23,6 +24,8 @@
     "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
+    "@sentry/nextjs": "^10.24.0",
+    "@spotlightjs/spotlight": "^4.5.1",
     "@tailwindcss/postcss": "^4",
     "@tanstack/react-query-devtools": "^5.90.2",
     "@types/node": "^20",

@@ -1,9 +1,9 @@
-import { UUID } from "crypto";
-import { WebsocketMessage } from "./types/client.types";
+import type { UUID } from "crypto";
+import type { WebsocketMessage } from "./types/client.type";
 import {
   ChatSocketMessage,
   ChatSocketTyping,
-} from "./types/server-response.types";
+} from "./types/server-response.type";
 
 type GetAccessToken = () => Promise<string>;
 
@@ -145,5 +145,19 @@ export class ChatSocket extends Socket {
       if ("typing" in data && data.room_name === this.currentRoom)
         return this.onTyping();
     };
+  }
+}
+
+interface NotificationSocketConstructor extends SocketConstructor {
+  onNotification: () => void;
+}
+
+export class NotificationSocket extends Socket {
+  constructor({
+    url,
+    getAccessToken,
+    onConnected,
+  }: NotificationSocketConstructor) {
+    super({ url, getAccessToken, onConnected });
   }
 }
