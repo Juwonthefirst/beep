@@ -24,3 +24,11 @@ export type WebsocketMessage =
       uuid: UUID;
       attachment?: { id: number; url: string };
     };
+
+export type WebSocketConnectionState =
+  | "connected"
+  | "connecting"
+  | "reconnecting"
+  | "reconnected"
+  | "reconnection_failed"
+  | "disconnected";

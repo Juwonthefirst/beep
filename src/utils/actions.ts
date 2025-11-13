@@ -8,6 +8,7 @@ import type {
 } from "./types/server-response.type";
 import { request } from "./request-client";
 import { processFile } from "./helpers";
+import SetCookie from "set-cookie-parser";
 
 export const login = async (
   prevState: AuthResponse | undefined,
@@ -152,4 +153,29 @@ export const googleAuthenicate = async (code: unknown) => {
   }
 
   return response.data;
+};
+
+export const getAccessToken = async () => {
+  const cookieStore = await cookies();
+  const accessTokenCookie = cookieStore.get("access_token");
+  if (accessTokenCookie) return accessTokenCookie.value;
+
+  const response = await request<undefined>({
+    path: "/auth/token/refresh/",
+    config: {
+      headers: {
+        "X-CSRFToken": cookieStore.get("csrftoken")?.value,
+      },
+    },
+  });
+
+  if ("error" in response) {
+    if (typeof response.error !== "string" && response.error.status === 401) {
+      cookieStore.delete("refresh_token");
+    }
+    return;
+  }
+  const responseCookies = response.headers["set-cookie"];
+  if (responseCookies)
+    return SetCookie.parse(responseCookies, { map: true }).access_token.value;
 };

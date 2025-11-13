@@ -1,13 +1,23 @@
+import ChatSocketProvider from "@/components/providers/chat-socket.provider";
 import QueryProvider from "@/components/providers/query.provider";
-import React from "react";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-//Add an header
-const MainLayout = ({
+const MainLayout = async ({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
-  return <QueryProvider>{children}</QueryProvider>;
+  const cookieStore = await cookies();
+  if (!cookieStore.has("refresh_token")) {
+    //cookieStore.set("requested_url", "/");
+    redirect("/login");
+  }
+  return (
+    <QueryProvider>
+      <ChatSocketProvider>{children}</ChatSocketProvider>
+    </QueryProvider>
+  );
 };
 
 export default MainLayout;

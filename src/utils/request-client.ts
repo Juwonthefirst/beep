@@ -1,12 +1,12 @@
 import "server-only";
 
-import axios, { AxiosRequestConfig, isAxiosError } from "axios";
+import axios, { type AxiosRequestConfig, isAxiosError } from "axios";
 import type { ApiMethods } from "./types/client.type";
 import { getAndSetCookies, getCookieString } from "./helpers";
 
 const api = axios.create({
   baseURL: process.env.BACKEND_URL,
-  timeout: 10000,
+  timeout: 5000,
   withCredentials: true,
 });
 
@@ -44,6 +44,7 @@ export const request = async <
     return response;
   } catch (e: unknown) {
     if (isAxiosError<ResponseErrorType>(e)) {
+      console.error(e.response?.data);
       const cookieStrings = e.response?.headers["set-cookie"];
       if (cookieStrings) await getAndSetCookies(cookieStrings);
       return { error: e.response || e.message };

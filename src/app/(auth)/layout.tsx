@@ -11,9 +11,11 @@ const AuthLayout = async ({
   children: React.ReactNode;
 }>) => {
   const cookieStore = await cookies();
-  if (cookieStore.has("refresh_token"))
-    redirect(cookieStore.get("requested_url")?.value || "/");
-  else if (
+  if (cookieStore.has("refresh_token")) {
+    const requestedURLCookie = cookieStore.get("requested_url");
+    //cookieStore.delete("requested_url");
+    redirect(requestedURLCookie?.value || "/");
+  } else if (
     cookieStore.has("signup_session_id") &&
     cookieStore.has("pending_google_signup")
   )

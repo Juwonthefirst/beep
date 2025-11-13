@@ -1,16 +1,19 @@
 import type { UUID } from "crypto";
-import type { WebsocketMessage } from "./types/client.type";
+import type {
+  WebSocketConnectionState,
+  WebsocketMessage,
+} from "./types/client.type";
 import {
   ChatSocketMessage,
   ChatSocketTyping,
 } from "./types/server-response.type";
+import { withRetry } from "./helpers";
 
-type GetAccessToken = () => Promise<string>;
+type GetAccessToken = () => Promise<string | undefined>;
 
 interface SocketConstructor {
   url: string;
   getAccessToken: GetAccessToken;
-  onConnected: () => void;
 }
 
 class Socket {
@@ -21,9 +24,11 @@ class Socket {
   private retryCount: number;
   protected socketConnected: boolean;
   private getAccessToken: GetAccessToken;
-  private onConnected: () => void;
+  onConnectionStateChange?:
+    | ((connectionState: WebSocketConnectionState) => void)
+    | null;
 
-  constructor({ url, getAccessToken, onConnected }: SocketConstructor) {
+  constructor({ url, getAccessToken }: SocketConstructor) {
     this.socket = null;
     this.url = url;
     this.maxRetry = 5;
@@ -31,16 +36,35 @@ class Socket {
     this.retryCount = 0;
     this.socketConnected = false;
     this.getAccessToken = getAccessToken;
-    this.onConnected = onConnected;
+    this.onConnectionStateChange = null;
   }
 
   async connect() {
+    try {
+      await withRetry<void>({
+        func: async () => {
+          const accessToken = await this.getAccessToken();
+          await new Promise<void>((resolve, reject) => {
+            this.socket = new WebSocket(this.url + `?token=${accessToken}`);
+            this.socket.onopen = () => {
+              this.retryCount = 0;
+              this.socketConnected = true;
+              this.onConnectionStateChange?.("connected");
+              resolve();
+            };
+            this.handleClose(reject);
+            this.handleError(reject);
+          });
+        },
+      });
+    } catch (error) {}
+
     const accessToken = await this.getAccessToken();
     this.socket = new WebSocket(this.url + `?token=${accessToken}`);
     this.socket.onopen = () => {
       this.retryCount = 0;
       this.socketConnected = true;
-      this.onConnected();
+      this.onConnectionStateChange?.("connected");
     };
     this.handleClose();
     this.handleError();
@@ -48,11 +72,11 @@ class Socket {
 
   disconnect() {
     if (!this.socket) return;
+    this.onConnectionStateChange?.("disconnected");
     this.socket.close(1000);
-    this.socket = null;
   }
 
-  private handleClose() {
+  private handleClose(reject?: () => void) {
     if (!this.socket) return;
     this.socket.onclose = (event) => {
       if (
@@ -64,6 +88,7 @@ class Socket {
         setTimeout(() => this.connect(), Math.min(this.retryTimeout, 10000));
       }
       this.socketConnected = false;
+      this.socket = null;
     };
   }
 
@@ -75,37 +100,21 @@ class Socket {
   }
 }
 
-interface ChatSocketConstructor extends SocketConstructor {
-  onTyping: () => void;
-  onMessage: (message: ChatSocketMessage) => void;
-}
-
 export class ChatSocket extends Socket {
-  currentRoom: string | null;
+  private currentRoom: string | null;
   private readonly pendingMessages: WebsocketMessage[];
-  private readonly onTyping: () => void;
-  private readonly onMessage: (message: ChatSocketMessage) => void;
-  constructor({
-    url,
-    getAccessToken,
-    onConnected: onSocketConnect,
-    onTyping,
-    onMessage,
-  }: ChatSocketConstructor) {
-    const onConnected = () => {
-      for (const message of this.pendingMessages) {
-        this.send(message);
-      }
-      onSocketConnect();
-    };
-    super({ url, getAccessToken, onConnected });
+  private onTyping: (() => void) | null;
+  private onMessage: ((message: ChatSocketMessage) => void) | null;
+
+  constructor({ url, getAccessToken }: SocketConstructor) {
+    super({ url, getAccessToken });
     this.currentRoom = null;
     this.pendingMessages = [];
-    this.onTyping = onTyping;
-    this.onMessage = onMessage;
+    this.onTyping = null;
+    this.onMessage = null;
   }
 
-  send(data: WebsocketMessage) {
+  private send(data: WebsocketMessage) {
     if (!this.socketConnected) {
       this.pendingMessages.push(data);
       return "pending";
@@ -115,9 +124,15 @@ export class ChatSocket extends Socket {
     return "sent";
   }
 
-  joinGroup(groupName: string) {
+  joinGroup(
+    groupName: string,
+    onMessage: (message: ChatSocketMessage) => void,
+    onTyping: () => void
+  ) {
     const status = this.send({ action: "group_join", room_name: groupName });
     this.currentRoom = groupName;
+    this.onMessage = onMessage;
+    this.onTyping = onTyping;
     this.listenForMessages();
     return status;
   }
@@ -125,6 +140,8 @@ export class ChatSocket extends Socket {
   leaveGroup() {
     const status = this.send({ action: "group_leave" });
     this.currentRoom = null;
+    this.onMessage = null;
+    this.onTyping = null;
     return status;
   }
 
@@ -143,7 +160,7 @@ export class ChatSocket extends Socket {
     this.socket.onmessage = (event) => {
       const data: ChatSocketTyping | ChatSocketMessage = JSON.parse(event.data);
       if ("typing" in data && data.room_name === this.currentRoom)
-        return this.onTyping();
+        return this.onTyping?.();
     };
   }
 }
@@ -153,11 +170,7 @@ interface NotificationSocketConstructor extends SocketConstructor {
 }
 
 export class NotificationSocket extends Socket {
-  constructor({
-    url,
-    getAccessToken,
-    onConnected,
-  }: NotificationSocketConstructor) {
-    super({ url, getAccessToken, onConnected });
+  constructor({ url, getAccessToken }: NotificationSocketConstructor) {
+    super({ url, getAccessToken });
   }
 }
