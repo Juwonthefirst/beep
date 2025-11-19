@@ -4,6 +4,29 @@ export interface CurrentUser {
   id: number;
   username: string;
   email: string;
+  profile_picture: string;
+}
+
+export interface BaseUser {
+  id: number;
+  username: string;
+  email: string;
+  profile_picture: string;
+  last_online: string;
+}
+
+export interface User extends BaseUser {
+  is_following_me: boolean;
+  is_followed_by_me: boolean;
+  is_online: boolean;
+}
+
+export interface Group {
+  id: number;
+  name: string;
+  description: string;
+  avatar: string;
+  created_at: string;
 }
 
 export interface AuthSuccessResponse {
@@ -30,4 +53,73 @@ export interface ChatSocketMessage {
   timestamp: string;
   uuid: UUID;
   attachment_url: string;
+}
+
+export interface ChatNotification {
+  type: "chat_notification";
+  sender: string;
+  sender_profile_picture: string;
+  group_name: string;
+  message: string;
+  is_group: boolean;
+  room_name: string;
+  timestamp: string;
+}
+
+export interface CallNotification {
+  type: "call_notification";
+  caller: string;
+  room_name: string;
+  is_video: boolean;
+  is_group: boolean;
+}
+
+export interface OnlineStatusNotification {
+  type: "online_status_notification";
+  user: number;
+  status: boolean;
+}
+
+export interface GroupEventNotification {
+  type: "group_notification";
+  group_id: number;
+  notification: string;
+}
+
+export interface FriendEventNotification {
+  type: "friend_notification";
+  sender: string;
+  sender_profile_picture: string;
+  action: "sent" | "accepted";
+}
+
+export type NotificationMessage =
+  | ChatNotification
+  | CallNotification
+  | OnlineStatusNotification
+  | GroupEventNotification
+  | FriendEventNotification;
+
+export interface PaginatedResponse<Type> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Type[];
+}
+
+interface ChatRoom {
+  id: number;
+  name: string;
+  last_message: string;
+  unread_message_count: number;
+}
+
+export interface UserChatRoom extends ChatRoom {
+  is_group: false;
+  parent: BaseUser;
+}
+
+export interface GroupChatRoom extends ChatRoom {
+  is_group: true;
+  parent: Group;
 }

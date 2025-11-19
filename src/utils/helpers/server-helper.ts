@@ -3,6 +3,7 @@ import "server-only";
 import { cookies } from "next/headers";
 import SetCookie from "set-cookie-parser";
 import sharp from "sharp";
+import { request } from "../request-client";
 
 export const processFile = async (file: File) => {
   const bytes = await file.arrayBuffer();
@@ -55,31 +56,27 @@ export const getCookieString = async () => {
   return cookieStrings.join("; ");
 };
 
-export const delay = (ms: number) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
+export const getORfetchAccessToken = async () => {
+  const cookieStore = await cookies();
+  const accessTokenCookie = cookieStore.get("access_token");
+  if (accessTokenCookie) return accessTokenCookie.value;
 
-interface WithRetry<Type> {
-  func: () => Promise<Type>;
-  maxRetryCount?: number;
-}
+  const response = await request<undefined>({
+    path: "/auth/token/refresh/",
+    config: {
+      headers: {
+        "X-CSRFToken": cookieStore.get("csrftoken")?.value,
+      },
+    },
+  });
 
-export const withRetry = async <Type>({
-  func,
-  maxRetryCount = 3,
-}: WithRetry<Type>): Promise<Type> => {
-  let retryCount = 0;
-  let retryTimeout = 1 * 1000;
-
-  while (true) {
-    try {
-      return await func();
-    } catch (error) {
-      retryCount++;
-      if (retryCount > maxRetryCount) {
-        throw error;
-      }
+  if ("error" in response) {
+    if (typeof response.error !== "string" && response.error.status === 401) {
+      cookieStore.delete("refresh_token");
     }
-    await delay(Math.min(retryTimeout, 10 * 1000));
-    retryTimeout *= 1.5;
+    return;
   }
+  const responseCookies = response.headers["set-cookie"];
+  if (responseCookies)
+    return SetCookie.parse(responseCookies, { map: true }).access_token.value;
 };

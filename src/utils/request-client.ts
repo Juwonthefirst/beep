@@ -2,7 +2,7 @@ import "server-only";
 
 import axios, { type AxiosRequestConfig, isAxiosError } from "axios";
 import type { ApiMethods } from "./types/client.type";
-import { getAndSetCookies, getCookieString } from "./helpers";
+import { getAndSetCookies, getCookieString } from "./helpers/server-helper";
 
 const api = axios.create({
   baseURL: process.env.BACKEND_URL,
@@ -19,7 +19,9 @@ interface RequestProp {
 
 export const request = async <
   ResponseSuccessType,
-  ResponseErrorType = { error: string }
+  ResponseErrorType = {
+    error: string;
+  }
 >({
   method = "post",
   path,

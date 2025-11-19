@@ -7,6 +7,7 @@ import { use, useState } from "react";
 import { cn } from "@/lib/utils";
 import { FormContext } from "../form/form";
 import { googleAuthenicate } from "@/utils/actions";
+import GoogleLogo from "../google-logo";
 
 const GoogleLoginBtn = () => {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
@@ -49,10 +50,11 @@ const GoogleLoginBtn = () => {
       }}
       disabled={formControls.isDisabled}
       className={cn(
-        "flex gap-2 bg-orange-500 rounded-md py-1.5 px-3 text-white text-sm items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed",
+        "flex gap-2 bg-orange-400 rounded-md py-1 px-3 text-white text-sm items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed transition-all",
         { "cursor-wait!": isAuthenticating }
       )}
     >
+      <GoogleLogo />
       {isAuthenticating ? (
         <LoaderCircle className="animate-spin" size={18} />
       ) : (

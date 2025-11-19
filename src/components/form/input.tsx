@@ -10,7 +10,7 @@ import { Eye, EyeClosed } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const className =
-  "text-sm transistion-all duration-200  rounded-md py-1.5 px-3  outline has-focus:ring-4 has-focus:ring-offset-2 has-focus:outline-2  ring-neutral-500/20 outline-black/75 has-focus:outline-black text-black *:placeholder:text-sm";
+  "text-sm transistion-all duration-200  rounded-md py-1.5 px-3 bg-neutral-100 shadow-xs has-focus:bg-white has-focus:ring-4 has-focus:ring-offset-2 has-focus:outline-2  ring-neutral-500/20 has-focus:outline-black text-black *:placeholder:text-sm";
 
 interface InputFieldPropType {
   required?: boolean;

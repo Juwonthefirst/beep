@@ -30,7 +30,7 @@ const SignupStep4 = ({
   const [usernameValidationState, setUsernameValidationState] =
     useState<ValidationState>("idle");
   const [profilePicturePreview, setProfilePicturePreview] =
-    useState("/default.jpg");
+    useState("/default.webp");
 
   return (
     <section className="mt-18 mx-auto">

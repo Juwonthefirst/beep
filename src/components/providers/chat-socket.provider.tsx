@@ -11,10 +11,8 @@ import {
   useMemo,
 } from "react";
 
-const chatSocket = new ChatSocket({
-  url: "ws://localhost:8000/ws/chat/",
-  getAccessToken: getAccessToken,
-});
+const chatSocket = new ChatSocket({ getAccessToken });
+
 interface ChatSocketContextValue {
   chatSocket: ChatSocket;
   connectionState: WebSocketConnectionState;
@@ -26,20 +24,14 @@ export const ChatSocketContext = createContext<ChatSocketContextValue>({
 });
 
 const ChatSocketProvider = ({ children }: { children: ReactNode }) => {
-  const [isLoading, setIsLoading] = useState(true);
   const [connectionState, setConnectionState] =
     useState<WebSocketConnectionState>("connecting");
 
   useEffect(() => {
-    (async () => {
-      setIsLoading(true);
-      chatSocket.onConnectionStateChange = (connectionState) => {
-        setConnectionState(connectionState);
-      };
-      await chatSocket.connect();
-      setIsLoading(false);
-    })();
-
+    chatSocket.onConnectionStateChange = (connectionState) => {
+      setConnectionState(connectionState);
+    };
+    chatSocket.connect();
     return () => {
       chatSocket.disconnect();
     };
@@ -50,7 +42,8 @@ const ChatSocketProvider = ({ children }: { children: ReactNode }) => {
     [connectionState]
   );
 
-  if (isLoading) return <p>Loading...</p>;
+  if (!(connectionState === "connected" || connectionState === "reconnected"))
+    return <p>{connectionState}</p>;
   return (
     <ChatSocketContext value={chatSocketContextValue}>
       {children}

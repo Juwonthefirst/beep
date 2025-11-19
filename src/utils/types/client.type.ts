@@ -25,10 +25,26 @@ export type WebsocketMessage =
       attachment?: { id: number; url: string };
     };
 
-export type WebSocketConnectionState =
-  | "connected"
-  | "connecting"
-  | "reconnecting"
-  | "reconnected"
+export type WebSocketConnectionSuccessState = "connected" | "reconnected";
+
+export type WebSocketConnectionLoadingState = "reconnecting" | "connecting";
+export type WebSocketConnectionFailedState =
   | "reconnection_failed"
   | "disconnected";
+
+export type WebSocketConnectionState =
+  | WebSocketConnectionSuccessState
+  | WebSocketConnectionLoadingState
+  | WebSocketConnectionFailedState;
+
+export const isWebSocketLoadingState = (
+  value: string
+): value is WebSocketConnectionLoadingState => {
+  return value === "reconnecting" || value === "connecting";
+};
+
+export const isWebSocketSuccessState = (
+  value: string
+): value is WebSocketConnectionSuccessState => {
+  return value === "reconnected" || value === "connected";
+};

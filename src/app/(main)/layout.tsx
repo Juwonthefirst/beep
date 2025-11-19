@@ -1,3 +1,5 @@
+import Header from "@/components/header/header";
+import Notifications from "@/components/notifications/notifications-display";
 import ChatSocketProvider from "@/components/providers/chat-socket.provider";
 import QueryProvider from "@/components/providers/query.provider";
 import { cookies } from "next/headers";
@@ -10,12 +12,15 @@ const MainLayout = async ({
 }>) => {
   const cookieStore = await cookies();
   if (!cookieStore.has("refresh_token")) {
-    //cookieStore.set("requested_url", "/");
     redirect("/login");
   }
   return (
     <QueryProvider>
-      <ChatSocketProvider>{children}</ChatSocketProvider>
+      <ChatSocketProvider>
+        <Notifications />
+        <Header />
+        {children}
+      </ChatSocketProvider>
     </QueryProvider>
   );
 };

@@ -1,13 +1,24 @@
 import type { UUID } from "crypto";
-import type {
-  WebSocketConnectionState,
-  WebsocketMessage,
-} from "./types/client.type";
 import {
+  isWebSocketLoadingState,
+  isWebSocketSuccessState,
+  type WebSocketConnectionFailedState,
+  type WebSocketConnectionLoadingState,
+  type WebSocketConnectionState,
+  type WebSocketConnectionSuccessState,
+  type WebsocketMessage,
+} from "./types/client.type";
+import type {
+  CallNotification,
+  ChatNotification,
   ChatSocketMessage,
   ChatSocketTyping,
+  FriendEventNotification,
+  GroupEventNotification,
+  NotificationMessage,
+  OnlineStatusNotification,
 } from "./types/server-response.type";
-import { withRetry } from "./helpers";
+import { withRetry } from "./helpers/client-helper";
 
 type GetAccessToken = () => Promise<string | undefined>;
 
@@ -20,82 +31,104 @@ class Socket {
   protected socket: WebSocket | null;
   private readonly url: string;
   private readonly maxRetry: number;
-  private retryTimeout: number;
-  private retryCount: number;
-  protected socketConnected: boolean;
   private getAccessToken: GetAccessToken;
+  protected connectionState: WebSocketConnectionState;
   onConnectionStateChange?:
     | ((connectionState: WebSocketConnectionState) => void)
     | null;
+
+  private readonly updateConnectionState: (
+    connectionState: WebSocketConnectionState
+  ) => void;
 
   constructor({ url, getAccessToken }: SocketConstructor) {
     this.socket = null;
     this.url = url;
     this.maxRetry = 5;
-    this.retryTimeout = 1000;
-    this.retryCount = 0;
-    this.socketConnected = false;
+    this.connectionState = "disconnected";
     this.getAccessToken = getAccessToken;
     this.onConnectionStateChange = null;
+    this.updateConnectionState = (
+      connectionState: WebSocketConnectionState
+    ) => {
+      this.connectionState = connectionState;
+      this.onConnectionStateChange?.(connectionState);
+    };
   }
 
-  async connect() {
+  private async createWebsocketConnection(
+    successState: WebSocketConnectionSuccessState,
+    loadingState: WebSocketConnectionLoadingState,
+    failedState: WebSocketConnectionFailedState
+  ) {
+    if (this.connectionState === loadingState) return;
+    this.updateConnectionState(loadingState);
     try {
       await withRetry<void>({
         func: async () => {
           const accessToken = await this.getAccessToken();
           await new Promise<void>((resolve, reject) => {
-            this.socket = new WebSocket(this.url + `?token=${accessToken}`);
+            this.socket = new WebSocket(
+              this.url + `?token=${accessToken || ""}`
+            );
             this.socket.onopen = () => {
-              this.retryCount = 0;
-              this.socketConnected = true;
-              this.onConnectionStateChange?.("connected");
+              this.updateConnectionState(successState);
               resolve();
             };
-            this.handleClose(reject);
+            this.handleClose(resolve, reject);
             this.handleError(reject);
           });
         },
+        maxRetryCount: this.maxRetry,
       });
-    } catch (error) {}
+    } catch (e) {
+      void e;
+      this.socket = null;
+      this.updateConnectionState(failedState);
+    }
+  }
 
-    const accessToken = await this.getAccessToken();
-    this.socket = new WebSocket(this.url + `?token=${accessToken}`);
-    this.socket.onopen = () => {
-      this.retryCount = 0;
-      this.socketConnected = true;
-      this.onConnectionStateChange?.("connected");
-    };
-    this.handleClose();
-    this.handleError();
+  async connect() {
+    await this.createWebsocketConnection(
+      "connected",
+      "connecting",
+      "disconnected"
+    );
+  }
+
+  async reconnect() {
+    await this.createWebsocketConnection(
+      "reconnected",
+      "reconnecting",
+      "reconnection_failed"
+    );
   }
 
   disconnect() {
     if (!this.socket) return;
-    this.onConnectionStateChange?.("disconnected");
+    this.updateConnectionState("disconnected");
     this.socket.close(1000);
   }
 
-  private handleClose(reject?: () => void) {
+  private handleClose(resolve: () => void, reject: () => void) {
     if (!this.socket) return;
     this.socket.onclose = (event) => {
-      if (
-        !(event.code === 1000 || event.code === 1001) &&
-        this.retryCount < this.maxRetry
-      ) {
-        this.retryCount++;
-        this.retryTimeout *= 1.5;
-        setTimeout(() => this.connect(), Math.min(this.retryTimeout, 10000));
+      if (isWebSocketLoadingState(this.connectionState)) {
+        if (event.code === 1000 || event.code === 1001) return resolve();
+        return reject();
       }
-      this.socketConnected = false;
-      this.socket = null;
+      if (isWebSocketSuccessState(this.connectionState)) {
+        this.reconnect();
+        return;
+      }
     };
   }
 
-  private handleError() {
+  private handleError(reject: () => void) {
     if (!this.socket) return;
-    this.socket.onerror = () => {
-      this.socketConnected = false;
+    this.socket.onerror = (message) => {
+      console.error(message);
+      reject();
     };
   }
 }
@@ -103,10 +136,11 @@ class Socket {
 export class ChatSocket extends Socket {
   private currentRoom: string | null;
   private readonly pendingMessages: WebsocketMessage[];
-  private onTyping: (() => void) | null;
+  private onTyping: ((sender_username: string) => void) | null;
   private onMessage: ((message: ChatSocketMessage) => void) | null;
 
-  constructor({ url, getAccessToken }: SocketConstructor) {
+  constructor({ getAccessToken }: Omit<SocketConstructor, "url">) {
+    const url = process.env.NEXT_PUBLIC_WEBSOCKET_URL + "/chat/";
     super({ url, getAccessToken });
     this.currentRoom = null;
     this.pendingMessages = [];
@@ -115,7 +149,7 @@ export class ChatSocket extends Socket {
   }
 
   private send(data: WebsocketMessage) {
-    if (!this.socketConnected) {
+    if (!isWebSocketSuccessState(this.connectionState)) {
       this.pendingMessages.push(data);
       return "pending";
     }
@@ -127,7 +161,7 @@ export class ChatSocket extends Socket {
   joinGroup(
     groupName: string,
     onMessage: (message: ChatSocketMessage) => void,
-    onTyping: () => void
+    onTyping: (sender_username: string) => void
   ) {
     const status = this.send({ action: "group_join", room_name: groupName });
     this.currentRoom = groupName;
@@ -159,18 +193,53 @@ export class ChatSocket extends Socket {
     if (!this.socket) return;
     this.socket.onmessage = (event) => {
       const data: ChatSocketTyping | ChatSocketMessage = JSON.parse(event.data);
-      if ("typing" in data && data.room_name === this.currentRoom)
-        return this.onTyping?.();
+      if (data.room_name !== this.currentRoom) return;
+      if ("typing" in data) return this.onTyping?.(data.sender_username);
+      return this.onMessage?.(data);
     };
   }
 }
 
-interface NotificationSocketConstructor extends SocketConstructor {
-  onNotification: () => void;
-}
-
 export class NotificationSocket extends Socket {
-  constructor({ url, getAccessToken }: NotificationSocketConstructor) {
+  onChatNotification: ((message: ChatNotification) => void) | null;
+  onCallNotification: ((message: CallNotification) => void) | null;
+  onFriendNotification: ((message: FriendEventNotification) => void) | null;
+  onGroupNotification: ((message: GroupEventNotification) => void) | null;
+  onOnlineStatusNotification:
+    | ((message: OnlineStatusNotification) => void)
+    | null;
+
+  constructor({ getAccessToken }: Omit<SocketConstructor, "url">) {
+    const url = process.env.NEXT_PUBLIC_WEBSOCKET_URL + "/notification/";
     super({ url, getAccessToken });
+    this.onChatNotification = null;
+    this.onCallNotification = null;
+    this.onFriendNotification = null;
+    this.onGroupNotification = null;
+    this.onOnlineStatusNotification = null;
+  }
+
+  listenForNotifications() {
+    if (!this.socket) return;
+    this.socket.onmessage = (event) => {
+      const data: NotificationMessage = JSON.parse(event.data);
+      switch (data.type) {
+        case "chat_notification":
+          return this.onChatNotification?.(data);
+        case "online_status_notification":
+          return this.onOnlineStatusNotification?.(data);
+        case "friend_notification":
+          return this.onFriendNotification?.(data);
+        case "group_notification":
+          return this.onGroupNotification?.(data);
+        case "call_notification":
+          return this.onCallNotification?.(data);
+      }
+    };
+  }
+
+  stopListeningForNotifications() {
+    if (!this.socket) return;
+    this.socket.onmessage = null;
   }
 }
