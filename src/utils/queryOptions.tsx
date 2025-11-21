@@ -7,6 +7,7 @@ import {
   UserChatRoom,
 } from "./types/server-response.type";
 import { URL } from "url";
+
 const api = axios.create({
   timeout: 5000,
   withCredentials: true,
@@ -23,7 +24,7 @@ export const chatListQueryOption = infiniteQueryOptions({
   queryFn: ({ pageParam }) =>
     api
       .get<PaginatedResponse<UserChatRoom | GroupChatRoom>>(
-        "/api/auth/user/rooms/" + pageParam ? `?cursor=${pageParam}` : ""
+        "/api/auth/user/rooms" + (pageParam ? `?cursor=${pageParam}` : "")
       )
       .then((res) => res.data),
   getNextPageParam: (lastPage) => {
@@ -34,3 +35,12 @@ export const chatListQueryOption = infiniteQueryOptions({
   },
   initialPageParam: "",
 });
+
+export const chatQueryOption = (roomName: string) =>
+  queryOptions({
+    queryKey: ["chats", roomName],
+    queryFn: () =>
+      api
+        .get<UserChatRoom | GroupChatRoom>(`/api/auth/user/rooms/${roomName}`)
+        .then((res) => res.data),
+  });

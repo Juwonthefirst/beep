@@ -12,6 +12,7 @@ export interface BaseUser {
   username: string;
   email: string;
   profile_picture: string;
+  is_online: boolean;
   last_online: string;
 }
 
@@ -29,10 +30,23 @@ export interface Group {
   created_at: string;
 }
 
+export interface Message {
+  id: number;
+  body: string;
+  attachment: string | null;
+  timestamp: string;
+  sender: string;
+  reply_to: Message | null;
+  room: number | null;
+  is_deleted: boolean;
+  is_edited: boolean;
+}
+
 export interface AuthSuccessResponse {
   user?: CurrentUser;
   status?: string;
 }
+
 export interface AuthErrorResponse {
   error: string;
 }
@@ -110,16 +124,19 @@ export interface PaginatedResponse<Type> {
 interface ChatRoom {
   id: number;
   name: string;
-  last_message: string;
+  last_message: Message;
   unread_message_count: number;
+  created_at: string;
 }
 
 export interface UserChatRoom extends ChatRoom {
   is_group: false;
-  parent: BaseUser;
+  friend: BaseUser;
+  group: null;
 }
 
 export interface GroupChatRoom extends ChatRoom {
   is_group: true;
-  parent: Group;
+  friend: null;
+  group: Group;
 }

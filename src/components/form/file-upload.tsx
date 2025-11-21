@@ -5,7 +5,7 @@ interface Props {
   name: string;
   className?: string;
   inputClassName?: string;
-  onUpload?: (files: File[]) => void;
+  onUpload?: (files: File[] | null) => void;
   accept?: string;
   multiple?: boolean;
   required?: boolean;
@@ -63,9 +63,9 @@ const FileUpload = ({
           if (event.target.files) {
             const uploadedFiles = [...event.target.files];
             onUpload?.(uploadedFiles.slice(0, maxFiles));
-          }
+          } else onUpload?.(null);
         }}
-        capture="environment"
+        capture="user"
       />
     </div>
   );

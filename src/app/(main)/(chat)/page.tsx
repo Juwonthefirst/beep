@@ -1,3 +1,3 @@
 export default function Page() {
-  return <div>Fuck off</div>;
+  return <div>Chat Area</div>;
 }

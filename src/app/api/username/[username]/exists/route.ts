@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { request } from "@/utils/request-client";
 import type { AuthErrorResponse } from "@/utils/types/server-response.type";
+import { stringifyResponseErrorStatusCode } from "@/utils/helpers/server-helper";
 
 export async function GET(
   req: Request,
@@ -14,14 +15,17 @@ export async function GET(
   });
 
   if ("error" in response) {
-    const errorMessage =
-      typeof response.error === "string"
-        ? response.error
-        : response.error?.data?.error;
-    const errorStatus =
-      typeof response.error === "string" ? 600 : response.error?.status;
+    const errorStatus = response.error?.status;
 
-    return NextResponse.json({ error: errorMessage }, { status: errorStatus });
+    return NextResponse.json(
+      {
+        error: stringifyResponseErrorStatusCode(
+          errorStatus || 600,
+          response.error?.data
+        ),
+      },
+      { status: errorStatus || 500 }
+    );
   }
   return NextResponse.json(response.data);
 }

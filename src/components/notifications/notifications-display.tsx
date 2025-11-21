@@ -7,10 +7,11 @@ import { getAccessToken } from "@/utils/actions";
 import { WebSocketConnectionState } from "@/utils/types/client.type";
 import { NotificationSocket } from "@/utils/websocket-handlers";
 import NotificationCard from "./notification-card";
+import NotificationSocketStateProvider from "../providers/notification-socket-state.provider";
 
 const notificationSocket = new NotificationSocket({ getAccessToken });
 
-const Notifications = () => {
+const Notifications = ({ children }: { children: React.ReactNode }) => {
   const [connectionState, setConnectionState] =
     useState<WebSocketConnectionState>("connecting");
 
@@ -55,7 +56,14 @@ const Notifications = () => {
     };
   }, []);
 
-  return <Toaster position="top-center" className="mx-auto" />;
+  return (
+    <>
+      <Toaster position="top-center" className="mx-auto" />
+      <NotificationSocketStateProvider connectionState={connectionState}>
+        {children}
+      </NotificationSocketStateProvider>
+    </>
+  );
 };
 
 export default Notifications;

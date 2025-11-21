@@ -43,3 +43,34 @@ export const createMediaURL = (
 
   return mediaURL + path + id + extension;
 };
+
+export const watchElementIntersecting = (
+  target: HTMLElement | null,
+  onIntersecting: () => void
+) => {
+  if (!target) return;
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      onIntersecting();
+    }
+  });
+  observer.observe(target);
+
+  return observer;
+};
+export const parseDateString = (dateString: string) => {
+  const padTime = (string: number) => String(string).padStart(2, "0");
+  const currentDate = new Date();
+  const date = new Date(dateString);
+  const timePassed = currentDate.getTime() - date.getTime();
+
+  const daysPassed = timePassed / (1000 * 60 * 60 * 24);
+
+  if (daysPassed < 1)
+    return `${padTime(date.getHours())}:${padTime(date.getMinutes())}`;
+  else if (daysPassed === 1) return "Yesterday";
+  else
+    return `${padTime(date.getDate())}/${padTime(
+      date.getMonth()
+    )}/${date.getFullYear()}`;
+};

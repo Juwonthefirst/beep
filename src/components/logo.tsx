@@ -8,7 +8,7 @@ const Logo = ({ className }: { className?: string }) => {
     <h1
       className={cn(
         geist.className,
-        "font-bold text-3xl text-blue-500",
+        "font-bold text-3xl text-theme",
         className
       )}
     >

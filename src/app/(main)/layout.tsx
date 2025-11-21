@@ -17,9 +17,10 @@ const MainLayout = async ({
   return (
     <QueryProvider>
       <ChatSocketProvider>
-        <Notifications />
-        <Header />
-        {children}
+        <Notifications>
+          <Header />
+          {children}
+        </Notifications>
       </ChatSocketProvider>
     </QueryProvider>
   );

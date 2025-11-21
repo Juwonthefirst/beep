@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import SetCookie from "set-cookie-parser";
 import sharp from "sharp";
 import { request } from "../request-client";
+import { AuthErrorResponse } from "../types/server-response.type";
 
 export const processFile = async (file: File) => {
   const bytes = await file.arrayBuffer();
@@ -71,7 +72,7 @@ export const getORfetchAccessToken = async () => {
   });
 
   if ("error" in response) {
-    if (typeof response.error !== "string" && response.error.status === 401) {
+    if (typeof response.error !== "string" && response.error?.status === 401) {
       cookieStore.delete("refresh_token");
     }
     return;
@@ -79,4 +80,24 @@ export const getORfetchAccessToken = async () => {
   const responseCookies = response.headers["set-cookie"];
   if (responseCookies)
     return SetCookie.parse(responseCookies, { map: true }).access_token.value;
+};
+
+export const stringifyResponseErrorStatusCode = (
+  status: number,
+  data: AuthErrorResponse | undefined
+) => {
+  switch (status) {
+    case 400:
+      return data?.error || "";
+    case 401:
+      return "You are not authenticated";
+    case 403:
+      return "You are not allowed here";
+    case 500:
+      return "Something went wrong at our end";
+    case 600:
+      return "Unable to connect to our server";
+    default:
+      return "Something went wrong, try again later";
+  }
 };

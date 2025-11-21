@@ -49,9 +49,9 @@ export const request = async <
       console.error(e.response?.data);
       const cookieStrings = e.response?.headers["set-cookie"];
       if (cookieStrings) await getAndSetCookies(cookieStrings);
-      return { error: e.response || e.message };
+      return { error: e.response };
     }
     console.error(e);
-    return { error: "failed" };
+    return { error: undefined };
   }
 };

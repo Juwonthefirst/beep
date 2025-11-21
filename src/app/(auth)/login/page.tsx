@@ -16,7 +16,7 @@ const Page = () => {
         <p className="text-sm">
           <FormDescription>Don&apos;t have an account? </FormDescription>
           <Link
-            className="text-blue-600 hover:underline font-medium"
+            className="text-theme hover:underline font-medium"
             href="/signup/"
           >
             Join now

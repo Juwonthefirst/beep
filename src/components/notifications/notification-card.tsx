@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import ProfilePicture from "../profile-picture";
+import { parseDateString } from "@/utils/helpers/client-helper";
 
 interface Props {
   toastId: string | number;
@@ -33,7 +34,9 @@ const NotificationCard = ({
       <div className="flex flex-col justify-center ">
         <div className="flex gap-1` justify-between items-center">
           <h1 className="font-medium line-clamp-1">{header}</h1>
-          {timestamp && <p className="text-xs text-blue-500">{timestamp}</p>}
+          {timestamp && (
+            <p className="text-xs text-theme">{parseDateString(timestamp)}</p>
+          )}
         </div>
         <p className="opacity-75 text-sm line-clamp-1 lg:line-clamp-2">
           {description}

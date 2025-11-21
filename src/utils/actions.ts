@@ -7,7 +7,11 @@ import type {
   AuthSuccessResponse,
 } from "./types/server-response.type";
 import { request } from "./request-client";
-import { getORfetchAccessToken, processFile } from "./helpers/server-helper";
+import {
+  getORfetchAccessToken,
+  processFile,
+  stringifyResponseErrorStatusCode,
+} from "./helpers/server-helper";
 
 export const login = async (
   prevState: AuthResponse | undefined,
@@ -29,10 +33,10 @@ export const login = async (
 
   if ("error" in response) {
     return {
-      error:
-        typeof response.error === "string"
-          ? response.error
-          : response.error?.data?.error,
+      error: stringifyResponseErrorStatusCode(
+        response.error?.status || 600,
+        response.error?.data
+      ),
     };
   }
   return response.data;
@@ -54,10 +58,10 @@ export const getOtp = async (
 
   if ("error" in response) {
     return {
-      error:
-        typeof response.error === "string"
-          ? response.error
-          : response.error?.data?.error,
+      error: stringifyResponseErrorStatusCode(
+        response.error?.status || 600,
+        response.error?.data
+      ),
     };
   }
   return response.data;
@@ -86,10 +90,10 @@ export const verifyOtp = async (
 
   if ("error" in response) {
     return {
-      error:
-        typeof response.error === "string"
-          ? response.error
-          : response.error?.data?.error,
+      error: stringifyResponseErrorStatusCode(
+        response.error?.status || 600,
+        response.error?.data
+      ),
     };
   }
   return response.data;
@@ -113,6 +117,7 @@ export const signup = async (
     profilePicture.type
   )
     formData.set("profile_picture", await processFile(profilePicture));
+  else return { error: "profile picture requires" };
 
   const response = await request<AuthSuccessResponse>({
     method: "post",
@@ -127,10 +132,10 @@ export const signup = async (
 
   if ("error" in response) {
     return {
-      error:
-        typeof response.error === "string"
-          ? response.error
-          : response.error?.data?.error,
+      error: stringifyResponseErrorStatusCode(
+        response.error?.status || 600,
+        response.error?.data
+      ),
     };
   }
   return response.data;
@@ -144,10 +149,10 @@ export const googleAuthenicate = async (code: unknown) => {
 
   if ("error" in response) {
     return {
-      error:
-        typeof response.error === "string"
-          ? response.error
-          : response.error?.data.error,
+      error: stringifyResponseErrorStatusCode(
+        response.error?.status || 600,
+        response.error?.data
+      ),
     };
   }
 

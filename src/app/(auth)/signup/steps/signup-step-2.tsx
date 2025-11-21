@@ -38,7 +38,7 @@ const RequestOtpBtn = ({
   return (
     <button
       type="button"
-      className="text-sm font-medium text-blue-600 disabled:opacity-70 hover:not-disabled:underline"
+      className="text-sm font-medium text-theme disabled:opacity-70 hover:not-disabled:underline"
       disabled={isDisabled}
       onClick={async () => {
         setisLoading(true);

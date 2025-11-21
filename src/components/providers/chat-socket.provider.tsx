@@ -16,18 +16,24 @@ const chatSocket = new ChatSocket({ getAccessToken });
 interface ChatSocketContextValue {
   chatSocket: ChatSocket;
   connectionState: WebSocketConnectionState;
+  currentRoom: string | null;
 }
 
 export const ChatSocketContext = createContext<ChatSocketContextValue>({
   chatSocket,
   connectionState: "disconnected",
+  currentRoom: null,
 });
 
 const ChatSocketProvider = ({ children }: { children: ReactNode }) => {
   const [connectionState, setConnectionState] =
     useState<WebSocketConnectionState>("connecting");
+  const [currentRoom, setCurrentRoom] = useState<string | null>(null);
 
   useEffect(() => {
+    chatSocket.onRoomChange = (roomName) => {
+      setCurrentRoom(roomName);
+    };
     chatSocket.onConnectionStateChange = (connectionState) => {
       setConnectionState(connectionState);
     };
@@ -38,8 +44,8 @@ const ChatSocketProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const chatSocketContextValue: ChatSocketContextValue = useMemo(
-    () => ({ chatSocket, connectionState }),
-    [connectionState]
+    () => ({ chatSocket, connectionState, currentRoom }),
+    [connectionState, currentRoom]
   );
 
   if (!(connectionState === "connected" || connectionState === "reconnected"))

@@ -29,8 +29,9 @@ const SignupStep4 = ({
 }: Omit<SignupStepsProps, "onSuccess"> & Props) => {
   const [usernameValidationState, setUsernameValidationState] =
     useState<ValidationState>("idle");
-  const [profilePicturePreview, setProfilePicturePreview] =
-    useState("/default.webp");
+  const [profilePicturePreview, setProfilePicturePreview] = useState<
+    string | null
+  >(null);
 
   return (
     <section className="mt-18 mx-auto">
@@ -43,7 +44,7 @@ const SignupStep4 = ({
               <span className="font-medium mr-1">{email}</span>
               <FormDescription>not you?</FormDescription>
               <button
-                className="ml-1 text-blue-600 hover:underline"
+                className="ml-1 text-theme hover:underline"
                 onClick={goToRequestOtp}
               >
                 Change email
@@ -57,7 +58,7 @@ const SignupStep4 = ({
         className="mt-6 items-center px-0 gap-4"
         action={signup}
         onSubmit={() => {
-          setProfilePicturePreview("/default.jpg");
+          setProfilePicturePreview(null);
         }}
       >
         <section className="mb-2">
@@ -70,11 +71,13 @@ const SignupStep4 = ({
             className="relative w-44 h-44 mx-auto"
             inputClassName="absolute bottom-1 right-1 z-10 border border-black/20"
             onUpload={(files) =>
-              setProfilePicturePreview(URL.createObjectURL(files[0]))
+              setProfilePicturePreview(
+                files && files[0] ? URL.createObjectURL(files[0]) : ""
+              )
             }
           >
             <Image
-              src={profilePicturePreview}
+              src={profilePicturePreview || "/default.webp"}
               alt="Profile Picture"
               fill
               sizes="176px"

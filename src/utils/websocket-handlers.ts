@@ -138,6 +138,8 @@ export class ChatSocket extends Socket {
   private readonly pendingMessages: WebsocketMessage[];
   private onTyping: ((sender_username: string) => void) | null;
   private onMessage: ((message: ChatSocketMessage) => void) | null;
+  onRoomChange: ((roomName: string | null) => void) | null;
+  private readonly updateCurrentRoom: (roomName: string | null) => void;
 
   constructor({ getAccessToken }: Omit<SocketConstructor, "url">) {
     const url = process.env.NEXT_PUBLIC_WEBSOCKET_URL + "/chat/";
@@ -146,6 +148,11 @@ export class ChatSocket extends Socket {
     this.pendingMessages = [];
     this.onTyping = null;
     this.onMessage = null;
+    this.onRoomChange = null;
+    this.updateCurrentRoom = (newRoomName) => {
+      this.currentRoom = newRoomName;
+      this.onRoomChange?.(newRoomName);
+    };
   }
 
   private send(data: WebsocketMessage) {
@@ -164,7 +171,7 @@ export class ChatSocket extends Socket {
     onTyping: (sender_username: string) => void
   ) {
     const status = this.send({ action: "group_join", room_name: groupName });
-    this.currentRoom = groupName;
+    this.updateCurrentRoom(groupName);
     this.onMessage = onMessage;
     this.onTyping = onTyping;
     this.listenForMessages();
@@ -173,7 +180,7 @@ export class ChatSocket extends Socket {
 
   leaveGroup() {
     const status = this.send({ action: "group_leave" });
-    this.currentRoom = null;
+    this.updateCurrentRoom(null);
     this.onMessage = null;
     this.onTyping = null;
     return status;
