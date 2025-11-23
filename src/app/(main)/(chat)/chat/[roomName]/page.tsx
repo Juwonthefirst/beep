@@ -1,4 +1,5 @@
 import ChatHeader from "@/components/chat/chat-header";
+import MessaageView from "@/components/chat/messages/message-view";
 
 export default async function Page({
   params,
@@ -9,6 +10,7 @@ export default async function Page({
   return (
     <section>
       <ChatHeader roomName={roomName} />
+      <MessaageView roomName={roomName} />
     </section>
   );
 }

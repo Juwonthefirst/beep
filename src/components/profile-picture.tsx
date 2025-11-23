@@ -10,16 +10,8 @@ type Props = {
   isServerMedia?: boolean;
 } & Omit<ImageProps, "alt" | "blurDataURL">;
 
-const ProfilePicture = ({
-  ownerName,
-  className,
-  isServerMedia = true,
-  ...imageProps
-}: Props) => {
+const ProfilePicture = ({ ownerName, className, ...imageProps }: Props) => {
   const [loadFailed, setloadFailed] = useState(false);
-  const mediaURL = isServerMedia
-    ? process.env.NEXT_PUBLIC_MEDIA_URL! + imageProps.src
-    : imageProps.src;
 
   return (
     <Image
@@ -29,7 +21,7 @@ const ProfilePicture = ({
       blurDataURL="/default.webp"
       {...imageProps}
       onError={() => setloadFailed(true)}
-      src={loadFailed ? "/default.webp" : mediaURL}
+      src={loadFailed ? "/default.webp" : imageProps.src}
     />
   );
 };

@@ -58,19 +58,34 @@ export const watchElementIntersecting = (
 
   return observer;
 };
-export const parseDateString = (dateString: string) => {
+
+interface ParseDateStringParam {
+  dateString: string;
+  fullDate?: boolean;
+  timeOnly?: boolean;
+}
+
+export const parseDateString = ({
+  dateString,
+  fullDate = false,
+  timeOnly = false,
+}: ParseDateStringParam) => {
   const padTime = (string: number) => String(string).padStart(2, "0");
   const currentDate = new Date();
   const date = new Date(dateString);
   const timePassed = currentDate.getTime() - date.getTime();
 
-  const daysPassed = timePassed / (1000 * 60 * 60 * 24);
+  const daysPassed = Math.floor(timePassed / (1000 * 60 * 60 * 24));
+  console.log(daysPassed);
+  const currentTime = `${padTime(date.getHours())}:${padTime(
+    date.getMinutes()
+  )}`;
 
-  if (daysPassed < 1)
-    return `${padTime(date.getHours())}:${padTime(date.getMinutes())}`;
-  else if (daysPassed === 1) return "Yesterday";
+  if (daysPassed < 1 || timeOnly) return currentTime;
+  else if (daysPassed === 1)
+    return fullDate ? `Yesterday, ${currentTime}` : "Yesterday";
   else
     return `${padTime(date.getDate())}/${padTime(
       date.getMonth()
-    )}/${date.getFullYear()}`;
+    )}/${date.getFullYear()}${fullDate ? ", " + currentTime : ""}`;
 };

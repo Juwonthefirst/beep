@@ -3,6 +3,7 @@ import axios from "axios";
 import {
   CurrentUser,
   GroupChatRoom,
+  Message,
   PaginatedResponse,
   UserChatRoom,
 } from "./types/server-response.type";
@@ -43,4 +44,23 @@ export const chatQueryOption = (roomName: string) =>
       api
         .get<UserChatRoom | GroupChatRoom>(`/api/auth/user/rooms/${roomName}`)
         .then((res) => res.data),
+  });
+
+export const messageQueryOption = (roomName: string) =>
+  infiniteQueryOptions({
+    queryKey: ["chats", roomName, "messages"],
+    queryFn: ({ pageParam }) =>
+      api
+        .get<PaginatedResponse<Message>>(
+          `/api/chats/${roomName}/messages` +
+            (pageParam ? `?cursor=${pageParam}` : "")
+        )
+        .then((res) => res.data),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.next) {
+        const url = new URL(lastPage.next);
+        return url.searchParams.get("cursor") || "";
+      }
+    },
+    initialPageParam: "",
   });

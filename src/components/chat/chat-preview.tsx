@@ -69,9 +69,9 @@ const ChatPreview = ({
                 " text-theme": unread_message_count > 0,
               })}
             >
-              {parseDateString(
-                isRoomEmpty ? created_at : last_message.timestamp
-              )}
+              {parseDateString({
+                dateString: isRoomEmpty ? created_at : last_message.timestamp,
+              })}
             </p>
           }
         </div>

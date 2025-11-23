@@ -9,6 +9,7 @@ import {
   type WebsocketMessage,
 } from "./types/client.type";
 import type {
+  Attachment,
   CallNotification,
   ChatNotification,
   ChatSocketMessage,
@@ -190,7 +191,7 @@ export class ChatSocket extends Socket {
     return this.send({ action: "typing" });
   }
 
-  chat(message: string, attachment?: { id: number; url: string }) {
+  chat(message: string, attachment?: Attachment) {
     const uuid = crypto.randomUUID() as UUID;
     this.send({ action: "chat", message, uuid, attachment });
     return uuid;

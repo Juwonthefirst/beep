@@ -5,15 +5,20 @@ import ProfilePicture from "../profile-picture";
 import { chatQueryOption } from "@/utils/queryOptions";
 import { cn } from "@/lib/utils";
 import { parseDateString } from "@/utils/helpers/client-helper";
+import { EllipsisVertical, Phone, Video } from "lucide-react";
+import useSocketState from "@/hooks/useSocketState.hook";
 
 const ChatHeader = ({ roomName }: { roomName: string }) => {
   const { data } = useSuspenseQuery(chatQueryOption(roomName));
+  const socketState = useSocketState();
   const mediaPath = data.is_group
     ? data.group.avatar
     : data.friend.profile_picture;
 
+  const extraIconsSize = 20;
+
   return (
-    <header className="flex items-center h-12 px-6 bg-white gap-4">
+    <header className="flex items-center h-12 px-6 bg-neutral-50 gap-4 w-full ">
       <div className="relative w-10 h-10 rounded-full">
         <ProfilePicture
           src={mediaPath}
@@ -23,8 +28,8 @@ const ChatHeader = ({ roomName }: { roomName: string }) => {
           sizes="80px"
         />
       </div>
-      <div className="flex flex-col -gap-1 ">
-        <p className="font-medium">
+      <div className="flex flex-col -gap-1 max-w-64 text-ellipsis">
+        <p className="font-medium ">
           {data.is_group ? data.group.avatar : data.friend.username}
         </p>
         {!data.is_group && (
@@ -35,9 +40,27 @@ const ChatHeader = ({ roomName }: { roomName: string }) => {
           >
             {data.friend.is_online
               ? "online"
-              : `last seen: ${parseDateString(data.friend.last_online)}`}
+              : `last seen: ${parseDateString({
+                  dateString: data.friend.last_online,
+                  fullDate: true,
+                })}`}
           </p>
         )}
+      </div>
+      {socketState.is_connecting && (
+        <p className="text-sm mx-auto">connecting</p>
+      )}
+
+      <div className="flex ml-auto gap-6 items-center px-4 *:p-2 *:hover:bg-theme/5 *:hover:text-theme *:rounded-full">
+        <button>
+          <Phone size={extraIconsSize} />
+        </button>
+        <button>
+          <Video size={extraIconsSize} />
+        </button>
+        <button>
+          <EllipsisVertical size={extraIconsSize} />
+        </button>
       </div>
     </header>
   );

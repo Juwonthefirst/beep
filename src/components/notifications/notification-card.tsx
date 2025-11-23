@@ -35,7 +35,9 @@ const NotificationCard = ({
         <div className="flex gap-1` justify-between items-center">
           <h1 className="font-medium line-clamp-1">{header}</h1>
           {timestamp && (
-            <p className="text-xs text-theme">{parseDateString(timestamp)}</p>
+            <p className="text-xs text-theme">
+              {parseDateString({ dateString: timestamp })}
+            </p>
           )}
         </div>
         <p className="opacity-75 text-sm line-clamp-1 lg:line-clamp-2">

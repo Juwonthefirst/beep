@@ -32,14 +32,21 @@ export interface Group {
 
 export interface Message {
   id: number;
+  uuid: string;
   body: string;
   attachment: string | null;
   timestamp: string;
-  sender: string;
+  sender: number;
   reply_to: Message | null;
   room: number | null;
   is_deleted: boolean;
   is_edited: boolean;
+}
+
+export interface Attachment {
+  id: number;
+  file: string;
+  type: string;
 }
 
 export interface AuthSuccessResponse {

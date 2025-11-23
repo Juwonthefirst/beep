@@ -1,4 +1,5 @@
 import type { UUID } from "crypto";
+import { Attachment } from "./server-response.type";
 
 export type ApiMethods = "get" | "post" | "patch" | "put" | "delete";
 
@@ -22,7 +23,7 @@ export type WebsocketMessage =
       action: "chat";
       message: string;
       uuid: UUID;
-      attachment?: { id: number; url: string };
+      attachment?: Attachment;
     };
 
 export type WebSocketConnectionSuccessState = "connected" | "reconnected";
@@ -47,4 +48,10 @@ export const isWebSocketSuccessState = (
   value: string
 ): value is WebSocketConnectionSuccessState => {
   return value === "reconnected" || value === "connected";
+};
+
+export const isWebSocketFailedState = (
+  value: string
+): value is WebSocketConnectionSuccessState => {
+  return value === "disconnected" || value === "reconnection_failed";
 };

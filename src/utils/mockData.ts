@@ -82,31 +82,32 @@ export const mockGroups: Group[] = [
 export function createMessage(
   id: number,
   body: string,
-  sender = "system",
+  sender: number,
   attachment: string | null = null,
   timestamp = new Date().toISOString(),
   room: number | null = null,
   replyTo?: Message
 ): Message {
+  const uuid = crypto.randomUUID();
   const msg = {
     id,
     body,
+    sender,
+    uuid,
     attachment,
     timestamp,
-    sender,
-    reply_to: null,
+    reply_to: replyTo,
     room,
     is_deleted: false,
     is_edited: false,
   } as Message;
 
-  msg.reply_to = replyTo || msg;
   return msg;
 }
 
 export const mockMessages: Message[] = [
-  createMessage(1, "Hey — welcome to Beep!", "alice"),
-  createMessage(2, "Thanks! Happy to be here.", "juwon"),
+  createMessage(1, "Hey — welcome to Beep!", 1),
+  createMessage(2, "Thanks! Happy to be here.", 2),
   createMessage(
     3,
     "Nice to meet you both",
@@ -114,11 +115,26 @@ export const mockMessages: Message[] = [
     null,
     undefined,
     null,
-    createMessage(1, "Hey — welcome to Beep!", "alice")
+    createMessage(1, "Hey — welcome to Beep!", 2)
   ),
-  createMessage(4, "How's the project going?", "charlie"),
-  createMessage(5, "Pretty good, wrapping up phase 2", "diana"),
-  createMessage(6, "Looking forward to the next phase", "alice"),
+  createMessage(4, "How's the project going?", 1),
+  createMessage(5, "Pretty good, wrapping up phase 2", 2),
+  createMessage(6, "Looking forward to the next phase", 1),
+
+  createMessage(7, "Hey — welcome to Beep!", 1),
+  createMessage(8, "Thanks! Happy to be here.", 2),
+  createMessage(
+    9,
+    "Nice to meet you both",
+    "bob",
+    null,
+    undefined,
+    null,
+    createMessage(1, "Hey — welcome to Beep!", 1)
+  ),
+  createMessage(10, "How's the project going?", 1),
+  createMessage(11, "Pretty good, wrapping up phase 2", 2),
+  createMessage(12, "Looking forward to the next phase", 1),
 ];
 
 // Generate list of messages

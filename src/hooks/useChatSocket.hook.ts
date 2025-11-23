@@ -2,9 +2,10 @@ import { useState, useEffect, use } from "react";
 
 import { ChatSocketContext } from "@/components/providers/chat-socket.provider";
 import { useQueryClient } from "@tanstack/react-query";
+import { Attachment } from "@/utils/types/server-response.type";
 
 const useChatSocket = (room_name: string) => {
-  const { chatSocket, connectionState } = use(ChatSocketContext);
+  const { chatSocket } = use(ChatSocketContext);
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
   const queryClient = useQueryClient();
 
@@ -33,12 +34,11 @@ const useChatSocket = (room_name: string) => {
 
   return {
     typingUsers,
-    send: (message: string, attachment?: { id: number; url: string }) =>
+    send: (message: string, attachment?: Attachment) =>
       chatSocket.chat(message, attachment),
     typing: () => {
       chatSocket.typing();
     },
-    connectionState,
   };
 };
 
