@@ -15,7 +15,7 @@ const SubmitBtn = ({ disabled = false, children }: Props) => {
   return (
     <button
       className={cn(
-        "bg-black rounded-md text-white px-2 py-1 flex flex-col items-center disabled:opacity-70 disabled:cursor-not-allowed w-full",
+        "bg-black rounded-md text-white px-3 py-1.5 flex flex-col items-center disabled:opacity-70 disabled:cursor-not-allowed w-full",
         { "cursor-wait!": isSubmitting }
       )}
       type="submit"

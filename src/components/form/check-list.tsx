@@ -10,7 +10,7 @@ const RequirementCheckList = ({
   requirements: ValidationRequirement[];
 }) => {
   return (
-    <div className="bg-neutral-100 rounded-md p-2 flex flex-col gap-2">
+    <div className=" border rounded-md p-2 flex flex-col gap-2">
       {requirements.map((requirement) => (
         <div key={requirement.message} className="flex gap-2 text-xs">
           <div

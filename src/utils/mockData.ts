@@ -111,7 +111,7 @@ export const mockMessages: Message[] = [
   createMessage(
     3,
     "Nice to meet you both",
-    "bob",
+    1,
     null,
     undefined,
     null,
@@ -138,7 +138,7 @@ export const mockMessages: Message[] = [
 ];
 
 // Generate list of messages
-export function createMessagesList(count: number, sender = "user"): Message[] {
+export function createMessagesList(count: number, sender = 1): Message[] {
   return Array.from({ length: count }, (_, i) =>
     createMessage(i + 1, `Message ${i + 1}`, sender)
   );

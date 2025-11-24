@@ -10,7 +10,7 @@ import SubmitBtn from "@/components/form/submit-btn";
 
 const Page = () => {
   return (
-    <AuthForm action={login} className="mt-20 px-4">
+    <AuthForm action={login} className="mt-20 /px-4">
       <div className="flex flex-col gap-2 items-center self-center">
         <Logo className="text-4xl" />
         <p className="text-sm">

@@ -13,7 +13,6 @@ const ProfileLink = () => {
         fill
         sizes="96px"
         ownerName="Your"
-        isServerMedia={data?.profile_picture !== undefined}
         src={data?.profile_picture || "/default.webp"}
       />
     </Link>

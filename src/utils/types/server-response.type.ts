@@ -98,6 +98,8 @@ export interface CallNotification {
 export interface OnlineStatusNotification {
   type: "online_status_notification";
   user: number;
+  room_name: string;
+  last_online: string;
   status: boolean;
 }
 

@@ -76,7 +76,6 @@ export const parseDateString = ({
   const timePassed = currentDate.getTime() - date.getTime();
 
   const daysPassed = Math.floor(timePassed / (1000 * 60 * 60 * 24));
-  console.log(daysPassed);
   const currentTime = `${padTime(date.getHours())}:${padTime(
     date.getMinutes()
   )}`;

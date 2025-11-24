@@ -8,7 +8,7 @@ export default async function Page({
 }) {
   const { roomName } = await params;
   return (
-    <section>
+    <section className="w-full">
       <ChatHeader roomName={roomName} />
       <MessaageView roomName={roomName} />
     </section>

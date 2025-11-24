@@ -10,7 +10,7 @@ import { Eye, EyeClosed } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const className =
-  "text-sm transistion-all duration-200  rounded-md py-1.5 px-3 bg-neutral-100 shadow-xs has-focus:bg-white has-focus:ring-4 has-focus:ring-offset-2 has-focus:outline-2  ring-neutral-500/20 has-focus:outline-black text-black *:placeholder:text-sm";
+  "text-sm transistion-all duration-200  rounded-md py-2 px-4 bg-neutral-100 shadow-xs has-focus:bg-white has-focus:ring-4 has-focus:ring-offset-2 has-focus:outline-2  ring-neutral-500/20 has-focus:outline-black text-black *:placeholder:text-sm";
 
 interface InputFieldPropType {
   required?: boolean;
@@ -115,7 +115,7 @@ export const PasswordField = (
       inputType={isVisible ? "text" : "password"}
       elementInField={
         <button type="button" onClick={() => setIsVisible(!isVisible)}>
-          {isVisible ? <Eye size={18} /> : <EyeClosed size={18} />}
+          {isVisible ? <Eye size={20} /> : <EyeClosed size={20} />}
         </button>
       }
     />

@@ -65,7 +65,6 @@ const FileUpload = ({
             onUpload?.(uploadedFiles.slice(0, maxFiles));
           } else onUpload?.(null);
         }}
-        capture="user"
       />
     </div>
   );

@@ -47,11 +47,11 @@ const ChatPreview = ({
       href={`/chat/${name}`}
       ref={ref}
       className={cn(
-        "hover:bg-black/3 p-2 rounded-lg  flex items-center gap-4",
+        "hover:bg-black/3 p-2 rounded-lg  flex items-center gap-2",
         { "bg-black/5!": isCurrentRoom }
       )}
     >
-      <div className="relative min-w-12 min-h-12 rounded-full shadow-md object-cover">
+      <div className="relative min-w-13 min-h-13 rounded-full shadow-md object-cover">
         <ProfilePicture
           ownerName={chatParentName}
           src={chatAvatar}
@@ -65,7 +65,7 @@ const ChatPreview = ({
           <h1 className="font-medium line-clamp-1">{chatParentName}</h1>
           {
             <p
-              className={cn("text-xs opacity-60", {
+              className={cn("md:hidden lg:block text-xs opacity-60", {
                 " text-theme": unread_message_count > 0,
               })}
             >
@@ -75,7 +75,7 @@ const ChatPreview = ({
             </p>
           }
         </div>
-        <div className="flex justify-between items-center">
+        <div className="justify-between items-center">
           <p className="opacity-70 text-sm line-clamp-1">
             {isRoomEmpty
               ? `Start a chat with ${chatParentName}`

@@ -27,13 +27,15 @@ interface SocketConstructor {
   url: string;
   getAccessToken: GetAccessToken;
 }
-
+// on socket reassign reattach all variables
+// what about we put things like onMessage as a class variable itself and refrence it whenever we reconnect
 class Socket {
   protected socket: WebSocket | null;
   private readonly url: string;
   private readonly maxRetry: number;
   private getAccessToken: GetAccessToken;
   protected connectionState: WebSocketConnectionState;
+  onConnected: (() => void) | null;
   onConnectionStateChange?:
     | ((connectionState: WebSocketConnectionState) => void)
     | null;
@@ -47,6 +49,7 @@ class Socket {
     this.url = url;
     this.maxRetry = 5;
     this.connectionState = "disconnected";
+    this.onConnected = null;
     this.getAccessToken = getAccessToken;
     this.onConnectionStateChange = null;
     this.updateConnectionState = (

@@ -85,7 +85,7 @@ const AuthForm = ({
   return (
     <form
       className={cn(
-        "flex flex-col gap-6 max-w-3xs mx-auto text-black px-2",
+        "flex flex-col gap-6 max-w-2xs mx-auto text-black px-4",
         className
       )}
       action={formAction}
