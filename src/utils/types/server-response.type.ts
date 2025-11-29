@@ -28,17 +28,26 @@ export interface Group {
   description: string;
   avatar: string;
   created_at: string;
+  mappedMembers: Map<number, GroupMember>;
+  members: GroupMember[];
+}
+
+export interface GroupMember {
+  id: number;
+  username: string;
+  role: string;
+  profile_picture: string;
 }
 
 export interface Message {
   id: number;
-  uuid: string;
+  uuid: UUID;
   body: string;
-  attachment: string | null;
+  attachment: Attachment | null;
   timestamp: string;
   sender: number;
   reply_to: Message | null;
-  room: number | null;
+  room: number;
   is_deleted: boolean;
   is_edited: boolean;
 }
@@ -46,7 +55,7 @@ export interface Message {
 export interface Attachment {
   id: number;
   file: string;
-  type: string;
+  content_type: string;
 }
 
 export interface AuthSuccessResponse {
@@ -66,25 +75,22 @@ export interface ChatSocketTyping {
   sender_username: string;
   room_name: string;
 }
+export type ChatEvent = "chat" | "delete" | "edit";
 
-export interface ChatSocketMessage {
+export interface ChatSocketMessage extends Message {
+  event: ChatEvent;
   room_name: string;
-  message: string;
-  sender_username: string;
-  timestamp: string;
-  uuid: UUID;
-  attachment_url: string;
 }
 
 export interface ChatNotification {
   type: "chat_notification";
-  sender: string;
+  sender_username: string;
   sender_profile_picture: string;
   group_name: string;
-  message: string;
+  message: Message;
   is_group: boolean;
   room_name: string;
-  timestamp: string;
+  event: ChatEvent;
 }
 
 export interface CallNotification {

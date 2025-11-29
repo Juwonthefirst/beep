@@ -14,6 +14,7 @@ import {
   FriendEventNotification,
   ChatSocketMessage,
   ChatSocketTyping,
+  Attachment,
 } from "./types/server-response.type";
 
 // ============ USERS ============
@@ -83,7 +84,7 @@ export function createMessage(
   id: number,
   body: string,
   sender: number,
-  attachment: string | null = null,
+  attachment: Attachment | null = null,
   timestamp = new Date().toISOString(),
   room: number | null = null,
   replyTo?: Message
@@ -119,18 +120,31 @@ export const mockMessages: Message[] = [
   ),
   createMessage(4, "How's the project going?", 1),
   createMessage(5, "Pretty good, wrapping up phase 2", 2),
-  createMessage(6, "Looking forward to the next phase", 1),
+  createMessage(6, "Looking forward to the next phase", 1, {
+    id: 1,
+    file: "/default.webp",
+    content_type: "image/webp",
+  }),
 
   createMessage(7, "Hey — welcome to Beep!", 1),
   createMessage(8, "Thanks! Happy to be here.", 2),
   createMessage(
     9,
     "Nice to meet you both",
-    "bob",
+    4,
     null,
     undefined,
     null,
-    createMessage(1, "Hey — welcome to Beep!", 1)
+    createMessage(
+      1,
+      "Hey — welcome to Beep hshhdh shjua8ujwwh sgshah gdjhhkjdb bbnzm hsfh nhgu jnvjwbvbj hj!",
+      1,
+      {
+        id: 1,
+        file: "/default.webp",
+        content_type: "image/webp",
+      }
+    )
   ),
   createMessage(10, "How's the project going?", 1),
   createMessage(11, "Pretty good, wrapping up phase 2", 2),

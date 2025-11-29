@@ -47,7 +47,7 @@ const ChatPreview = ({
       href={`/chat/${name}`}
       ref={ref}
       className={cn(
-        "hover:bg-black/3 p-2 rounded-lg  flex items-center gap-2",
+        "hover:bg-black/3 p-2 rounded-lg  flex items-center gap-3",
         { "bg-black/5!": isCurrentRoom }
       )}
     >
@@ -75,7 +75,7 @@ const ChatPreview = ({
             </p>
           }
         </div>
-        <div className="justify-between items-center">
+        <div className="flex justify-between items-center">
           <p className="opacity-70 text-sm line-clamp-1">
             {isRoomEmpty
               ? `Start a chat with ${chatParentName}`

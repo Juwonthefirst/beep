@@ -1,4 +1,6 @@
-//import "client-only";
+import "client-only";
+
+import { PaginatedResponse } from "../types/server-response.type";
 
 export const delay = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
@@ -87,4 +89,25 @@ export const parseDateString = ({
     return `${padTime(date.getDate())}/${padTime(
       date.getMonth()
     )}/${date.getFullYear()}${fullDate ? ", " + currentTime : ""}`;
+};
+
+export const filterOutObjectFromResponse = <ObjectType>(
+  object_property: unknown,
+  lookup_property: keyof ObjectType,
+  apiResponse: PaginatedResponse<ObjectType>[]
+): [PaginatedResponse<ObjectType>[], ObjectType | undefined] => {
+  let removedObject: ObjectType | undefined;
+
+  const filteredResponse = apiResponse.map((response) => ({
+    ...response,
+    results: response.results.filter((result) => {
+      if (result[lookup_property] === object_property) {
+        removedObject = result;
+        return false;
+      }
+      return true;
+    }),
+  }));
+
+  return [filteredResponse, removedObject];
 };

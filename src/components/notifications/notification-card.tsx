@@ -22,17 +22,18 @@ const NotificationCard = ({
   return (
     <Link
       href={notificationURL}
-      className="bg-white border border-black/10 shadow-md p-2 rounded-lg max-w-2xs md:max-w-xs lg:max-w-sm mx-auto flex items-center gap-4"
+      className="bg-white border border-black/10 shadow-lg p-2 rounded-lg w-2xs md:w-xs lg:w-sm mx-auto flex items-center gap-4"
     >
       <ProfilePicture
         ownerName={header}
         src={profilePictureURL}
         height={48}
         width={48}
-        className="rounded-full shadow-md -my-6 object-cover"
+        className="rounded-full shadow-md -my-2 object-cover"
       />
-      <div className="flex flex-col justify-center ">
-        <div className="flex gap-1` justify-between items-center">
+
+      <div className="flex flex-col justify-center w-full">
+        <div className="flex gap-1 justify-between items-center">
           <h1 className="font-medium line-clamp-1">{header}</h1>
           {timestamp && (
             <p className="text-xs text-theme">

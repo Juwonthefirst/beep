@@ -3,6 +3,7 @@ import axios from "axios";
 import {
   CurrentUser,
   GroupChatRoom,
+  GroupMember,
   Message,
   PaginatedResponse,
   UserChatRoom,
@@ -44,6 +45,14 @@ export const chatQueryOption = (roomName: string) =>
       api
         .get<UserChatRoom | GroupChatRoom>(`/api/auth/user/rooms/${roomName}`)
         .then((res) => res.data),
+    select: (data) => {
+      if (data.is_group) {
+        data.group.mappedMembers = new Map<number, GroupMember>(
+          data.group.members.map((member) => [member.id, member])
+        );
+      }
+      return data;
+    },
   });
 
 export const messageQueryOption = (roomName: string) =>

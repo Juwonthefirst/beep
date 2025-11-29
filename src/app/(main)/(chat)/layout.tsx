@@ -1,5 +1,4 @@
-import ChatList from "@/components/chat/chat-list";
-import SearchBar from "@/components/search-bar";
+import ChatSection from "@/components/chat/chat-section";
 
 export default function ChatLayout({
   children,
@@ -7,13 +6,9 @@ export default function ChatLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section className="flex h-[calc(100vh-56px)]">
-      <div className="hidden md:flex flex-col gap-6 md:w-1/3  border-r h-full overflow-y-auto border-neutral-200 p-4 ">
-        <SearchBar />
-        <h2 className="text-xl font-semibold -my-2 ml-2">Chats</h2>
-        <ChatList />
-      </div>
-      <div className="w-full md:w-2/3">{children}</div>
+    <section className="flex">
+      <ChatSection className="hidden md:flex flex-col gap-6 md:min-w-1/3  border-r border-neutral-200 h-screen overflow-y-auto px-4 py-2" />
+      {children}
     </section>
   );
 }

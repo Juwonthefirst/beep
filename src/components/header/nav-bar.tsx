@@ -45,7 +45,7 @@ const NavBar = () => {
   const pathName = usePathname();
 
   return (
-    <nav className="hidden sm:flex items-center gap-4 ">
+    <nav className="hidden /sm:flex items-center gap-4 ">
       <NavLink
         href="/"
         Icon={MessageCircle}

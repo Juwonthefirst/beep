@@ -9,11 +9,12 @@ import { NotificationSocket } from "@/utils/websocket-handlers";
 import NotificationCard from "./notification-card";
 import NotificationSocketStateProvider from "../providers/notification-socket-state.provider";
 import { useQueryClient } from "@tanstack/react-query";
-import { chatQueryOption } from "@/utils/queryOptions";
+import { chatListQueryOption, chatQueryOption } from "@/utils/queryOptions";
 import {
   UserChatRoom,
   GroupChatRoom,
 } from "@/utils/types/server-response.type";
+import { filterOutObjectFromResponse } from "@/utils/helpers/client-helper";
 
 const notificationSocket = new NotificationSocket({ getAccessToken });
 
@@ -27,15 +28,39 @@ const Notifications = ({ children }: { children: React.ReactNode }) => {
       setConnectionState(connectionState);
     };
 
-    notificationSocket.onChatNotification = (message) => {
+    notificationSocket.onChatNotification = (notification) => {
+      queryClient.setQueryData(chatListQueryOption.queryKey, (old) => {
+        if (!old) return old;
+        const [updatedPages, filteredChatRoom] = filterOutObjectFromResponse<
+          UserChatRoom | GroupChatRoom
+        >(notification.room_name, "name", old.pages);
+
+        if (!filteredChatRoom) {
+          queryClient.invalidateQueries({
+            queryKey: chatListQueryOption.queryKey,
+            exact: true,
+          });
+          return old;
+        }
+
+        updatedPages[0].results = [
+          {
+            ...filteredChatRoom,
+            unread_message_count: filteredChatRoom.unread_message_count + 1,
+            last_message: notification.message,
+          },
+          ...updatedPages[0].results,
+        ];
+        return { ...old, pages: updatedPages };
+      });
       toast.custom((toastId) => (
         <NotificationCard
-          profilePictureURL={message.sender_profile_picture}
+          profilePictureURL={notification.sender_profile_picture}
           toastId={toastId}
-          header={message.sender}
-          description={message.message}
-          notificationURL={`/chat/${message.room_name}`}
-          timestamp={message.timestamp}
+          header={notification.sender_username}
+          description={notification.message.body}
+          notificationURL={`/chat/${notification.room_name}`}
+          timestamp={notification.message.timestamp}
         />
       ));
     };

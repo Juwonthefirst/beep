@@ -1,4 +1,3 @@
-import Header from "@/components/header/header";
 import Notifications from "@/components/notifications/notifications-display";
 import ChatSocketProvider from "@/components/providers/chat-socket.provider";
 import QueryProvider from "@/components/providers/query.provider";
@@ -17,10 +16,7 @@ const MainLayout = async ({
   return (
     <QueryProvider>
       <ChatSocketProvider>
-        <Notifications>
-          <Header />
-          {children}
-        </Notifications>
+        <Notifications>{children}</Notifications>
       </ChatSocketProvider>
     </QueryProvider>
   );
