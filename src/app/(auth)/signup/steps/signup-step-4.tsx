@@ -14,6 +14,7 @@ import type {
   ValidationState,
 } from "@/utils/types/client.type";
 import SubmitBtn from "@/components/form/submit-btn";
+import { Camera } from "lucide-react";
 
 interface Props {
   isGoogleLogin?: boolean;
@@ -69,7 +70,10 @@ const SignupStep4 = ({
             name="profile_picture"
             accept="image/*"
             className="relative w-44 h-44 mx-auto"
-            inputClassName="absolute bottom-1 right-1 z-10 border border-black/20"
+            inputClassName="block p-2 bg-white text-black shadow-md rounded-full w-fit h-fit cursor-pointer hover:bg-neutral-200 transition-colors absolute bottom-1 right-1 z-10 border border-black/20"
+            labelChildren={
+              <Camera color="#000000" strokeWidth={2.5} size={24} />
+            }
             onUpload={(files) =>
               setProfilePicturePreview(
                 files && files[0] ? URL.createObjectURL(files[0]) : ""

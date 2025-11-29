@@ -46,12 +46,13 @@ const ChatList = () => {
     <div className="flex flex-col gap-4 px-1">
       {data && data.pages[0].results.length === 0 && <NoChatRoom />}
       {data &&
-        data.pages.flatMap((response) =>
+        data.pages.flatMap((response, currentPageParamIndex) =>
           response.results.map((chatRoom, index) => (
             <ChatPreview
               key={chatRoom.id}
               ref={
-                data.pageParams.length * PAGE_SIZE - LIMIT === index
+                data.pageParams.length * PAGE_SIZE - LIMIT ===
+                currentPageParamIndex * PAGE_SIZE + index
                   ? intersectingElement
                   : undefined
               }

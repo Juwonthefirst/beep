@@ -1,4 +1,5 @@
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
+//import { URL } from "node:url";
 import axios from "axios";
 import {
   CurrentUser,
@@ -8,7 +9,6 @@ import {
   PaginatedResponse,
   UserChatRoom,
 } from "./types/server-response.type";
-import { URL } from "url";
 
 const api = axios.create({
   timeout: 5000,

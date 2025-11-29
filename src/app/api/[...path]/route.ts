@@ -12,10 +12,11 @@ export async function GET(
   { params }: { params: Promise<{ path: string[] }> }
 ) {
   const { path } = await params;
+  const { searchParams } = new URL(req.url);
   const accessToken = await getORfetchAccessToken();
   const response = await request<unknown, AuthErrorResponse>({
     method: "get",
-    path: path.join("/") + "/",
+    path: path.join("/") + "/?" + searchParams.toString(),
     config: {
       headers: {
         Authorization: `Bearer ${accessToken || ""}`,

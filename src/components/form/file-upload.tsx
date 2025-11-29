@@ -1,6 +1,3 @@
-import { cn } from "@/lib/utils";
-import { Camera } from "lucide-react";
-
 interface Props {
   name: string;
   className?: string;
@@ -11,8 +8,8 @@ interface Props {
   required?: boolean;
   disabled?: boolean;
   maxFiles?: number;
-  iconSize?: number;
   children?: React.ReactNode;
+  labelChildren?: React.ReactNode;
 }
 
 const FileUpload = ({
@@ -22,10 +19,10 @@ const FileUpload = ({
   inputClassName,
   accept,
   multiple = false,
-  required,
+  required = false,
   maxFiles,
   children,
-  iconSize = 24,
+  labelChildren,
 }: Props) => {
   return (
     <div
@@ -41,14 +38,8 @@ const FileUpload = ({
       }}
     >
       {children}
-      <label
-        className={cn(
-          "block p-2 bg-white text-black shadow-md rounded-full w-fit h-fit cursor-pointer hover:bg-neutral-200 transition-colors  ",
-          inputClassName
-        )}
-        htmlFor={name}
-      >
-        <Camera color="#000000" strokeWidth={2.5} size={iconSize} />
+      <label className={inputClassName} htmlFor={name}>
+        {labelChildren}
       </label>
       <input
         id={name}

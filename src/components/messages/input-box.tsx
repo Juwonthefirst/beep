@@ -2,8 +2,9 @@
 
 import useChatSocket from "@/hooks/useChatSocket.hook";
 import { Paperclip, Send } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import throttle from "lodash.throttle";
+import FileUpload from "../form/file-upload";
 
 interface Props {
   roomName: string;
@@ -16,7 +17,7 @@ const InputBox = ({ roomName }: Props) => {
   const [attachmentFile, setAttachmentFile] = useState<File[]>([]);
 
   return (
-    <div className=" py-2 px-8">
+    <div className="py-2 px-8 shrink-0">
       <form
         onSubmit={(event) => {
           event.preventDefault();
@@ -38,14 +39,16 @@ const InputBox = ({ roomName }: Props) => {
           }}
           className="focus:outline-0 w-full "
         />
-        <div className="flex gap-2 items-center *:p-2">
-          <button type="button">
-            <Paperclip />
-          </button>
-          <button
-            className="[&:hover,&:active]:bg-theme/20 rounded-full"
-            type="submit"
-          >
+        <div className="flex gap-2 items-center *:p-2 *:[&:hover,&:active]:bg-theme/20 *:rounded-full">
+          <FileUpload
+            name="attachment upload"
+            onUpload={(files) => {
+              if (files) setAttachmentFile((prev) => [...prev, ...files]);
+            }}
+            labelChildren={<Paperclip />}
+            multiple
+          />
+          <button className="" type="submit">
             <Send />
           </button>
         </div>

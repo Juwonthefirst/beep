@@ -3,11 +3,13 @@ import { parseDateString } from "@/utils/helpers/client-helper";
 import { GroupMember, Message } from "@/utils/types/server-response.type";
 import { Reply } from "lucide-react";
 import Attachment from "./attachment";
+import { RefObject } from "react";
 
 type MessageCardProps = Message & {
+  ref?: RefObject<HTMLDivElement | null>;
   sentByMe: boolean;
   isGroupMessage: boolean;
-  sender_details: { username: string } | GroupMember;
+  sender_detail: { username: string } | GroupMember;
 };
 
 const ReplyToMessageCard = ({ id, body, attachment }: MessageCardProps) => {
@@ -34,9 +36,10 @@ const ReplyToMessageCard = ({ id, body, attachment }: MessageCardProps) => {
 
 const MessageCard = ({
   id,
+  ref,
   body,
   sender,
-  sender_details,
+  sender_detail,
   reply_to,
   timestamp,
   attachment,
@@ -44,6 +47,7 @@ const MessageCard = ({
 }: MessageCardProps) => {
   return (
     <div
+      ref={ref}
       className={cn("max-w-4/5 ", {
         "self-end ": sentByMe,
       })}
