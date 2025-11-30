@@ -5,6 +5,7 @@ import { Paperclip, Send } from "lucide-react";
 import { useRef, useState } from "react";
 import throttle from "lodash.throttle";
 import FileUpload from "../form/file-upload";
+import AttachmentPreview from "./attachment-preview";
 
 interface Props {
   roomName: string;
@@ -13,22 +14,39 @@ interface Props {
 const InputBox = ({ roomName }: Props) => {
   const chatSocket = useChatSocket(roomName);
   const [inputValue, setInputValue] = useState("");
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const [attachmentFile, setAttachmentFile] = useState<File[]>([]);
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
+  const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
 
   return (
-    <div className="py-2 px-8 shrink-0">
+    <div className="flex flex-col gap-4 py-2 px-6 md:px-8">
+      <div className="flex overflow-auto gap-2">
+        {attachmentFiles.map((attachmentFile) => (
+          <AttachmentPreview
+            key={attachmentFile.name}
+            attachment={attachmentFile}
+            onRemove={() => {
+              setAttachmentFiles((prev) =>
+                prev.filter((file) => file !== attachmentFile)
+              );
+            }}
+          />
+        ))}
+      </div>
       <form
         onSubmit={(event) => {
           event.preventDefault();
           if (!inputValue) return;
           chatSocket.send(inputValue);
           setInputValue("");
-          inputRef.current?.focus();
+          if (inputRef.current) {
+            inputRef.current.focus();
+            inputRef.current.style.height = "auto";
+          }
         }}
-        className="flex items-center border border-black rounded-xl px-4 text-sm "
+        className="flex items-center rounded-xl py-0.5 px-2 text-sm bg-neutral-100 border border-neutral-500/10"
       >
-        <input
+        <textarea
+          name="chat-message-input"
           ref={inputRef}
           value={inputValue}
           onChange={(event) => {
@@ -36,20 +54,23 @@ const InputBox = ({ roomName }: Props) => {
             throttle(() => {
               chatSocket.typing();
             }, 1000)();
+            event.target.style.height = "auto";
+            event.target.style.height = event.target.scrollHeight + "px";
           }}
-          className="focus:outline-0 w-full "
+          className="focus:outline-0 w-full resize-none overflow-y-auto max-h-30"
+          rows={1}
         />
-        <div className="flex gap-2 items-center *:p-2 *:[&:hover,&:active]:bg-theme/20 *:rounded-full">
+        <div className="flex gap-1 md:gap-2 self-end items-center *:p-2 *:[&:hover,&:active]:text-theme *:[&:hover,&:active]:scale-110 *:rounded-full *:transition-all">
           <FileUpload
             name="attachment upload"
             onUpload={(files) => {
-              if (files) setAttachmentFile((prev) => [...prev, ...files]);
+              if (files) setAttachmentFiles((prev) => [...prev, ...files]);
             }}
-            labelChildren={<Paperclip />}
+            labelChildren={<Paperclip size={22} />}
             multiple
           />
           <button className="" type="submit">
-            <Send />
+            <Send size={22} />
           </button>
         </div>
       </form>

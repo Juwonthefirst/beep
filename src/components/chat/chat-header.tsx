@@ -13,7 +13,7 @@ import useChatSocket from "@/hooks/useChatSocket.hook";
 const extraIconsSize = 22;
 
 export const ChatHeaderSkeleton = () => (
-  <div className="flex items-center h-12 px-4 md:px-6 bg-neutral-50 gap-4 w-full">
+  <div className="flex items-center h-14 px-4 md:px-6 bg-neutral-50 gap-4 w-full">
     <Skeleton className="min-w-10 min-h-10 rounded-full" />
     <div className="flex flex-col gap-1 w-full max-w-64">
       <Skeleton className="h-4 w-2/3" />
@@ -42,7 +42,7 @@ const ChatHeader = ({ roomName }: { roomName: string }) => {
     : data.friend.profile_picture;
 
   return (
-    <header className="flex items-center h-14 px-4 md:px-6 bg-neutral-50 gap-4 w-full ">
+    <header className="flex items-center shrink-0 h-14 px-4 md:px-6 bg-neutral-50 gap-4 w-full ">
       <div className="relative min-w-10 min-h-10 rounded-full">
         <ProfilePicture
           src={mediaPath}

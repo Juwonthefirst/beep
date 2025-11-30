@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils";
-import { parseDateString } from "@/utils/helpers/client-helper";
-import { GroupMember, Message } from "@/utils/types/server-response.type";
+import { Message } from "@/utils/types/server-response.type";
 import { Reply } from "lucide-react";
 import Attachment from "./attachment";
 import { RefObject } from "react";
@@ -8,8 +7,8 @@ import { RefObject } from "react";
 type MessageCardProps = Message & {
   ref?: RefObject<HTMLDivElement | null>;
   sentByMe: boolean;
-  isGroupMessage: boolean;
-  sender_detail: { username: string } | GroupMember;
+  isFirst: boolean;
+  isLast: boolean;
 };
 
 const ReplyToMessageCard = ({ id, body, attachment }: MessageCardProps) => {
@@ -39,11 +38,12 @@ const MessageCard = ({
   ref,
   body,
   sender,
-  sender_detail,
   reply_to,
   timestamp,
   attachment,
   sentByMe,
+  isFirst,
+  isLast,
 }: MessageCardProps) => {
   return (
     <div
@@ -64,18 +64,22 @@ const MessageCard = ({
 
       <div
         className={cn(
-          "flex flex-col px-2 p-1 rounded-b-xl text-sm w-fit text-left min-w-18",
+          "flex flex-col px-3 py-1.5 text-[15px] w-fit text-left min-w-18",
           {
-            "rounded-tl-xl bg-theme/90  text-white ml-auto": sentByMe,
-            "rounded-tr-xl bg-neutral-100 text-black": !sentByMe,
+            "bg-theme/90 rounded-l-[18px] rounded-r-sm  text-white ml-auto":
+              sentByMe,
+            " bg-neutral-100 rounded-r-[18px] rounded-l-sm text-black":
+              !sentByMe,
+            "rounded-t-[18px]!": isLast,
+            "rounded-b-[18px]!": isFirst,
           }
         )}
         role="log"
       >
-        <p>{body}</p>
-        <p className={cn("text-xs opacity-70", { "self-start": !sentByMe })}>
+        <p className="whitespace-pre-wrap">{body}</p>
+        {/* <p className={cn("text-xs opacity-70", { "self-start": !sentByMe })}>
           {parseDateString({ dateString: timestamp, timeOnly: true })}
-        </p>
+        </p> */}
       </div>
       {attachment && (
         <Attachment

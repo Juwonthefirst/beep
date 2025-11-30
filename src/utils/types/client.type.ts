@@ -1,5 +1,5 @@
 import type { UUID } from "crypto";
-import { Attachment } from "./server-response.type";
+import { Attachment, Message } from "./server-response.type";
 
 export type ApiMethods = "get" | "post" | "patch" | "put" | "delete";
 
@@ -55,3 +55,9 @@ export const isWebSocketFailedState = (
 ): value is WebSocketConnectionSuccessState => {
   return value === "disconnected" || value === "reconnection_failed";
 };
+
+export interface MessageGroup {
+  userId: number;
+  type: "message";
+  messages: Message[];
+}

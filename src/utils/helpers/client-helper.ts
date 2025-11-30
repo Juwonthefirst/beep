@@ -1,6 +1,7 @@
 import "client-only";
 
-import { PaginatedResponse } from "../types/server-response.type";
+import { Message, PaginatedResponse } from "../types/server-response.type";
+import { MessageGroup } from "../types/client.type";
 
 export const delay = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
@@ -110,4 +111,31 @@ export const filterOutObjectFromResponse = <ObjectType>(
   }));
 
   return [filteredResponse, removedObject];
+};
+
+export const createMessageGroups = (messages: Message[]) => {
+  const groups: MessageGroup[] = [];
+  let lastUserId: number | undefined;
+  let lastTime: number | undefined;
+  const timeDifferenceLimit = 60 * 5 * 1000;
+  messages.forEach((message) => {
+    const messageTimeInSeconds = new Date(message.timestamp).getTime();
+    if (
+      lastUserId !== message.sender ||
+      !lastTime ||
+      lastTime - messageTimeInSeconds > timeDifferenceLimit
+    ) {
+      groups.push({
+        type: "message",
+        userId: message.sender,
+        messages: [message],
+      });
+      lastUserId = message.sender;
+      lastTime = messageTimeInSeconds;
+      return;
+    }
+    groups.at(-1)?.messages.push(message);
+  });
+
+  return groups;
 };

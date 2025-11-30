@@ -10,10 +10,14 @@ import {
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import MessageCard from "./message-card";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import MessageLoading from "./message-loading";
-import { watchElementIntersecting } from "@/utils/helpers/client-helper";
+import {
+  createMessageGroups,
+  watchElementIntersecting,
+} from "@/utils/helpers/client-helper";
 import { UUID } from "crypto";
+import MessageGroup from "./message-group";
 
 const MessaageView = ({ roomName }: { roomName: string }) => {
   const { data, isFetchingNextPage, hasNextPage, fetchNextPage } =
@@ -25,6 +29,12 @@ const MessaageView = ({ roomName }: { roomName: string }) => {
   const intersectingElement = useRef<HTMLDivElement | null>(null);
   const PAGE_SIZE = 50;
   const LIMIT = 5;
+
+  const messageGroups = useMemo(
+    () =>
+      createMessageGroups(data.pages.flatMap((response) => response.results)),
+    [data]
+  );
 
   useEffect(() => {
     if (isFetchingNextPage || !hasNextPage) return;
@@ -52,35 +62,28 @@ const MessaageView = ({ roomName }: { roomName: string }) => {
   return (
     <div
       ref={messageViewRef}
-      className="flex-1 flex flex-col-reverse gap-1 py-4 px-8 overflow-auto"
+      className="flex flex-col-reverse gap-4 py-4 px-8 overflow-auto"
     >
-      {data.pages.flatMap((response, currentPageParamIndex) =>
-        response.results.map((message, index) => {
-          const isSentByMe = currentUser.id === message.sender;
-          const sender_details = chatDetails.is_group
-            ? chatDetails.group.mappedMembers.get(message.sender)
-            : { username: isSentByMe ? "You" : chatDetails.friend.username };
-          if (!sender_details) return null;
+      {messageGroups.map((messageGroup, index) => {
+        const isSentByMe = currentUser.id === messageGroup.userId;
+        const sender_details = chatDetails.is_group
+          ? chatDetails.group.mappedMembers.get(messageGroup.userId)
+          : { username: isSentByMe ? "You" : chatDetails.friend.username };
+        if (!sender_details) return null;
 
-          return (
-            <MessageCard
-              key={message.uuid}
-              ref={
-                data.pageParams.length * PAGE_SIZE - LIMIT ===
-                currentPageParamIndex * PAGE_SIZE + index
-                  ? intersectingElement
-                  : undefined
-              }
-              {...message}
-              sentByMe={isSentByMe}
-              sender_detail={sender_details}
-              isGroupMessage={chatDetails.is_group}
-            />
-          );
-        })
-      )}
+        return (
+          <MessageGroup
+            key={messageGroup.messages[0].uuid}
+            intersectionRef={index === 0 ? intersectingElement : undefined}
+            {...messageGroup}
+            sentByMe={isSentByMe}
+            sender_detail={sender_details}
+            isGroupMessage={chatDetails.is_group}
+          />
+        );
+      })}
       {isFetchingNextPage && (
-        <MessageLoading className="my-4 flex items-center w-full" />
+        <MessageLoading className="my-4 flex justify-center w-full" />
       )}
     </div>
   );
