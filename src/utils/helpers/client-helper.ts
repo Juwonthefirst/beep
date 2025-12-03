@@ -73,23 +73,36 @@ export const parseDateString = ({
   fullDate = false,
   timeOnly = false,
 }: ParseDateStringParam) => {
-  const padTime = (string: number) => String(string).padStart(2, "0");
   const currentDate = new Date();
   const date = new Date(dateString);
-  const timePassed = currentDate.getTime() - date.getTime();
+  const yesterdayDate = new Date(dateString);
+  yesterdayDate.setDate(yesterdayDate.getDate() + 1);
 
-  const daysPassed = Math.floor(timePassed / (1000 * 60 * 60 * 24));
-  const currentTime = `${padTime(date.getHours())}:${padTime(
-    date.getMinutes()
-  )}`;
+  const timeStyleOption: Intl.DateTimeFormatOptions = {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  };
+  const currentTime = date.toLocaleTimeString("en-US", timeStyleOption);
 
-  if (daysPassed < 1 || timeOnly) return currentTime;
-  else if (daysPassed === 1)
+  if (
+    currentDate.toLocaleDateString() === date.toLocaleDateString() ||
+    timeOnly
+  )
+    return currentTime;
+  else if (
+    currentDate.toLocaleDateString() === yesterdayDate.toLocaleDateString()
+  )
     return fullDate ? `Yesterday, ${currentTime}` : "Yesterday";
   else
-    return `${padTime(date.getDate())}/${padTime(
-      date.getMonth()
-    )}/${date.getFullYear()}${fullDate ? ", " + currentTime : ""}`;
+    return fullDate
+      ? date.toLocaleString("en-GB", {
+          ...timeStyleOption,
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        })
+      : date.toLocaleDateString("en-GB");
 };
 
 export const filterOutObjectFromResponse = <ObjectType>(

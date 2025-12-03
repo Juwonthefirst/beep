@@ -1,4 +1,6 @@
 import type { UUID } from "crypto";
+import { v4 as uuidV4 } from "uuid";
+
 import {
   isWebSocketLoadingState,
   isWebSocketSuccessState,
@@ -195,7 +197,7 @@ export class ChatSocket extends Socket {
   }
 
   chat(message: string, attachment?: Attachment) {
-    const uuid = crypto.randomUUID() as UUID;
+    const uuid = uuidV4() as UUID;
     this.send({ action: "chat", message, uuid, attachment });
     return uuid;
   }

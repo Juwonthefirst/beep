@@ -51,7 +51,7 @@ const ChatPreview = ({
         { "bg-black/5!": isCurrentRoom }
       )}
     >
-      <div className="relative min-w-13 min-h-13 rounded-full shadow-md object-cover">
+      <div className="relative w-13 h-13 shrink-0 rounded-full shadow-md object-cover">
         <ProfilePicture
           ownerName={chatParentName}
           src={chatAvatar}
@@ -76,7 +76,7 @@ const ChatPreview = ({
           }
         </div>
         <div className="flex justify-between items-center">
-          <p className="opacity-70 text-sm line-clamp-1">
+          <p className="opacity-70 text-sm line-clamp-1 wrap-anywhere ">
             {isRoomEmpty
               ? `Start a chat with ${chatParentName}`
               : is_group
@@ -84,7 +84,7 @@ const ChatPreview = ({
               : last_message.body}
           </p>
           {unread_message_count > 0 && (
-            <p className="text-xs bg-theme rounded-full w-5 h-5 text-white items-center justify-center flex ">
+            <p className="text-xs bg-theme rounded-full shrink-0 w-5 h-5 text-white items-center justify-center flex ">
               {unread_message_count}
             </p>
           )}

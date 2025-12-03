@@ -11,7 +11,7 @@ export default async function Page({
 }) {
   const { roomName } = await params;
   return (
-    <section className="flex flex-col w-full h-dvh">
+    <section className="flex flex-col h-dvh w-full">
       <Suspense fallback={<ChatHeaderSkeleton />}>
         <ChatHeader roomName={roomName} />
       </Suspense>

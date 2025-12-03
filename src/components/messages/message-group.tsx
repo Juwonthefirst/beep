@@ -2,6 +2,7 @@ import type { MessageGroup } from "@/utils/types/client.type";
 import React, { RefObject } from "react";
 import MessageCard from "./message-card";
 import { GroupMember } from "@/utils/types/server-response.type";
+import { parseDateString } from "@/utils/helpers/client-helper";
 
 interface MessageGroupProps extends Omit<MessageGroup, "userId"> {
   intersectionRef?: RefObject<HTMLDivElement | null>;
@@ -18,16 +19,20 @@ const MessageGroup = ({
 }: MessageGroupProps) => {
   return (
     <div className="w-full">
-      <p className="mb-4 text-xs text-center opacity-70">
-        {messages[0].timestamp}
+      <p className="my-6 text-xs text-center opacity-70">
+        {parseDateString({
+          dateString: messages[messages.length - 1].timestamp,
+          fullDate: true,
+        })}
       </p>
+      <p className="text-sm">{sender_detail.username}</p>
       <div className="flex flex-col-reverse gap-0.5">
         {messages.map((message, index) => (
           <MessageCard
             key={message.uuid}
             {...message}
             ref={
-              intersectionRef && index === Math.min(0, messages.length - 4)
+              intersectionRef && index === Math.max(0, messages.length - 4)
                 ? intersectionRef
                 : undefined
             }
@@ -37,6 +42,9 @@ const MessageGroup = ({
           />
         ))}
       </div>
+      {/* <p className={cn("text-sm opacity-80", { "text-right": sentByMe })}>
+        {sender_detail.username}
+      </p> */}
     </div>
   );
 };

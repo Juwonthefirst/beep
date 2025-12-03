@@ -26,7 +26,7 @@ const ReplyToMessageCard = ({ id, body, attachment }: MessageCardProps) => {
         )}
         <div className={cn("flex flex-col text-xs py-1 px-2")}>
           <p className="">{"You"}</p>
-          <p className="line-clamp-1 opacity-70">{body}</p>
+          <p className="line-clamp-1 opacity-70 ">{body}</p>
         </div>
       </div>
     </div>
@@ -63,20 +63,16 @@ const MessageCard = ({
       )}
 
       <div
-        className={cn(
-          "flex flex-col px-3 py-1.5 text-[15px] w-fit text-left min-w-18",
-          {
-            "bg-theme/90 rounded-l-[18px] rounded-r-sm  text-white ml-auto":
-              sentByMe,
-            " bg-neutral-100 rounded-r-[18px] rounded-l-sm text-black":
-              !sentByMe,
-            "rounded-t-[18px]!": isLast,
-            "rounded-b-[18px]!": isFirst,
-          }
-        )}
+        className={cn("flex flex-col px-3 py-1.5 w-fit text-left", {
+          "bg-theme/90 rounded-l-2xl rounded-r-[6px]  text-white ml-auto":
+            sentByMe,
+          " bg-neutral-100 rounded-r-2xl rounded-l-[6px] text-black": !sentByMe,
+          "rounded-t-2xl!": isLast,
+          "rounded-b-2xl!": isFirst,
+        })}
         role="log"
       >
-        <p className="whitespace-pre-wrap">{body}</p>
+        <p className="whitespace-pre-wrap wrap-anywhere">{body}</p>
         {/* <p className={cn("text-xs opacity-70", { "self-start": !sentByMe })}>
           {parseDateString({ dateString: timestamp, timeOnly: true })}
         </p> */}

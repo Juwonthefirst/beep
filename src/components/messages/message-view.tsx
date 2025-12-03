@@ -9,7 +9,6 @@ import {
   useSuspenseInfiniteQuery,
   useSuspenseQuery,
 } from "@tanstack/react-query";
-import MessageCard from "./message-card";
 import { useEffect, useMemo, useRef } from "react";
 import MessageLoading from "./message-loading";
 import {
@@ -27,8 +26,6 @@ const MessaageView = ({ roomName }: { roomName: string }) => {
   const messageViewRef = useRef<HTMLDivElement | null>(null);
   const lastMessageUUId = useRef<UUID>(null);
   const intersectingElement = useRef<HTMLDivElement | null>(null);
-  const PAGE_SIZE = 50;
-  const LIMIT = 5;
 
   const messageGroups = useMemo(
     () =>
@@ -49,7 +46,7 @@ const MessaageView = ({ roomName }: { roomName: string }) => {
   }, [isFetchingNextPage, hasNextPage, fetchNextPage]);
 
   useEffect(() => {
-    const newLastMessageUUID = data.pages[0].results[0].uuid;
+    const newLastMessageUUID = data.pages[0].results[0]?.uuid;
     if (
       !messageViewRef.current ||
       newLastMessageUUID === lastMessageUUId.current
@@ -62,7 +59,7 @@ const MessaageView = ({ roomName }: { roomName: string }) => {
   return (
     <div
       ref={messageViewRef}
-      className="flex flex-col-reverse gap-4 py-4 px-8 overflow-auto"
+      className="flex-1 flex flex-col-reverse gap-6 py-4 px-4 md:px-8 overflow-y-auto shrink-0"
     >
       {messageGroups.map((messageGroup, index) => {
         const isSentByMe = currentUser.id === messageGroup.userId;
@@ -74,7 +71,11 @@ const MessaageView = ({ roomName }: { roomName: string }) => {
         return (
           <MessageGroup
             key={messageGroup.messages[0].uuid}
-            intersectionRef={index === 0 ? intersectingElement : undefined}
+            intersectionRef={
+              index === messageGroups.length - 1
+                ? intersectingElement
+                : undefined
+            }
             {...messageGroup}
             sentByMe={isSentByMe}
             sender_detail={sender_details}

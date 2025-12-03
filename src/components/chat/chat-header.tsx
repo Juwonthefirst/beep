@@ -13,7 +13,7 @@ import useChatSocket from "@/hooks/useChatSocket.hook";
 const extraIconsSize = 22;
 
 export const ChatHeaderSkeleton = () => (
-  <div className="flex items-center h-14 px-4 md:px-6 bg-neutral-50 gap-4 w-full">
+  <div className="flex items-center h-14 px-4 md:px-6 border-b border-neutral-200/80 gap-4 w-full">
     <Skeleton className="min-w-10 min-h-10 rounded-full" />
     <div className="flex flex-col gap-1 w-full max-w-64">
       <Skeleton className="h-4 w-2/3" />
@@ -42,7 +42,7 @@ const ChatHeader = ({ roomName }: { roomName: string }) => {
     : data.friend.profile_picture;
 
   return (
-    <header className="flex items-center shrink-0 h-14 px-4 md:px-6 bg-neutral-50 gap-4 w-full ">
+    <header className="flex items-center shrink-0 h-14 px-4 md:px-6 border-b border-neutral-200/80 gap-4 w-full ">
       <div className="relative min-w-10 min-h-10 rounded-full">
         <ProfilePicture
           src={mediaPath}
@@ -68,7 +68,6 @@ const ChatHeader = ({ roomName }: { roomName: string }) => {
               ? "online"
               : `last seen: ${parseDateString({
                   dateString: data.friend.last_online,
-                  fullDate: true,
                 })}`}
           </p>
         )}
@@ -80,7 +79,7 @@ const ChatHeader = ({ roomName }: { roomName: string }) => {
         </div>
       )}
 
-      <div className="flex ml-auto gap-3 md:gap-4 lg:gap-6 items-center *:p-2 *:hover:bg-theme/5 *:hover:text-theme *:rounded-full">
+      <div className="flex ml-auto gap-3 md:gap-4 lg:gap-6 items-center *:p-2 *:hover:bg-theme/5 *:hover:text-theme *:rounded-full *:hover:scale-110 *:transition-all">
         <button>
           <Phone size={extraIconsSize} />
         </button>
