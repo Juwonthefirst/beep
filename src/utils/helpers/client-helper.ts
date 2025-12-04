@@ -130,7 +130,7 @@ export const createMessageGroups = (messages: Message[]) => {
   const groups: MessageGroup[] = [];
   let lastUserId: number | undefined;
   let lastTime: number | undefined;
-  const timeDifferenceLimit = 60 * 5 * 1000;
+  const timeDifferenceLimit = 60 * 30 * 1000;
   messages.forEach((message) => {
     const messageTimeInSeconds = new Date(message.timestamp).getTime();
     if (

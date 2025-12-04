@@ -1,17 +1,27 @@
 import { cn } from "@/lib/utils";
-import { Message } from "@/utils/types/server-response.type";
+import type { Message, ReplyMessage } from "@/utils/types/server-response.type";
 import { Reply } from "lucide-react";
 import Attachment from "./attachment";
 import { RefObject } from "react";
 
-type MessageCardProps = Message & {
+type ReplyMessageCardProps = ReplyMessage & {
+  ref?: RefObject<HTMLDivElement | null>;
+  sentByMe: boolean;
+};
+
+interface MessageCardProps extends Message {
   ref?: RefObject<HTMLDivElement | null>;
   sentByMe: boolean;
   isFirst: boolean;
   isLast: boolean;
-};
+}
 
-const ReplyToMessageCard = ({ id, body, attachment }: MessageCardProps) => {
+const ReplyToMessageCard = ({
+  id,
+  body,
+  attachment,
+  sender,
+}: ReplyMessageCardProps) => {
   return (
     <div className="flex gap-2 items-center w-fit mb-1 mt-2">
       <Reply size={18} className="rotate-y-180" />
@@ -25,7 +35,7 @@ const ReplyToMessageCard = ({ id, body, attachment }: MessageCardProps) => {
           />
         )}
         <div className={cn("flex flex-col text-xs py-1 px-2")}>
-          <p className="">{"You"}</p>
+          <p>{sender}</p>
           <p className="line-clamp-1 opacity-70 ">{body}</p>
         </div>
       </div>
@@ -39,7 +49,6 @@ const MessageCard = ({
   body,
   sender,
   reply_to,
-  timestamp,
   attachment,
   sentByMe,
   isFirst,
@@ -48,7 +57,7 @@ const MessageCard = ({
   return (
     <div
       ref={ref}
-      className={cn("max-w-4/5 ", {
+      className={cn("max-w-3/4 ", {
         "self-end ": sentByMe,
       })}
     >
@@ -73,9 +82,6 @@ const MessageCard = ({
         role="log"
       >
         <p className="whitespace-pre-wrap wrap-anywhere">{body}</p>
-        {/* <p className={cn("text-xs opacity-70", { "self-start": !sentByMe })}>
-          {parseDateString({ dateString: timestamp, timeOnly: true })}
-        </p> */}
       </div>
       {attachment && (
         <Attachment

@@ -3,6 +3,7 @@ import React, { RefObject } from "react";
 import MessageCard from "./message-card";
 import { GroupMember } from "@/utils/types/server-response.type";
 import { parseDateString } from "@/utils/helpers/client-helper";
+import { cn } from "@/lib/utils";
 
 interface MessageGroupProps extends Omit<MessageGroup, "userId"> {
   intersectionRef?: RefObject<HTMLDivElement | null>;
@@ -16,6 +17,7 @@ const MessageGroup = ({
   intersectionRef,
   sentByMe,
   sender_detail,
+  isGroupMessage,
 }: MessageGroupProps) => {
   return (
     <div className="w-full">
@@ -25,7 +27,7 @@ const MessageGroup = ({
           fullDate: true,
         })}
       </p>
-      <p className="text-sm">{sender_detail.username}</p>
+
       <div className="flex flex-col-reverse gap-0.5">
         {messages.map((message, index) => (
           <MessageCard
@@ -42,9 +44,11 @@ const MessageGroup = ({
           />
         ))}
       </div>
-      {/* <p className={cn("text-sm opacity-80", { "text-right": sentByMe })}>
-        {sender_detail.username}
-      </p> */}
+      {!sentByMe && isGroupMessage && (
+        <p className={cn("text-sm font-medium m-2 ml-1")}>
+          @{sender_detail.username}
+        </p>
+      )}
     </div>
   );
 };

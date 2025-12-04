@@ -52,6 +52,11 @@ export interface Message {
   is_edited: boolean;
 }
 
+export type ReplyMessage = Omit<
+  Message,
+  "uuid" | "reply_to" | "timestamp" | "is_edited" | "room"
+>;
+
 export interface Attachment {
   id: number;
   file: string;
