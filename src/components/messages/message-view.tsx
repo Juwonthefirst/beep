@@ -13,10 +13,13 @@ import { useEffect, useMemo, useRef } from "react";
 import MessageLoading from "./message-loading";
 import {
   createMessageGroups,
+  parseDateString,
   watchElementIntersecting,
 } from "@/utils/helpers/client-helper";
 import { UUID } from "crypto";
 import MessageGroup from "./message-group";
+import useChatSocket from "@/hooks/useChatSocket.hook";
+import TypingIndicator from "./typing-indicator";
 
 const MessaageView = ({ roomName }: { roomName: string }) => {
   const { data, isFetchingNextPage, hasNextPage, fetchNextPage } =
@@ -26,6 +29,7 @@ const MessaageView = ({ roomName }: { roomName: string }) => {
   const messageViewRef = useRef<HTMLDivElement | null>(null);
   const lastMessageUUId = useRef<UUID>(null);
   const intersectingElement = useRef<HTMLDivElement | null>(null);
+  const { typingUsers } = useChatSocket(roomName);
 
   const messageGroups = useMemo(
     () =>
@@ -61,7 +65,21 @@ const MessaageView = ({ roomName }: { roomName: string }) => {
       ref={messageViewRef}
       className="flex-1 flex flex-col-reverse gap-6 py-4 px-4 md:px-8 overflow-y-auto shrink-0"
     >
+      {true && <TypingIndicator />}
       {messageGroups.map((messageGroup, index) => {
+        if (messageGroup.type === "dateHeader")
+          return (
+            <p
+              key={messageGroup.timestamp}
+              className="mb-3 mt-8 text-xs text-center opacity-70"
+            >
+              {parseDateString({
+                dateString: messageGroup.timestamp,
+                fullDate: true,
+              })}
+            </p>
+          );
+
         const isSentByMe = currentUser.id === messageGroup.userId;
         const sender_details = chatDetails.is_group
           ? chatDetails.group.mappedMembers.get(messageGroup.userId)

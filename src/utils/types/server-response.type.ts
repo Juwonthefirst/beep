@@ -144,7 +144,7 @@ export interface PaginatedResponse<Type> {
 interface ChatRoom {
   id: number;
   name: string;
-  last_message: Message;
+  last_message: Message | null;
   unread_message_count: number;
   created_at: string;
 }

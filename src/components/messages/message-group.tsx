@@ -2,7 +2,6 @@ import type { MessageGroup } from "@/utils/types/client.type";
 import React, { RefObject } from "react";
 import MessageCard from "./message-card";
 import { GroupMember } from "@/utils/types/server-response.type";
-import { parseDateString } from "@/utils/helpers/client-helper";
 import { cn } from "@/lib/utils";
 
 interface MessageGroupProps extends Omit<MessageGroup, "userId"> {
@@ -21,13 +20,6 @@ const MessageGroup = ({
 }: MessageGroupProps) => {
   return (
     <div className="w-full">
-      <p className="my-6 text-xs text-center opacity-70">
-        {parseDateString({
-          dateString: messages[messages.length - 1].timestamp,
-          fullDate: true,
-        })}
-      </p>
-
       <div className="flex flex-col-reverse gap-0.5">
         {messages.map((message, index) => (
           <MessageCard

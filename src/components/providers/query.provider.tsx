@@ -13,7 +13,7 @@ const QueryProvider = ({ children }: Props) => {
   return (
     <QueryClientProvider client={queryclient}>
       {children}
-      {/* <ReactQueryDevtools /> */}
+      <ReactQueryDevtools />
     </QueryClientProvider>
   );
 };

@@ -40,7 +40,6 @@ const ChatPreview = ({
 }) => {
   const chatParentName = is_group ? group.name : friend.username;
   const chatAvatar = is_group ? group.avatar : friend.profile_picture;
-  const isRoomEmpty = !(last_message.room && last_message.sender);
 
   return (
     <Link
@@ -70,14 +69,14 @@ const ChatPreview = ({
               })}
             >
               {parseDateString({
-                dateString: isRoomEmpty ? created_at : last_message.timestamp,
+                dateString: !last_message ? created_at : last_message.timestamp,
               })}
             </p>
           }
         </div>
         <div className="flex justify-between items-center">
           <p className="opacity-70 text-sm line-clamp-1 wrap-anywhere ">
-            {isRoomEmpty
+            {!last_message
               ? `Start a chat with ${chatParentName}`
               : is_group
               ? `${last_message.sender}: ${last_message.body}`

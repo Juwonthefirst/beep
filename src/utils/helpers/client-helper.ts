@@ -1,7 +1,11 @@
 import "client-only";
 
 import { Message, PaginatedResponse } from "../types/server-response.type";
-import { MessageGroup } from "../types/client.type";
+import {
+  isMessageGroup,
+  type DateHeader,
+  type MessageGroup,
+} from "../types/client.type";
 
 export const delay = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
@@ -127,17 +131,23 @@ export const filterOutObjectFromResponse = <ObjectType>(
 };
 
 export const createMessageGroups = (messages: Message[]) => {
-  const groups: MessageGroup[] = [];
+  const groups: (MessageGroup | DateHeader)[] = [];
   let lastUserId: number | undefined;
   let lastTime: number | undefined;
   const timeDifferenceLimit = 60 * 30 * 1000;
   messages.forEach((message) => {
     const messageTimeInSeconds = new Date(message.timestamp).getTime();
-    if (
-      lastUserId !== message.sender ||
-      !lastTime ||
-      lastTime - messageTimeInSeconds > timeDifferenceLimit
-    ) {
+    const hasSurpassedTimeDifference = lastTime
+      ? lastTime - messageTimeInSeconds > timeDifferenceLimit
+      : false;
+
+    if (lastUserId !== message.sender || hasSurpassedTimeDifference) {
+      if (hasSurpassedTimeDifference) {
+        groups.push({
+          type: "dateHeader",
+          timestamp: message.timestamp,
+        });
+      }
       groups.push({
         type: "message",
         userId: message.sender,
@@ -147,7 +157,8 @@ export const createMessageGroups = (messages: Message[]) => {
       lastTime = messageTimeInSeconds;
       return;
     }
-    groups.at(-1)?.messages.push(message);
+    const lastGroup = groups.at(-1);
+    if (isMessageGroup(lastGroup)) lastGroup.messages.push(message);
   });
 
   return groups;

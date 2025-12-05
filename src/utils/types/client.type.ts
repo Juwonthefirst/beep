@@ -61,3 +61,14 @@ export interface MessageGroup {
   type: "message";
   messages: Message[];
 }
+
+export interface DateHeader {
+  type: "dateHeader";
+  timestamp: string;
+}
+
+export const isMessageGroup = (value: unknown): value is MessageGroup =>
+  value !== null &&
+  typeof value === "object" &&
+  "type" in value &&
+  value.type === "message";
