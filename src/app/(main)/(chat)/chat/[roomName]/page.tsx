@@ -2,6 +2,7 @@ import ChatHeader, { ChatHeaderSkeleton } from "@/components/chat/chat-header";
 import InputBox from "@/components/messages/input-box";
 import MessageLoading from "@/components/messages/message-loading";
 import MessaageView from "@/components/messages/message-view";
+import ChatroomProvider from "@/components/providers/chatroom-state.provider";
 import { Suspense } from "react";
 
 export default async function Page({
@@ -12,18 +13,20 @@ export default async function Page({
   const { roomName } = await params;
   return (
     <section className="flex flex-col h-dvh w-full">
-      <Suspense fallback={<ChatHeaderSkeleton />}>
-        <ChatHeader roomName={roomName} />
-      </Suspense>
-      <Suspense
-        fallback={
-          <MessageLoading className="flex flex-1 items-start justify-center pt-4" />
-        }
-      >
-        <MessaageView roomName={roomName} />
-      </Suspense>
+      <ChatroomProvider roomName={roomName}>
+        <Suspense fallback={<ChatHeaderSkeleton />}>
+          <ChatHeader />
+        </Suspense>
+        <Suspense
+          fallback={
+            <MessageLoading className="flex flex-1 items-start justify-center pt-4" />
+          }
+        >
+          <MessaageView />
+        </Suspense>
 
-      <InputBox roomName={roomName} />
+        <InputBox />
+      </ChatroomProvider>
     </section>
   );
 }

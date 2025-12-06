@@ -1,8 +1,9 @@
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+
 import Notifications from "@/components/notifications/notifications-display";
 import ChatSocketProvider from "@/components/providers/chat-socket.provider";
 import QueryProvider from "@/components/providers/query.provider";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
 const MainLayout = async ({
   children,

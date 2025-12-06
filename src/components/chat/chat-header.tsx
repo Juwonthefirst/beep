@@ -8,7 +8,11 @@ import { parseDateString } from "@/utils/helpers/client-helper";
 import { EllipsisVertical, LoaderCircle, Phone, Video } from "lucide-react";
 import useSocketState from "@/hooks/useSocketState.hook";
 import { Skeleton } from "../ui/skeleton";
-import useChatSocket from "@/hooks/useChatSocket.hook";
+import {
+  CurrentRoomNameContext,
+  TypingUsersContext,
+} from "../providers/chatroom-state.provider";
+import { use } from "react";
 
 const extraIconsSize = 22;
 
@@ -33,10 +37,11 @@ export const ChatHeaderSkeleton = () => (
   </div>
 );
 
-const ChatHeader = ({ roomName }: { roomName: string }) => {
+const ChatHeader = () => {
+  const roomName = use(CurrentRoomNameContext);
   const { data } = useSuspenseQuery(chatQueryOption(roomName));
   const socketState = useSocketState();
-  const chatSocket = useChatSocket(roomName);
+  const typingUsers = use(TypingUsersContext);
   const mediaPath = data.is_group
     ? data.group.avatar
     : data.friend.profile_picture;
@@ -62,7 +67,7 @@ const ChatHeader = ({ roomName }: { roomName: string }) => {
               "text-theme text-sm": data.friend.is_online,
             })}
           >
-            {chatSocket.typingUsers.includes(data.friend.username)
+            {typingUsers.length > 0
               ? "typing..."
               : data.friend.is_online
               ? "online"

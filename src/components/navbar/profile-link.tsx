@@ -8,7 +8,7 @@ import { currentUserQueryOption } from "@/utils/queryOptions";
 const ProfileLink = () => {
   const { data } = useQuery(currentUserQueryOption);
   return (
-    <Link className="relative block w-8 h-8" href="/profile">
+    <Link className="relative block w-10 h-10" href="/profile">
       <ProfilePicture
         fill
         sizes="96px"

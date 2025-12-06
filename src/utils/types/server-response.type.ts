@@ -160,3 +160,5 @@ export interface GroupChatRoom extends ChatRoom {
   friend: null;
   group: Group;
 }
+
+export type TypingUsers = string[];

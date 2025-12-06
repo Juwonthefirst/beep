@@ -146,7 +146,6 @@ export class ChatSocket extends Socket {
   private onMessage: ((message: ChatSocketMessage) => void) | null;
   onRoomChange: ((roomName: string | null) => void) | null;
   private readonly updateCurrentRoom: (roomName: string | null) => void;
-
   constructor({ getAccessToken }: Omit<SocketConstructor, "url">) {
     const url = process.env.NEXT_PUBLIC_WEBSOCKET_URL + "/chat/";
     super({ url, getAccessToken });

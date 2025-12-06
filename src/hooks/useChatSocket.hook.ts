@@ -8,6 +8,7 @@ import {
   Attachment,
   GroupChatRoom,
   Message,
+  TypingUsers,
   UserChatRoom,
 } from "@/utils/types/server-response.type";
 import { chatListQueryOption, messageQueryOption } from "@/utils/queryOptions";
@@ -16,7 +17,7 @@ import { filterOutObjectFromResponse } from "@/utils/helpers/client-helper";
 const useChatSocket = (room_name: string) => {
   // rework typing to use user id
   const { chatSocket } = use(ChatSocketContext);
-  const [typingUsers, setTypingUsers] = useState<string[]>([]);
+  const [typingUsers, setTypingUsers] = useState<TypingUsers>([]);
   const queryClient = useQueryClient();
 
   useEffect(() => {

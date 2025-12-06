@@ -56,19 +56,17 @@ export const isWebSocketFailedState = (
   return value === "disconnected" || value === "reconnection_failed";
 };
 
+export type ChatSocketSend = (
+  message: string,
+  attachment?: Attachment,
+  uuid?: UUID
+) => void;
+
+export type ChatSocketTyping = () => void;
+
 export interface MessageGroup {
   userId: number;
   type: "message";
+  hasDateHeader: boolean;
   messages: Message[];
 }
-
-export interface DateHeader {
-  type: "dateHeader";
-  timestamp: string;
-}
-
-export const isMessageGroup = (value: unknown): value is MessageGroup =>
-  value !== null &&
-  typeof value === "object" &&
-  "type" in value &&
-  value.type === "message";

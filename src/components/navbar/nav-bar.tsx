@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { LucideIcon, MessageCircle, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import ProfileLink from "./profile-link";
 
 interface NavLinkProps {
   href: string;
@@ -18,17 +19,16 @@ const NavLink = ({ href, isCurrent, Icon, children }: NavLinkProps) => {
       href={href}
       data-current={isCurrent}
       className={cn(
-        "group flex gap-2 items-center text-sm rounded-full text-theme py-2 px-4 transition-all duration-300",
+        "group flex gap-2 items-center text-sm rounded-full text-white p-2 transition-all duration-300 ",
         {
-          "bg-theme border text-white font-semibold": isCurrent,
-          "hover:bg-blue-50": !isCurrent,
+          " text-white font-semibold text-base": isCurrent,
         }
       )}
     >
       <Icon className="" size={20} />
       <p
         className={cn(
-          "max-w-0 opacity-0 overflow-hidden transition-all duration-700 ease-in-out whitespace-nowrap",
+          "md:hidden max-w-0 opacity-0 overflow-hidden transition-all duration-700 ease-in-out whitespace-nowrap",
           {
             "max-w-xs opacity-100": isCurrent,
             "group-hover:max-w-xs group-hover:opacity-100": !isCurrent,
@@ -45,7 +45,7 @@ const NavBar = () => {
   const pathName = usePathname();
 
   return (
-    <nav className="hidden /sm:flex items-center gap-4 ">
+    <nav className="md:hidden fixed bottom-10 flex justify-between items-center gap-4 self-center w-9/10 max-w-sm bg-theme/90 backdrop-blur-md py-2 px-4 rounded-full">
       <NavLink
         href="/"
         Icon={MessageCircle}
@@ -67,6 +67,7 @@ const NavBar = () => {
       >
         Thoughts
       </NavLink>
+      <ProfileLink />
     </nav>
   );
 };

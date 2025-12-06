@@ -1,18 +1,15 @@
 "use client";
 
-import useChatSocket from "@/hooks/useChatSocket.hook";
 import { Paperclip, Send } from "lucide-react";
-import { useRef, useState } from "react";
+import { use, useRef, useState } from "react";
 import throttle from "lodash.throttle";
 import FileUpload from "../form/file-upload";
 import AttachmentPreview from "./attachment-preview";
+import { ChatSocketControlsContext } from "../providers/chatroom-state.provider";
 
-interface Props {
-  roomName: string;
-}
+const InputBox = () => {
+  const chatsocketControls = use(ChatSocketControlsContext);
 
-const InputBox = ({ roomName }: Props) => {
-  const chatSocket = useChatSocket(roomName);
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
@@ -36,7 +33,7 @@ const InputBox = ({ roomName }: Props) => {
         onSubmit={(event) => {
           event.preventDefault();
           if (!inputValue) return;
-          chatSocket.send(inputValue);
+          chatsocketControls?.send(inputValue);
           setInputValue("");
           if (inputRef.current) {
             inputRef.current.focus();
@@ -52,7 +49,7 @@ const InputBox = ({ roomName }: Props) => {
           onChange={(event) => {
             setInputValue(event.target.value);
             throttle(() => {
-              chatSocket.typing();
+              chatsocketControls?.typing();
             }, 1000)();
             event.target.style.height = "auto";
             event.target.style.height = event.target.scrollHeight + "px";
