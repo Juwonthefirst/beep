@@ -43,7 +43,7 @@ const SignupStep3 = ({ onSuccess }: Omit<SignupStepsProps, "email">) => {
 
       <AuthForm
         className="mt-6"
-        action={async () => ({ status: "saved" })}
+        action={async () => ({ status: "success", data: null })}
         onSuccess={onSignupSuccess}
       >
         <div className="flex flex-col gap-2">
@@ -86,7 +86,7 @@ const SignupStep3 = ({ onSuccess }: Omit<SignupStepsProps, "email">) => {
         >
           Submit
         </SubmitBtn>
-        <FormError/>
+        <FormError />
       </AuthForm>
     </section>
   );

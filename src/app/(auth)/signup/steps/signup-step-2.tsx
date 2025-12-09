@@ -80,7 +80,7 @@ const SignupStep2 = ({ email, onSuccess }: SignupStepsProps) => {
       <AuthForm
         className="mt-12 items-center"
         action={verifyOtp}
-        onSuccess={onSuccess}
+        onSuccess={() => onSuccess()}
       >
         <OtpInput />
         <SubmitBtn>Verify</SubmitBtn>

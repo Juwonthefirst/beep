@@ -25,10 +25,7 @@ const SignupStep1 = ({ onSuccess }: Omit<SignupStepsProps, "email">) => {
           <Logo />
         </div>
         <FormDescription className="max-w-xs leading-5">
-          Your only open source chat platform{" "}
-          {/*where you can meet, call, chat
-          with your loved ones with features created by you. Enter your email to
-          continue */}
+          Your only open source chat platform
         </FormDescription>
       </div>
       <AuthForm action={getOtp} onSuccess={onSignupSuccess}>

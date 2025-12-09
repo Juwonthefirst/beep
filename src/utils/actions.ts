@@ -5,6 +5,8 @@ import { cookies } from "next/headers";
 import type {
   AuthResponse,
   AuthSuccessResponse,
+  FormResponse,
+  Group,
 } from "./types/server-response.type";
 import { request } from "./request-client";
 import {
@@ -16,12 +18,13 @@ import {
 export const login = async (
   prevState: AuthResponse | undefined,
   formData: FormData
-) => {
+): Promise<FormResponse> => {
   const identification = formData.get("identification");
   const password = formData.get("password");
 
-  if (!identification) return { error: "Enter a username or email" };
-  else if (!password) return { error: "Enter your password" };
+  if (!identification)
+    return { status: "error", error: "Enter a username or email" };
+  else if (!password) return { status: "error", error: "Enter your password" };
   const response = await request<AuthSuccessResponse>({
     method: "post",
     path: "/auth/login/",
@@ -33,21 +36,22 @@ export const login = async (
 
   if ("error" in response) {
     return {
+      status: "error",
       error: stringifyResponseErrorStatusCode(
         response.error?.status || 600,
         response.error?.data
       ),
     };
   }
-  return response.data;
+  return { status: "success", data: response.data };
 };
 
 export const getOtp = async (
   prevState: AuthResponse | undefined,
   formData: FormData
-) => {
+): Promise<FormResponse> => {
   const email = formData.get("email");
-  if (!email) return { error: "Enter a valid email" };
+  if (!email) return { status: "error", error: "Enter a valid email" };
   const response = await request<AuthSuccessResponse>({
     method: "post",
     path: "/auth/get-otp/",
@@ -58,23 +62,25 @@ export const getOtp = async (
 
   if ("error" in response) {
     return {
+      status: "error",
       error: stringifyResponseErrorStatusCode(
         response.error?.status || 600,
         response.error?.data
       ),
     };
   }
-  return response.data;
+  return { status: "success", data: response.data };
 };
 
 export const verifyOtp = async (
   prevState: AuthResponse | undefined,
   formData: FormData
-) => {
+): Promise<FormResponse> => {
   const cookieStore = await cookies();
 
   const otp = formData.get("otp");
-  if (!otp) return { error: "Enter the otp sent to your mail" };
+  if (!otp)
+    return { status: "error", error: "Enter the otp sent to your mail" };
   const response = await request<AuthSuccessResponse>({
     method: "post",
     path: "/auth/verify-otp/",
@@ -90,23 +96,26 @@ export const verifyOtp = async (
 
   if ("error" in response) {
     return {
+      status: "error",
       error: stringifyResponseErrorStatusCode(
         response.error?.status || 600,
         response.error?.data
       ),
     };
   }
-  return response.data;
+  return { status: "success", data: response.data };
 };
 
 export const signup = async (
   prevState: AuthResponse | undefined,
   formData: FormData
-) => {
+): Promise<FormResponse> => {
   const cookieStore = await cookies();
 
-  if (!formData.has("username")) return { error: "Enter a username" };
-  if (!formData.has("password")) return { error: "Enter a password" };
+  if (!formData.has("username"))
+    return { status: "error", error: "Enter a username" };
+  if (!formData.has("password"))
+    return { status: "error", error: "Enter a password" };
 
   const profilePicture = formData.get("profile_picture");
   formData.delete("profile_picture");
@@ -117,7 +126,7 @@ export const signup = async (
     profilePicture.type
   )
     formData.set("profile_picture", await processFile(profilePicture));
-  else return { error: "profile picture requires" };
+  else return { status: "error", error: "profile picture requires" };
 
   const response = await request<AuthSuccessResponse>({
     method: "post",
@@ -132,13 +141,15 @@ export const signup = async (
 
   if ("error" in response) {
     return {
+      status: "error",
       error: stringifyResponseErrorStatusCode(
         response.error?.status || 600,
         response.error?.data
       ),
     };
   }
-  return response.data;
+
+  return { status: "success", data: response.data };
 };
 
 export const googleAuthenicate = async (code: unknown) => {
@@ -161,4 +172,38 @@ export const googleAuthenicate = async (code: unknown) => {
 
 export const getAccessToken = async () => {
   return await getORfetchAccessToken();
+};
+
+export const createGroup = async (
+  prevState: FormResponse | undefined,
+  formData: FormData
+): Promise<FormResponse> => {
+  if (!formData.has("name")) {
+    return {
+      status: "error",
+      error: "Enter your group name",
+    };
+  }
+
+  const avatar = formData.get("avatar");
+  formData.delete("avatar");
+  if (avatar && avatar instanceof Blob && avatar.size && avatar.type)
+    formData.set("avatar", await processFile(avatar));
+
+  const response = await request<{ data: Group }>({
+    path: "/group/",
+    data: formData,
+  });
+
+  if ("error" in response) {
+    return {
+      status: "error",
+      error: stringifyResponseErrorStatusCode(
+        response.error?.status || 600,
+        response.error?.data
+      ),
+    };
+  }
+
+  return { status: "success", data: response.data.data };
 };

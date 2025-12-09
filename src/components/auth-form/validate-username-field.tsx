@@ -6,7 +6,7 @@ import axios, { isAxiosError } from "axios";
 
 import InputField from "@/components/form/input";
 import type {
-  AuthErrorResponse,
+  ErrorResponse,
   UsernameExist,
 } from "@/utils/types/server-response.type";
 import type { ValidationState } from "@/utils/types/client.type";
@@ -46,7 +46,7 @@ const ValidateUsernameField = ({
       setError("");
       return "valid";
     } catch (e) {
-      if (isAxiosError<AuthErrorResponse>(e)) {
+      if (isAxiosError<ErrorResponse>(e)) {
         const errorMessage = e.response?.data?.error;
         if (errorMessage) {
           setError(errorMessage);

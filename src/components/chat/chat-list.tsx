@@ -8,7 +8,7 @@ import { watchElementIntersecting } from "@/utils/helpers/client-helper";
 import ChatListSkeleton from "./chat-list-skeleton";
 import NoChatRoom from "./no-chat-room";
 import { isAxiosError } from "axios";
-import { AuthErrorResponse } from "@/utils/types/server-response.type";
+import { ErrorResponse } from "@/utils/types/server-response.type";
 import { usePathname } from "next/navigation";
 
 const ChatList = () => {
@@ -39,7 +39,7 @@ const ChatList = () => {
     return () => observer?.disconnect();
   }, [isFetchingNextPage, hasNextPage, fetchNextPage, isPending]);
 
-  if (isError && isAxiosError<AuthErrorResponse>(error))
+  if (isError && isAxiosError<ErrorResponse>(error))
     return <p>{error.response?.data.error}</p>;
 
   return (

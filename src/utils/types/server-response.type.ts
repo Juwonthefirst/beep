@@ -68,12 +68,17 @@ export interface AuthSuccessResponse {
   status?: string;
 }
 
-export interface AuthErrorResponse {
+export interface ErrorResponse {
   error: string;
 }
 
-export type AuthResponse = AuthErrorResponse | AuthSuccessResponse;
-export type UsernameExist = { exists: boolean } | AuthErrorResponse;
+export type AuthResponse = ErrorResponse | AuthSuccessResponse;
+export type UsernameExist = { exists: boolean } | ErrorResponse;
+
+export type FormResponse =
+  | { status: "success"; data: unknown }
+  | { status: "error"; error: string }
+  | { status: "idle" };
 
 export interface ChatSocketTyping {
   typing: boolean;

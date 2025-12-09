@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { LucideIcon, MessageCircle, Users } from "lucide-react";
+import { LucideIcon, MessageCircle, PhoneCall, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ProfileLink from "./profile-link";
@@ -19,19 +19,18 @@ const NavLink = ({ href, isCurrent, Icon, children }: NavLinkProps) => {
       href={href}
       data-current={isCurrent}
       className={cn(
-        "group flex gap-2 items-center text-sm rounded-full text-white p-2 transition-all duration-300 ",
+        "group flex md:flex-col gap-2 items-center text-sm md:text-xs rounded-full text-white p-2 md:p-3 transition-all duration-300 ",
         {
           " text-white font-semibold text-base": isCurrent,
         }
       )}
     >
-      <Icon className="" size={20} />
+      <Icon className="" size={22} />
       <p
         className={cn(
           "md:hidden max-w-0 opacity-0 overflow-hidden transition-all duration-700 ease-in-out whitespace-nowrap",
           {
             "max-w-xs opacity-100": isCurrent,
-            "group-hover:max-w-xs group-hover:opacity-100": !isCurrent,
           }
         )}
       >
@@ -41,11 +40,11 @@ const NavLink = ({ href, isCurrent, Icon, children }: NavLinkProps) => {
   );
 };
 
-const NavBar = () => {
+export const NavBar = ({ className }: { className?: string }) => {
   const pathName = usePathname();
 
   return (
-    <nav className="md:hidden fixed bottom-10 flex justify-between items-center gap-4 self-center w-9/10 max-w-sm bg-theme/90 backdrop-blur-md py-2 px-4 rounded-full">
+    <nav className={className}>
       <NavLink
         href="/"
         Icon={MessageCircle}
@@ -62,7 +61,7 @@ const NavBar = () => {
       </NavLink>
       <NavLink
         href="/thoughts"
-        Icon={MessageCircle}
+        Icon={PhoneCall}
         isCurrent={pathName.startsWith("/thoughts")}
       >
         Thoughts
@@ -72,4 +71,6 @@ const NavBar = () => {
   );
 };
 
-export default NavBar;
+export const MobileNavBar = () => (
+  <NavBar className="md:hidden fixed bg-black/3 bottom-10 flex justify-between items-center self-center gap-4 w-9/10 max-w-sm backdrop-blur-sm backdrop-saturate-200 py-2 px-4 rounded-full *:text-black border border-black/10 /bg-black/3 *:data-[current=true]:text-theme" />
+);

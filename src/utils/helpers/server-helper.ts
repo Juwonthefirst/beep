@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import SetCookie from "set-cookie-parser";
 import sharp from "sharp";
 import { request } from "../request-client";
-import { AuthErrorResponse } from "../types/server-response.type";
+import { ErrorResponse } from "../types/server-response.type";
 
 export const processFile = async (file: File) => {
   const bytes = await file.arrayBuffer();
@@ -84,7 +84,7 @@ export const getORfetchAccessToken = async () => {
 
 export const stringifyResponseErrorStatusCode = (
   status: number,
-  data: AuthErrorResponse | undefined
+  data: ErrorResponse | undefined
 ) => {
   switch (status) {
     case 400:

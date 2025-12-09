@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { request } from "@/utils/request-client";
-import type { AuthErrorResponse } from "@/utils/types/server-response.type";
+import type { ErrorResponse } from "@/utils/types/server-response.type";
 import {
   getORfetchAccessToken,
   stringifyResponseErrorStatusCode,
@@ -14,7 +14,7 @@ export async function GET(
   const { path } = await params;
   const { searchParams } = new URL(req.url);
   const accessToken = await getORfetchAccessToken();
-  const response = await request<unknown, AuthErrorResponse>({
+  const response = await request<unknown, ErrorResponse>({
     method: "get",
     path: path.join("/") + "/?" + searchParams.toString(),
     config: {

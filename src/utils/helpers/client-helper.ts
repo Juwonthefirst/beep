@@ -2,6 +2,7 @@ import "client-only";
 
 import type { Message, PaginatedResponse } from "../types/server-response.type";
 import type { MessageGroup } from "../types/client.type";
+import axios from "axios";
 
 export const delay = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
@@ -152,4 +153,8 @@ export const createMessageGroups = (messages: Message[]) => {
   });
 
   return groups;
+};
+
+export const uploadFileToStorage = async (file: File) => {
+  const response = axios.get("/api/upload/");
 };

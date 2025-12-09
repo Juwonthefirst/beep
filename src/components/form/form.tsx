@@ -1,10 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import {
-  AuthErrorResponse,
-  AuthResponse,
-} from "@/utils/types/server-response.type";
+import type { FormResponse } from "@/utils/types/server-response.type";
 import {
   createContext,
   FormEventHandler,
@@ -18,11 +15,11 @@ import {
 
 interface Props {
   action: (
-    prevState: AuthResponse | undefined,
+    prevState: FormResponse | undefined,
     formData: FormData
-  ) => Promise<AuthResponse | undefined>;
+  ) => Promise<FormResponse | undefined>;
   children: ReactNode;
-  onSuccess?: () => void;
+  onSuccess?: (data: unknown) => void;
   className?: string;
   onSubmit?: FormEventHandler<HTMLFormElement>;
 }
@@ -49,14 +46,14 @@ export const FormError = ({ className }: { className?: string }) => {
   );
 };
 
-const AuthForm = ({
+const Form = ({
   action,
   onSuccess,
   children,
   className = "",
   onSubmit,
 }: Props) => {
-  const initialState: AuthErrorResponse = { error: "" };
+  const initialState: FormResponse = { status: "idle" };
   const [state, formAction, isSubmitting] = useActionState(
     action,
     initialState
@@ -65,11 +62,10 @@ const AuthForm = ({
   const [isDisabled, setIsDisabled] = useState(false);
 
   useEffect(() => {
-    if (state && "status" in state) onSuccess?.();
+    if (state && state.status === "success") onSuccess?.(state.data);
   }, [state, onSuccess]);
 
-  const formError =
-    state && "error" in state && state.error ? state.error : error;
+  const formError = state && state.status === "error" ? state.error : error;
 
   const formStateControls = useMemo(
     () => ({
@@ -96,4 +92,4 @@ const AuthForm = ({
   );
 };
 
-export default AuthForm;
+export default Form;

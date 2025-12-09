@@ -8,7 +8,7 @@ import SignupStep3 from "./steps/signup-step-3";
 import SignupStep4 from "./steps/signup-step-4";
 
 const Page = () => {
-  const [signupStep, setsignupStep] = useState<1 | 2 | 3 | 4>(1);
+  const [signupStep, setsignupStep] = useState<1 | 2 | 3 | 4>(4);
   const [userEmail, setUserEmail] = useState("");
   const [userPassword, setUserPassword] = useState("");
 

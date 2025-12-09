@@ -22,7 +22,7 @@ const NotificationCard = ({
   return (
     <Link
       href={notificationURL}
-      className="bg-white border border-black/10 shadow-lg p-2 rounded-lg w-2xs md:w-xs lg:w-sm mx-auto flex items-center gap-4"
+      className="bg-white border border-black/10 shadow-lg p-3 rounded-3xl w-xs md:w-xs lg:w-sm mx-auto flex items-center gap-4"
     >
       <ProfilePicture
         ownerName={header}

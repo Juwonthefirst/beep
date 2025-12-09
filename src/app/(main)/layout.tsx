@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 
 import Notifications from "@/components/notifications/notifications-display";
 import ChatSocketProvider from "@/components/providers/chat-socket.provider";
-import QueryProvider from "@/components/providers/query.provider";
 
 const MainLayout = async ({
   children,
@@ -15,11 +14,9 @@ const MainLayout = async ({
     redirect("/login");
   }
   return (
-    <QueryProvider>
-      <ChatSocketProvider>
-        <Notifications>{children}</Notifications>
-      </ChatSocketProvider>
-    </QueryProvider>
+    <ChatSocketProvider>
+      <Notifications>{children}</Notifications>
+    </ChatSocketProvider>
   );
 };
 

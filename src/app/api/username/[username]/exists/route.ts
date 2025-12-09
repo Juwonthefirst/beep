@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { request } from "@/utils/request-client";
-import type { AuthErrorResponse } from "@/utils/types/server-response.type";
+import type { ErrorResponse } from "@/utils/types/server-response.type";
 import { stringifyResponseErrorStatusCode } from "@/utils/helpers/server-helper";
 
 export async function GET(
@@ -9,7 +9,7 @@ export async function GET(
   { params }: { params: Promise<{ username: string }> }
 ) {
   const { username } = await params;
-  const response = await request<{ exists: boolean }, AuthErrorResponse>({
+  const response = await request<{ exists: boolean }, ErrorResponse>({
     method: "get",
     path: `/users/username/${username}/exists/`,
   });
