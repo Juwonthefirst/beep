@@ -43,6 +43,7 @@ export const request = async <
         : await api[method]<ResponseSuccessType>(path, data, requestConfig);
 
     await getAndSetCookies(response.headers["set-cookie"] || []);
+    console.log(JSON.stringify(response.data));
     return response;
   } catch (e: unknown) {
     if (isAxiosError<ResponseErrorType>(e)) {

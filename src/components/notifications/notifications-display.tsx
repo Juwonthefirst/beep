@@ -15,6 +15,7 @@ import {
   GroupChatRoom,
 } from "@/utils/types/server-response.type";
 import { filterOutObjectFromResponse } from "@/utils/helpers/client-helper";
+import CallNotification from "./call-notification";
 
 const notificationSocket = new NotificationSocket({ getAccessToken });
 
@@ -58,9 +59,13 @@ const Notifications = ({ children }: { children: React.ReactNode }) => {
           profilePictureURL={notification.sender_profile_picture}
           toastId={toastId}
           header={notification.sender_username}
-          description={notification.message.body}
+          description={
+            notification.is_group
+              ? `${notification.message.sender_username}:  ${notification.message.body}`
+              : notification.message.body
+          }
           notificationURL={`/chat/${notification.room_name}`}
-          timestamp={notification.message.timestamp}
+          timestamp={notification.message.created_at}
         />
       ));
     };
@@ -92,6 +97,12 @@ const Notifications = ({ children }: { children: React.ReactNode }) => {
           return newData;
         }
       );
+    };
+
+    notificationSocket.onCallNotification = (notification) => {
+      toast.custom((toastId) => (
+        <CallNotification {...notification} toastId={toastId} />
+      ), {duration: Infinity});
     };
 
     (async () => {

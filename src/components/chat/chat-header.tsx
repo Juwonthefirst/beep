@@ -12,7 +12,9 @@ import {
   CurrentRoomNameContext,
   TypingUsersContext,
 } from "../providers/chatroom-state.provider";
-import { use } from "react";
+import { use, useMemo } from "react";
+import CallButtons from "../call/call-buttons";
+import { CallerInfo } from "@/utils/types/client.type";
 
 const extraIconsSize = 22;
 
@@ -46,6 +48,19 @@ const ChatHeader = () => {
     ? data.group.avatar
     : data.friend.profile_picture;
 
+  const username = data.is_group ? data.group.name : data.friend.username;
+  const avatar = data.is_group
+    ? data.group.avatar
+    : data.friend.profile_picture;
+
+  const callerInfo = useMemo<CallerInfo>(
+    () => ({
+      username,
+      avatar,
+    }),
+    [username, avatar]
+  );
+
   return (
     <header className="flex items-center shrink-0 h-14 px-4 md:px-6 border-b border-neutral-200/80 gap-4 w-full ">
       <div className="relative min-w-10 min-h-10 rounded-full">
@@ -59,7 +74,7 @@ const ChatHeader = () => {
       </div>
       <div className="flex flex-col -gap-1 max-w-64 text-ellipsis">
         <p className="font-medium ">
-          {data.is_group ? data.group.avatar : data.friend.username}
+          {data.is_group ? data.group.name : data.friend.username}
         </p>
         {!data.is_group && (
           <p
@@ -85,12 +100,7 @@ const ChatHeader = () => {
       )}
 
       <div className="flex ml-auto gap-3 md:gap-4 lg:gap-6 items-center *:p-2 *:hover:bg-theme/5 *:hover:text-theme *:rounded-full *:hover:scale-110 *:transition-all">
-        <button>
-          <Phone size={extraIconsSize} />
-        </button>
-        <button>
-          <Video size={extraIconsSize} />
-        </button>
+        <CallButtons callerInfo={callerInfo} iconSize={extraIconsSize} />
         <button>
           <EllipsisVertical size={extraIconsSize} />
         </button>

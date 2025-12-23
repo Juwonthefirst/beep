@@ -5,15 +5,17 @@ import { cookies } from "next/headers";
 import type {
   AuthResponse,
   AuthSuccessResponse,
+  CallAccessToken,
   FormResponse,
-  Group,
+  GroupCreateResponse,
+  SignupResponse,
 } from "./types/server-response.type";
 import { request } from "./request-client";
 import {
   getORfetchAccessToken,
-  processFile,
   stringifyResponseErrorStatusCode,
 } from "./helpers/server-helper";
+import { CallState } from "./types/client.type";
 
 export const login = async (
   prevState: AuthResponse | undefined,
@@ -117,18 +119,18 @@ export const signup = async (
   if (!formData.has("password"))
     return { status: "error", error: "Enter a password" };
 
-  const profilePicture = formData.get("profile_picture");
-  formData.delete("profile_picture");
-  if (
-    profilePicture &&
-    profilePicture instanceof Blob &&
-    profilePicture.size &&
-    profilePicture.type
-  )
-    formData.set("profile_picture", await processFile(profilePicture));
-  else return { status: "error", error: "profile picture requires" };
+  // const profilePicture = formData.get("profile_picture");
+  // formData.delete("profile_picture");
+  // if (
+  //   profilePicture &&
+  //   profilePicture instanceof Blob &&
+  //   profilePicture.size &&
+  //   profilePicture.type
+  // )
+  //   formData.set("profile_picture", await processFile(profilePicture));
+  // else return { status: "error", error: "profile picture requires" };
 
-  const response = await request<AuthSuccessResponse>({
+  const response = await request<SignupResponse>({
     method: "post",
     path: "/auth/signup/",
     data: formData,
@@ -177,7 +179,7 @@ export const getAccessToken = async () => {
 export const createGroup = async (
   prevState: FormResponse | undefined,
   formData: FormData
-): Promise<FormResponse> => {
+): Promise<FormResponse<GroupCreateResponse>> => {
   if (!formData.has("name")) {
     return {
       status: "error",
@@ -185,14 +187,15 @@ export const createGroup = async (
     };
   }
 
-  const avatar = formData.get("avatar");
-  formData.delete("avatar");
-  if (avatar && avatar instanceof Blob && avatar.size && avatar.type)
-    formData.set("avatar", await processFile(avatar));
-
-  const response = await request<{ data: Group }>({
-    path: "/group/",
+  const accessToken = await getORfetchAccessToken();
+  const response = await request<GroupCreateResponse>({
+    path: "/groups/",
     data: formData,
+    config: {
+      headers: {
+        Authorization: `Bearer ${accessToken || ""}`,
+      },
+    },
   });
 
   if ("error" in response) {
@@ -205,5 +208,75 @@ export const createGroup = async (
     };
   }
 
-  return { status: "success", data: response.data.data };
+  return { status: "success", data: response.data };
+};
+
+export const fetchCallAccessToken = async ({
+  roomName,
+  startedCall,
+  callId,
+  callType,
+}: CallState): Promise<FormResponse<CallAccessToken>> => {
+  const accessToken = await getORfetchAccessToken();
+  const config = {
+    headers: {
+      Authorization: `Bearer ${accessToken || ""}`,
+    },
+  };
+
+  const response = await (() => {
+    if (startedCall)
+      return request<CallAccessToken>({
+        path: `/chats/${roomName}/call/start/`,
+        data: { is_video: callType === "video" },
+        config,
+      });
+
+    return request<CallAccessToken>({
+      method: "get",
+      path: `/chats/${roomName}/call/${callId}/join/`,
+      config,
+    });
+  })();
+
+  if ("error" in response) {
+    return {
+      status: "error",
+      error: stringifyResponseErrorStatusCode(
+        response.error?.status || 600,
+        response.error?.data
+      ),
+    };
+  }
+
+  return { status: "success", data: response.data };
+};
+
+export const addGroupMembers = async (
+  groupId: number,
+  memberIds: number[]
+): Promise<FormResponse<{ status: string }>> => {
+  const accessToken = await getORfetchAccessToken();
+  const config = {
+    headers: {
+      Authorization: `Bearer ${accessToken || ""}`,
+    },
+  };
+  const response = await request<{ status: string }>({
+    path: `/groups/${groupId}/members/add/`,
+    data: { member_ids: memberIds },
+    config,
+  });
+
+  if ("error" in response) {
+    return {
+      status: "error",
+      error: stringifyResponseErrorStatusCode(
+        response.error?.status || 600,
+        response.error?.data
+      ),
+    };
+  }
+
+  return { status: "success", data: response.data };
 };

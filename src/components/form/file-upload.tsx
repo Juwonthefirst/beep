@@ -1,5 +1,5 @@
 interface Props {
-  name: string;
+  name?: string;
   className?: string;
   inputClassName?: string;
   onUpload?: (files: File[] | null) => void;
@@ -38,15 +38,16 @@ const FileUpload = ({
       }}
     >
       {children}
-      <label className={inputClassName} htmlFor={name}>
+      <label className={inputClassName} htmlFor={name || "file-input"}>
         {labelChildren}
       </label>
       <input
-        id={name}
+        id={name || "file-input"}
         multiple={multiple}
         className="hidden"
         accept={accept}
         type="file"
+        value={""}
         required={required}
         name={name}
         onChange={(event) => {

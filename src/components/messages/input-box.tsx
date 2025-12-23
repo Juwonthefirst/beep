@@ -16,10 +16,10 @@ const InputBox = () => {
 
   return (
     <div className="flex flex-col gap-4 py-2 px-6 md:px-8">
-      <div className="flex overflow-auto gap-2">
+      <div className="flex overflow-x-auto gap-2 w-full">
         {attachmentFiles.map((attachmentFile) => (
           <AttachmentPreview
-            key={attachmentFile.name}
+            key={attachmentFile.lastModified}
             attachment={attachmentFile}
             onRemove={() => {
               setAttachmentFiles((prev) =>
@@ -59,14 +59,13 @@ const InputBox = () => {
         />
         <div className="flex gap-1 md:gap-2 self-end items-center *:p-2 *:[&:hover,&:active]:text-theme *:[&:hover,&:active]:scale-110 *:rounded-full *:transition-all">
           <FileUpload
-            name="attachment upload"
             onUpload={(files) => {
-              if (files) setAttachmentFiles((prev) => [...prev, ...files]);
+              if (files) setAttachmentFiles((prev) => [...files, ...prev]);
             }}
             labelChildren={<Paperclip size={22} />}
             multiple
           />
-          <button className="" type="submit">
+          <button type="submit">
             <Send size={22} />
           </button>
         </div>

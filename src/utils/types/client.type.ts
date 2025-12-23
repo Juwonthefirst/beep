@@ -24,7 +24,8 @@ export type WebsocketMessage =
       message: string;
       uuid: UUID;
       attachment?: Attachment;
-    };
+    }
+  | { action: "call_decline"; call_id: string };
 
 export type WebSocketConnectionSuccessState = "connected" | "reconnected";
 
@@ -70,3 +71,17 @@ export interface MessageGroup {
   hasDateHeader: boolean;
   messages: Message[];
 }
+
+export interface CallerInfo {
+  username: string;
+  avatar: string;
+}
+
+export type CallState = {
+  roomName: string;
+  callerInfo: CallerInfo;
+  callType: "video" | "voice";
+} & (
+  | { startedCall: true; callId: null }
+  | { startedCall: false; callId: string }
+);

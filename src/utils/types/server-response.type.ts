@@ -16,6 +16,12 @@ export interface BaseUser {
   last_online: string;
 }
 
+export interface Friend {
+  id: number;
+  username: string;
+  profile_picture: string;
+}
+
 export interface User extends BaseUser {
   is_following_me: boolean;
   is_followed_by_me: boolean;
@@ -25,6 +31,7 @@ export interface User extends BaseUser {
 export interface Group {
   id: number;
   name: string;
+  room_name: string;
   description: string;
   avatar: string;
   created_at: string;
@@ -44,7 +51,7 @@ export interface Message {
   uuid: UUID;
   body: string;
   attachment: Attachment | null;
-  timestamp: string;
+  created_at: string;
   sender: number;
   reply_to: Message | null;
   room: number;
@@ -54,8 +61,10 @@ export interface Message {
 
 export type ReplyMessage = Omit<
   Message,
-  "uuid" | "reply_to" | "timestamp" | "is_edited" | "room"
->;
+  "uuid" | "reply_to" | "created_at" | "is_edited" | "room"
+> & { sender: string };
+
+export type LastMessage = Message & { sender_username: string };
 
 export interface Attachment {
   id: number;
@@ -75,8 +84,8 @@ export interface ErrorResponse {
 export type AuthResponse = ErrorResponse | AuthSuccessResponse;
 export type UsernameExist = { exists: boolean } | ErrorResponse;
 
-export type FormResponse =
-  | { status: "success"; data: unknown }
+export type FormResponse<ReturnType = unknown> =
+  | { status: "success"; data: ReturnType }
   | { status: "error"; error: string }
   | { status: "idle" };
 
@@ -87,7 +96,7 @@ export interface ChatSocketTyping {
 }
 export type ChatEvent = "chat" | "delete" | "edit";
 
-export interface ChatSocketMessage extends Message {
+export interface ChatSocketMessage extends LastMessage {
   event: ChatEvent;
   room_name: string;
 }
@@ -97,7 +106,7 @@ export interface ChatNotification {
   sender_username: string;
   sender_profile_picture: string;
   group_name: string;
-  message: Message;
+  message: LastMessage;
   is_group: boolean;
   room_name: string;
   event: ChatEvent;
@@ -105,7 +114,9 @@ export interface ChatNotification {
 
 export interface CallNotification {
   type: "call_notification";
-  caller: string;
+  caller_username: string;
+  caller_profile_picture: string;
+  call_id: string;
   room_name: string;
   is_video: boolean;
   is_group: boolean;
@@ -149,7 +160,7 @@ export interface PaginatedResponse<Type> {
 interface ChatRoom {
   id: number;
   name: string;
-  last_message: Message | null;
+  last_message: LastMessage | null;
   unread_message_count: number;
   created_at: string;
 }
@@ -167,3 +178,39 @@ export interface GroupChatRoom extends ChatRoom {
 }
 
 export type TypingUsers = string[];
+export type SignupResponse = { user: CurrentUser; avatar_upload_link: string };
+export type GroupCreateResponse = Group & { avatar_upload_link: string };
+export const isSignupResponseData = (data: unknown): data is SignupResponse => {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    "user" in data &&
+    "avatar_upload_link" in data
+  );
+};
+
+export const isGroupCreateResponseData = (
+  data: unknown
+): data is GroupCreateResponse => {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    "id" in data &&
+    "avatar_upload_link" in data
+  );
+};
+
+export interface CallAccessToken {
+  room_url: string;
+  token: string;
+}
+
+export interface RoomMetadata {
+  is_video_call: boolean;
+  host_id: number;
+  is_group: boolean;
+}
+
+export interface ParticipantMetaData extends Friend {
+  role: string;
+}

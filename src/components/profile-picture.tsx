@@ -15,7 +15,7 @@ const ProfilePicture = ({ ownerName, className, ...imageProps }: Props) => {
 
   return (
     <Image
-      className={cn("rounded-full object-cover", className)}
+      className={cn("rounded-full object-cover shadow-md", className)}
       alt={`${ownerName} profile picture`}
       placeholder="blur"
       blurDataURL="/default.webp"

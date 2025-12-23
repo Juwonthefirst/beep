@@ -1,4 +1,5 @@
-import { Play } from "lucide-react";
+import { Play, X } from "lucide-react";
+import { motion } from "motion/react";
 import Image from "next/image";
 import { useMemo } from "react";
 
@@ -14,16 +15,24 @@ const AttachmentPreview = ({ attachment, onRemove }: Props) => {
   );
 
   return (
-    <div className="w-18 h-18 rounded-md relative overflow-hidden shrink-0 shadow-md">
+    <motion.div
+      layout
+      className="w-18 h-18 rounded-md relative overflow-hidden shrink-0 shadow-md"
+    >
       <button
-        className="absolute top-0 right-0 w-4 h-4 font-semibold bg-white rounded-full text-black z-10 text-xs shadow-ld"
+        className="absolute top-0 right-0 p-0.5 bg-white rounded-full text-black z-10 shadow-lg"
         type="button"
         onClick={onRemove}
       >
-        X
+        <X size={14} strokeWidth={2.5} />
       </button>
       {attachment.type.startsWith("image/") ? (
-        <Image src={previewURL} alt="attachment preview" fill />
+        <Image
+          src={previewURL}
+          alt="attachment preview"
+          fill
+          className="object-cover"
+        />
       ) : attachment.type.startsWith("video/") ? (
         <div className="w-full h-full relative flex items-center justify-center">
           <Play className="opacity-70 text-white fill-white shadow-md" />
@@ -36,7 +45,7 @@ const AttachmentPreview = ({ attachment, onRemove }: Props) => {
       ) : (
         <div className="bg-theme/50 w-full h-full"></div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

@@ -7,13 +7,13 @@ import type { ReactNode } from "react";
 interface Props {
   children: ReactNode;
 }
-const queryclient = new QueryClient();
+export const queryclient = new QueryClient();
 
 const QueryProvider = ({ children }: Props) => {
   return (
     <QueryClientProvider client={queryclient}>
       {children}
-      {/* <ReactQueryDevtools /> */}
+      <ReactQueryDevtools />
     </QueryClientProvider>
   );
 };

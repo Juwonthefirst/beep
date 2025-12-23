@@ -25,7 +25,7 @@ const MessageGroup = ({
       {hasDateHeader && (
         <p className="mb-6 mt-8 text-xs text-center opacity-70">
           {parseDateString({
-            dateString: messages.at(-1)?.timestamp || "",
+            dateString: messages.at(-1)?.created_at || "",
             fullDate: true,
           })}
         </p>

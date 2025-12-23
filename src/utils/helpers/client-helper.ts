@@ -29,23 +29,8 @@ export const withRetry = async <Type>({
       }
     }
     await delay(Math.min(retryTimeout, 10 * 1000));
-    retryTimeout *= 1.5;
+    retryTimeout *= 2;
   }
-};
-
-export const createMediaURL = (
-  type: "attachment" | "profile-picture" | "group-avatar",
-  id: string
-) => {
-  if (type === "attachment") return `/uploads/attachment/` + id;
-  const extension = ".webp";
-  const mediaURL = process.env.NEXT_PUBLIC_MEDIA_URL;
-  const path =
-    type === "profile-picture"
-      ? "/uploads/profile-picture/"
-      : "/uploads/group-avatar/";
-
-  return mediaURL + path + id + extension;
 };
 
 export const watchElementIntersecting = (
@@ -133,7 +118,7 @@ export const createMessageGroups = (messages: Message[]) => {
   let lastTime: number | undefined;
   const timeDifferenceLimit = 60 * 30 * 1000;
   messages.forEach((message) => {
-    const messageTimeInSeconds = new Date(message.timestamp).getTime();
+    const messageTimeInSeconds = new Date(message.created_at).getTime();
     const hasSurpassedTimeDifference =
       !lastTime || lastTime - messageTimeInSeconds > timeDifferenceLimit;
 
@@ -155,6 +140,14 @@ export const createMessageGroups = (messages: Message[]) => {
   return groups;
 };
 
-export const uploadFileToStorage = async (file: File) => {
-  const response = axios.get("/api/upload/");
+export const uploadFileToUrl = async (file: File, uploadURL: string) => {
+  return await withRetry({
+    func: async () => {
+      return await axios.put(uploadURL, file, {
+        headers: { "Content-Type": file.type },
+      });
+    },
+  });
 };
+
+export const muteTrack = () => {};

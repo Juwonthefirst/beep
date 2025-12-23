@@ -38,6 +38,7 @@ class Socket {
   private getAccessToken: GetAccessToken;
   protected connectionState: WebSocketConnectionState;
   onConnected: (() => void) | null;
+  protected onSocketEvent: ((event: MessageEvent) => void) | null;
   onConnectionStateChange?:
     | ((connectionState: WebSocketConnectionState) => void)
     | null;
@@ -54,6 +55,7 @@ class Socket {
     this.onConnected = null;
     this.getAccessToken = getAccessToken;
     this.onConnectionStateChange = null;
+    this.onSocketEvent = null;
     this.updateConnectionState = (
       connectionState: WebSocketConnectionState
     ) => {
@@ -81,6 +83,7 @@ class Socket {
               this.updateConnectionState(successState);
               resolve();
             };
+            this.socket.onmessage = (event) => this.onSocketEvent?.(event);
             this.handleClose(resolve, reject);
             this.handleError(reject);
           });
@@ -201,9 +204,12 @@ export class ChatSocket extends Socket {
     return uuid;
   }
 
+  declineCall(call_id: string) {
+    return this.send({ action: "call_decline", call_id });
+  }
+
   private listenForMessages() {
-    if (!this.socket) return;
-    this.socket.onmessage = (event) => {
+    this.onSocketEvent = (event) => {
       const data: ChatSocketTyping | ChatSocketMessage = JSON.parse(event.data);
       if (data.room_name !== this.currentRoom) return;
       if ("typing" in data) return this.onTyping?.(data.sender_username);
@@ -232,8 +238,7 @@ export class NotificationSocket extends Socket {
   }
 
   listenForNotifications() {
-    if (!this.socket) return;
-    this.socket.onmessage = (event) => {
+    this.onSocketEvent = (event) => {
       const data: NotificationMessage = JSON.parse(event.data);
       switch (data.type) {
         case "chat_notification":
@@ -251,7 +256,6 @@ export class NotificationSocket extends Socket {
   }
 
   stopListeningForNotifications() {
-    if (!this.socket) return;
-    this.socket.onmessage = null;
+    this.onSocketEvent = null;
   }
 }

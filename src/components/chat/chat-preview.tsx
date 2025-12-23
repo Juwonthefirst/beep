@@ -46,11 +46,11 @@ const ChatPreview = ({
       href={`/chat/${name}`}
       ref={ref}
       className={cn(
-        "hover:bg-black/3 p-2 rounded-lg  flex items-center gap-3",
+        "hover:bg-black/3 p-2 rounded-lg  flex items-center gap-3 transition-all duration-200",
         { "bg-black/5!": isCurrentRoom }
       )}
     >
-      <div className="relative w-13 h-13 shrink-0 rounded-full shadow-md object-cover">
+      <div className="relative size-13 rounded-full shrink-0">
         <ProfilePicture
           ownerName={chatParentName}
           src={chatAvatar}
@@ -69,7 +69,9 @@ const ChatPreview = ({
               })}
             >
               {parseDateString({
-                dateString: !last_message ? created_at : last_message.timestamp,
+                dateString: !last_message
+                  ? created_at
+                  : last_message.created_at,
               })}
             </p>
           }
@@ -79,7 +81,7 @@ const ChatPreview = ({
             {!last_message
               ? `Start a chat with ${chatParentName}`
               : is_group
-              ? `${last_message.sender}: ${last_message.body}`
+              ? `${last_message.sender_username}:  ${last_message.body}`
               : last_message.body}
           </p>
           {unread_message_count > 0 && (

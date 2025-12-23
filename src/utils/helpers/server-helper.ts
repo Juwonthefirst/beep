@@ -88,7 +88,7 @@ export const stringifyResponseErrorStatusCode = (
 ) => {
   switch (status) {
     case 400:
-      return data?.error || "";
+      return data?.error || "Something went wrong, try again later";
     case 401:
       return "You are not authenticated";
     case 403:

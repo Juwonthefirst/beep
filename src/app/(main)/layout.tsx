@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import Notifications from "@/components/notifications/notifications-display";
 import ChatSocketProvider from "@/components/providers/chat-socket.provider";
+import CallProvider from "@/components/providers/call-provider";
 
 const MainLayout = async ({
   children,
@@ -14,9 +15,11 @@ const MainLayout = async ({
     redirect("/login");
   }
   return (
-    <ChatSocketProvider>
-      <Notifications>{children}</Notifications>
-    </ChatSocketProvider>
+    <CallProvider>
+      <ChatSocketProvider>
+        <Notifications>{children}</Notifications>
+      </ChatSocketProvider>
+    </CallProvider>
   );
 };
 

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import FileUpload from "@/components/form/file-upload";
 import AuthForm, { FormError } from "@/components/form/form";
@@ -15,6 +15,8 @@ import type {
 } from "@/utils/types/client.type";
 import SubmitBtn from "@/components/form/submit-btn";
 import { Camera } from "lucide-react";
+import { isSignupResponseData } from "@/utils/types/server-response.type";
+import { uploadFileToUrl } from "@/utils/helpers/client-helper";
 
 interface Props {
   isGoogleLogin?: boolean;
@@ -30,10 +32,11 @@ const SignupStep4 = ({
 }: Omit<SignupStepsProps, "onSuccess"> & Props) => {
   const [usernameValidationState, setUsernameValidationState] =
     useState<ValidationState>("idle");
-  const [profilePicturePreview, setProfilePicturePreview] = useState<
-    string | null
-  >(null);
-
+  const [profilePicture, setProfilePicture] = useState<File | null>(null);
+  const profilePicturePreview = useMemo(
+    () => profilePicture && URL.createObjectURL(profilePicture),
+    [profilePicture]
+  );
   return (
     <section className="mt-18 mx-auto">
       <div className="flex flex-col gap-1 items-center text-sm text-center">
@@ -57,9 +60,17 @@ const SignupStep4 = ({
 
       <AuthForm
         className="mt-6 items-center px-0 gap-4"
-        action={signup}
-        onSubmit={() => {
-          setProfilePicturePreview(null);
+        action={async (prevState, formData) => {
+          const response = await signup(prevState, formData);
+          if (
+            response.status === "success" &&
+            isSignupResponseData(response.data) &&
+            profilePicture
+          ) {
+            alert("Uploading profile picture");
+            uploadFileToUrl(profilePicture, response.data.avatar_upload_link);
+          }
+          return response;
         }}
       >
         <section className="mb-2">
@@ -67,18 +78,13 @@ const SignupStep4 = ({
             Upload your profile picture:
           </h2>
           <FileUpload
-            name="profile_picture"
             accept="image/*"
             className="relative w-44 h-44 mx-auto"
             inputClassName="block p-2 bg-white text-black shadow-md rounded-full w-fit h-fit cursor-pointer hover:bg-neutral-200 transition-colors absolute bottom-1 right-1 z-10 border border-black/20"
             labelChildren={
               <Camera color="#000000" strokeWidth={2.5} size={24} />
             }
-            onUpload={(files) =>
-              setProfilePicturePreview(
-                files && files[0] ? URL.createObjectURL(files[0]) : ""
-              )
-            }
+            onUpload={(files) => setProfilePicture(files && files[0])}
           >
             <Image
               src={profilePicturePreview || "/default.webp"}
@@ -98,7 +104,7 @@ const SignupStep4 = ({
         <PasswordField
           fieldClassName="hidden"
           name="password"
-          required={!isGoogleLogin}
+          required={false}
           value={password}
         />
 
