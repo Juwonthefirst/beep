@@ -61,15 +61,7 @@ const MessageCard = ({
         "self-end ": sentByMe,
       })}
     >
-      {reply_to && (
-        <ReplyToMessageCard
-          {...reply_to}
-          sentByMe={
-            (sentByMe && sender === reply_to.sender) ||
-            (!sentByMe && sender !== reply_to.sender)
-          }
-        />
-      )}
+      {reply_to && <ReplyToMessageCard {...reply_to} sentByMe={} />}
 
       <div
         className={cn("flex flex-col px-3 py-1.5 w-fit text-left", {

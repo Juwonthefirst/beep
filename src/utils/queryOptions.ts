@@ -17,7 +17,6 @@ import {
   UserChatRoom,
 } from "./types/server-response.type";
 import { addGroupMembers } from "./actions";
-import { redirect } from "next/navigation";
 
 const api = axios.create({
   timeout: 5000,
