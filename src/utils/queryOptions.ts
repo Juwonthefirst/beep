@@ -100,28 +100,29 @@ export const chatQueryOption = (roomName: string) =>
   });
 
 export const messageQueryOption = (roomName: string) =>
-  cursorPaginationQueryOption({
+  cursorPaginationQueryOption<Message>({
     queryKey: ["chats", roomName, "messages"],
     path: `/api/chats/${roomName}/messages`,
   });
 
-export const friendsQueryOption = infiniteQueryOptions({
-  queryKey: ["friends"],
-  queryFn: ({ pageParam }) =>
-    api
-      .get<PaginatedResponse<Friend>>(
-        `/api/auth/user/friends?page=${pageParam}`
-      )
+export const friendsQueryOption = (searchKeyword: string) =>
+  infiniteQueryOptions({
+    queryKey: ["friends", searchKeyword],
+    queryFn: ({ pageParam }) =>
+      api
+        .get<PaginatedResponse<Friend>>(
+          `/api/auth/user/friends?page=${pageParam}&search=${searchKeyword}`
+        )
 
-      .then((res) => res.data),
-  getNextPageParam: (lastPage) => {
-    if (lastPage.next) {
-      const nextPageUrl = new URL(lastPage.next);
-      return nextPageUrl.searchParams.get("page") || "1";
-    }
-  },
-  initialPageParam: "1",
-});
+        .then((res) => res.data),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.next) {
+        const nextPageUrl = new URL(lastPage.next);
+        return nextPageUrl.searchParams.get("page") || "1";
+      }
+    },
+    initialPageParam: "1",
+  });
 
 export const addMemberMutationOption = mutationOptions({
   mutationFn: ({
@@ -137,6 +138,5 @@ export const addMemberMutationOption = mutationOptions({
     context.client.invalidateQueries({
       queryKey: ["chats", variables.groupId],
     });
-    redirect(`/chats/${variables.roomName}`);
   },
 });

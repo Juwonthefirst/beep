@@ -7,21 +7,28 @@ import { cn } from "@/lib/utils";
 
 interface Props {
   disabled?: boolean;
+  isSubmitting?: boolean;
   children: ReactNode;
 }
 
-const SubmitBtn = ({ disabled = false, children }: Props) => {
-  const { isSubmitting, isDisabled: formDisabled } = use(FormContext);
+const SubmitBtn = ({ disabled = false, isSubmitting, children }: Props) => {
+  const { isSubmitting: isFormSubmitting, isDisabled: isFormDisabled } =
+    use(FormContext);
+
   return (
     <button
       className={cn(
         "bg-black rounded-md text-white px-3 py-1.5 flex flex-col items-center disabled:opacity-70 disabled:cursor-not-allowed w-full",
-        { "cursor-wait!": isSubmitting }
+        { "cursor-wait!": isSubmitting || isFormSubmitting }
       )}
       type="submit"
-      disabled={disabled || formDisabled}
+      disabled={disabled || isFormDisabled}
     >
-      {isSubmitting ? <LoaderCircle className="animate-spin" /> : children}
+      {isSubmitting || isFormSubmitting ? (
+        <LoaderCircle className="animate-spin" />
+      ) : (
+        children
+      )}
     </button>
   );
 };

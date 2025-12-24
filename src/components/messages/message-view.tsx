@@ -63,15 +63,15 @@ const MessaageView = () => {
   return (
     <div
       ref={messageViewRef}
-      className="flex-1 flex flex-col-reverse gap-6 py-4 px-4 md:px-8 overflow-y-auto shrink-0"
+      className="flex-1 flex flex-col-reverse gap-6 py-4 px-4 md:px-8 overflow-y-auto"
     >
       <TypingIndicator />
       {messageGroups.map((messageGroup, index) => {
         const isSentByMe = currentUser.id === messageGroup.userId;
         const sender_details = chatDetails.is_group
           ? chatDetails.group.mappedMembers.get(messageGroup.userId)
-          : { username: isSentByMe ? "You" : chatDetails.friend.username };
-        if (!sender_details) return null;
+          : null;
+        if (sender_details === undefined) return null;
 
         return (
           <MessageGroup

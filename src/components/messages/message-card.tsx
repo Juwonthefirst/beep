@@ -4,10 +4,10 @@ import { Reply } from "lucide-react";
 import Attachment from "./attachment";
 import { RefObject } from "react";
 
-type ReplyMessageCardProps = ReplyMessage & {
+interface ReplyMessageCardProps extends ReplyMessage {
   ref?: RefObject<HTMLDivElement | null>;
   sentByMe: boolean;
-};
+}
 
 interface MessageCardProps extends Message {
   ref?: RefObject<HTMLDivElement | null>;
@@ -31,7 +31,7 @@ const ReplyToMessageCard = ({
             {...attachment}
             message_id={String(id)}
             className="min-w-9 min-h-9 rounded-sm overflow-hidden"
-            imageSizes="64px"
+            imageSizes="72px"
           />
         )}
         <div className={cn("flex flex-col text-xs py-1 px-2")}>

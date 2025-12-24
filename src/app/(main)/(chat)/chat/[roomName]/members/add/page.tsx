@@ -1,18 +1,23 @@
 "use client";
+
+import { FormDescription } from "@/components/form/form-sematics";
+import SubmitBtn from "@/components/form/submit-btn";
 import ProfilePicture from "@/components/profile-picture";
 import SearchBar from "@/components/search-bar";
 import { cn } from "@/lib/utils";
+import { watchElementIntersecting } from "@/utils/helpers/client-helper";
 import {
   addMemberMutationOption,
   chatQueryOption,
   friendsQueryOption,
 } from "@/utils/queryOptions";
-import { Friend } from "@/utils/types/server-response.type";
+import { ErrorResponse, Friend } from "@/utils/types/server-response.type";
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
 import { Check, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { usePathname } from "next/navigation";
-import { useMemo, useState } from "react";
+import { redirect, usePathname } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const SelectedUser = (props: Friend & { onClick: () => void }) => {
   return (
@@ -41,27 +46,67 @@ const SelectedUser = (props: Friend & { onClick: () => void }) => {
 
 const Page = () => {
   const roomName = usePathname().split("/")[2];
-  const { mutate, error, isPending } = useMutation(addMemberMutationOption);
-  const friendQuery = useInfiniteQuery(friendsQueryOption);
-  const roomQuery = useQuery(chatQueryOption(roomName));
-  const [selectedUsersId, setSelectedUsersId] = useState<number[]>([2, 4]);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [selectedUsersId, setSelectedUsersId] = useState<number[]>([]);
+
+  const { mutate, error, isPending, isSuccess } = useMutation(
+    addMemberMutationOption
+  );
+
+  const {
+    data: friendQueryData,
+    error: friendQueryError,
+    isPending: isFriendQueryPending,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery(friendsQueryOption(searchKeyword));
+  const {
+    data: roomQueryData,
+    error: roomQueryError,
+    isPending: isRoomQueryPending,
+  } = useQuery(chatQueryOption(roomName));
   const friends = useMemo(() => {
     const friendsMap = new Map<number, Friend>();
 
-    friendQuery.data?.pages.forEach((response) =>
+    friendQueryData?.pages.forEach((response) =>
       response.results.forEach((friend) => friendsMap.set(friend.id, friend))
     );
     return friendsMap;
-  }, [friendQuery.data?.pages]);
+  }, [friendQueryData?.pages]);
+  const intersectingElement = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    if (isFetchingNextPage || !hasNextPage || isFriendQueryPending) return;
+
+    const observer = watchElementIntersecting(
+      intersectingElement.current,
+      () => {
+        fetchNextPage();
+      }
+    );
+    return () => observer?.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage, isFriendQueryPending]);
+
+  if (isSuccess && roomQueryData) redirect(`/chat/${roomQueryData.name}`);
+
+  const LIMIT = 5;
+
+  if (!roomQueryData?.is_group) return <p>Invalid room</p>;
 
   return (
     <form
       onSubmit={(event) => {
         event.preventDefault();
+        mutate({
+          roomName: roomQueryData.name,
+          groupId: roomQueryData.group.id,
+          memberIds: selectedUsersId,
+        });
       }}
-      className="px-4 py-2 flex flex-col gap-4 flex-1"
+      className="p-4 flex flex-col gap-4 flex-1"
     >
-      <SearchBar />
+      <SearchBar setSearchKeyword={setSearchKeyword} />
       <AnimatePresence>
         {selectedUsersId.length > 0 && (
           <motion.div
@@ -73,7 +118,7 @@ const Page = () => {
             key="selected-users-view"
             className="flex p-1 gap-2"
           >
-            {selectedUsersId.values().map((userId) => {
+            {selectedUsersId.map((userId) => {
               const friend = friends.get(userId);
               if (friend)
                 return (
@@ -93,13 +138,28 @@ const Page = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      <section className="flex flex-col gap-2 p-4 max-w-md">
-        <h2 className="text-xl font-semibold -ml-4 mb-2">Friends</h2>
-        {friends.values().map((friend) => {
-          if (roomQuery.data?.group?.mappedMembers.has(friend.id)) return;
+      {error && (
+        <p className="text-xs text-red-500">
+          {isAxiosError<ErrorResponse>(error)
+            ? error.response?.data.error
+            : error.message}
+        </p>
+      )}
+      <section className="flex flex-col gap-2 p-4 max-w-md flex-1 overflow-y-auto">
+        <div className="mb-3">
+          <h2 className="text-xl font-semibold -ml-4 ">Friends</h2>
+          <FormDescription>Select friends to add to</FormDescription>
+          <span className="text-sm">{" " + roomQueryData.group.name}</span>
+        </div>
+
+        {Array.from(friends.values()).map((friend, index) => {
+          if (roomQueryData?.group?.mappedMembers.has(friend.id)) return;
           const isSelected = selectedUsersId.includes(friend.id);
           return (
             <button
+              ref={
+                friends.size - LIMIT - 1 === index ? intersectingElement : null
+              }
               onClick={() => {
                 if (selectedUsersId.includes(friend.id))
                   return setSelectedUsersId(
@@ -134,6 +194,12 @@ const Page = () => {
           );
         })}
       </section>
+      <SubmitBtn
+        disabled={isPending || selectedUsersId.length <= 0}
+        isSubmitting={isPending}
+      >
+        Add
+      </SubmitBtn>
     </form>
   );
 };

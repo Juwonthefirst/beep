@@ -42,7 +42,7 @@ export interface Group {
 export interface GroupMember {
   id: number;
   username: string;
-  role: string;
+  role: string | null;
   profile_picture: string;
 }
 
@@ -53,7 +53,7 @@ export interface Message {
   attachment: Attachment | null;
   created_at: string;
   sender: number;
-  reply_to: Message | null;
+  reply_to: ReplyMessage | null;
   room: number;
   is_deleted: boolean;
   is_edited: boolean;
@@ -61,7 +61,7 @@ export interface Message {
 
 export type ReplyMessage = Omit<
   Message,
-  "uuid" | "reply_to" | "created_at" | "is_edited" | "room"
+  "uuid" | "reply_to" | "created_at" | "is_edited" | "room" | "sender"
 > & { sender: string };
 
 export type LastMessage = Message & { sender_username: string };

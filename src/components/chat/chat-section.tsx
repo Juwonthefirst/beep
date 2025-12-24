@@ -4,6 +4,8 @@ import SearchBar from "../search-bar";
 import ChatList from "./chat-list";
 import { MobileNavBar } from "../navbar/nav-bar";
 import Menu from "../menu";
+import Link from "next/link";
+import { Users } from "lucide-react";
 
 const ChatSection = ({ className }: { className?: string }) => {
   return (
@@ -11,7 +13,12 @@ const ChatSection = ({ className }: { className?: string }) => {
       <div className="flex flex-col gap-3 mb-6">
         <div className="flex justify-between items-center">
           <Logo className="self-start ml-2" />
-          <Menu />
+          <Menu>
+            <Link className="flex gap-2 items-center" href="/chat/group">
+              <Users className="text-theme " size={20} />
+              <p>Create group</p>
+            </Link>
+          </Menu>
         </div>
         <SearchBar />
       </div>

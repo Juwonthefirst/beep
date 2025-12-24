@@ -9,9 +9,11 @@ import { CallerInfo } from "@/utils/types/client.type";
 const CallButtons = ({
   iconSize,
   callerInfo,
+  className,
 }: {
   iconSize: number;
   callerInfo: CallerInfo;
+  className?: string;
 }) => {
   const callControls = use(CallControlsContext);
   const roomName = use(CurrentRoomNameContext);
@@ -19,6 +21,7 @@ const CallButtons = ({
   return (
     <>
       <button
+        className={className}
         disabled={callControls?.isInCall}
         onClick={() =>
           callControls?.setCurrentCallState({
@@ -33,6 +36,7 @@ const CallButtons = ({
         <Phone size={iconSize} />
       </button>
       <button
+        className={className}
         disabled={callControls?.isInCall}
         onClick={() =>
           callControls?.setCurrentCallState({

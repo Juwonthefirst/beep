@@ -15,6 +15,8 @@ import {
 import { use, useMemo } from "react";
 import CallButtons from "../call/call-buttons";
 import { CallerInfo } from "@/utils/types/client.type";
+import Menu from "../menu";
+import Link from "next/link";
 
 const extraIconsSize = 22;
 
@@ -99,11 +101,17 @@ const ChatHeader = () => {
         </div>
       )}
 
-      <div className="flex ml-auto gap-3 md:gap-4 lg:gap-6 items-center *:p-2 *:hover:bg-theme/5 *:hover:text-theme *:rounded-full *:hover:scale-110 *:transition-all">
-        <CallButtons callerInfo={callerInfo} iconSize={extraIconsSize} />
-        <button>
-          <EllipsisVertical size={extraIconsSize} />
-        </button>
+      <div className="flex ml-auto gap-3 md:gap-4 lg:gap-6 items-center">
+        <CallButtons
+          className="p-2 hover:bg-theme/5 hover:text-theme rounded-full hover:scale-110 transition-all"
+          callerInfo={callerInfo}
+          iconSize={extraIconsSize}
+        />
+        <Menu>
+          {data.is_group && (
+            <Link href={`/chat/${data.name}/members/add`}>Add members</Link>
+          )}
+        </Menu>
       </div>
     </header>
   );

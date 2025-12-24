@@ -1,16 +1,18 @@
 "use client";
 
-import { EllipsisVertical, Users } from "lucide-react";
+import { EllipsisVertical } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import Link from "next/link";
 import { useState } from "react";
 
-const Menu = () => {
+const Menu = ({ children }: { children: React.ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="relative mr-2">
-      <button onClick={() => setIsOpen(!isOpen)}>
+      <button
+        className="p-2 hover:bg-theme/5 hover:text-theme rounded-full hover:scale-110 transition-all"
+        onClick={() => setIsOpen(!isOpen)}
+      >
         <EllipsisVertical />
       </button>
       <AnimatePresence>
@@ -23,10 +25,7 @@ const Menu = () => {
             transition={{ duration: 0.15 }}
             className="md:text-sm absolute top-8 right-2 z-50 bg-neutral-50 border border-black/5 px-2 py-1 rounded-lg flex flex-col shadow-lg *:whitespace-nowrap *:p-2 *:rounded-md *:hover:bg-black/5"
           >
-            <Link className="flex gap-2 items-center" href="/chat/group">
-              <Users className="text-theme " size={20} />
-              <p>Create group</p>
-            </Link>
+            {children}
           </motion.div>
         )}
       </AnimatePresence>
