@@ -43,7 +43,13 @@ const MessageGroup = ({
             />
           </div>
         )}
+
         <div className="flex flex-col-reverse gap-0.5 flex-1">
+          {!sentByMe && isGroupMessage && sender_detail && (
+            <p className={cn("text-xs font-medium my-2 ")}>
+              {sender_detail.username}
+            </p>
+          )}
           {messages.map((message, index) => (
             <MessageCard
               key={message.uuid}
@@ -60,11 +66,6 @@ const MessageGroup = ({
           ))}
         </div>
       </div>
-      {!sentByMe && isGroupMessage && sender_detail && (
-        <p className={cn("text-xs font-medium my-2 ")}>
-          @ {sender_detail.username}
-        </p>
-      )}
     </div>
   );
 };

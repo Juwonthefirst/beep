@@ -2,12 +2,7 @@ import { cn } from "@/lib/utils";
 import type { Message, ReplyMessage } from "@/utils/types/server-response.type";
 import { Reply } from "lucide-react";
 import Attachment from "./attachment";
-import { RefObject } from "react";
-
-interface ReplyMessageCardProps extends ReplyMessage {
-  ref?: RefObject<HTMLDivElement | null>;
-  sentByMe: boolean;
-}
+import { type RefObject } from "react";
 
 interface MessageCardProps extends Message {
   ref?: RefObject<HTMLDivElement | null>;
@@ -16,12 +11,7 @@ interface MessageCardProps extends Message {
   isLast: boolean;
 }
 
-const ReplyToMessageCard = ({
-  id,
-  body,
-  attachment,
-  sender,
-}: ReplyMessageCardProps) => {
+const ReplyToMessageCard = ({ id, body, attachment, sender }: ReplyMessage) => {
   return (
     <div className="flex gap-2 items-center w-fit mb-1 mt-2">
       <Reply size={18} className="rotate-y-180" />
@@ -47,7 +37,6 @@ const MessageCard = ({
   id,
   ref,
   body,
-  sender,
   reply_to,
   attachment,
   sentByMe,
@@ -61,7 +50,7 @@ const MessageCard = ({
         "self-end ": sentByMe,
       })}
     >
-      {reply_to && <ReplyToMessageCard {...reply_to} sentByMe={} />}
+      {reply_to && <ReplyToMessageCard {...reply_to} />}
 
       <div
         className={cn("flex flex-col px-3 py-1.5 w-fit text-left", {

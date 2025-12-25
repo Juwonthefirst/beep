@@ -44,6 +44,7 @@ export interface GroupMember {
   username: string;
   role: string | null;
   profile_picture: string;
+  hex_color: string;
 }
 
 export interface Message {

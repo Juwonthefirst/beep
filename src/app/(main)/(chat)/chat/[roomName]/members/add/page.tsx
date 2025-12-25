@@ -16,7 +16,7 @@ import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { Check, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { redirect, usePathname } from "next/navigation";
+import { redirect, useParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 const SelectedUser = (props: Friend & { onClick: () => void }) => {
@@ -45,7 +45,7 @@ const SelectedUser = (props: Friend & { onClick: () => void }) => {
 };
 
 const Page = () => {
-  const roomName = usePathname().split("/")[2];
+  const { roomName } = useParams();
   const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedUsersId, setSelectedUsersId] = useState<number[]>([]);
 
@@ -65,7 +65,7 @@ const Page = () => {
     data: roomQueryData,
     error: roomQueryError,
     isPending: isRoomQueryPending,
-  } = useQuery(chatQueryOption(roomName));
+  } = useQuery(chatQueryOption(roomName as string));
   const friends = useMemo(() => {
     const friendsMap = new Map<number, Friend>();
 

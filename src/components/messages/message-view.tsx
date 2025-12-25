@@ -20,7 +20,6 @@ import {
 import MessageGroup from "./message-group";
 import TypingIndicator from "./typing-indicator";
 import { CurrentRoomNameContext } from "../providers/chatroom-state.provider";
-import CurrentUserIdProvider from "../providers/current-user-id.provider";
 
 const MessaageView = () => {
   const roomName = use(CurrentRoomNameContext);
@@ -67,30 +66,28 @@ const MessaageView = () => {
       className="flex-1 flex flex-col-reverse gap-6 py-4 px-4 md:px-8 overflow-y-auto"
     >
       <TypingIndicator />
-      <CurrentUserIdProvider value={currentUser.id}>
-        {messageGroups.map((messageGroup, index) => {
-          const isSentByMe = currentUser.id === messageGroup.userId;
-          const sender_details = chatDetails.is_group
-            ? chatDetails.group.mappedMembers.get(messageGroup.userId)
-            : null;
-          if (sender_details === undefined) return null;
+      {messageGroups.map((messageGroup, index) => {
+        const isSentByMe = currentUser.id === messageGroup.userId;
+        const sender_details = chatDetails.is_group
+          ? chatDetails.group.mappedMembers.get(messageGroup.userId)
+          : null;
+        if (sender_details === undefined) return null;
 
-          return (
-            <MessageGroup
-              key={messageGroup.messages[0].uuid}
-              intersectionRef={
-                index === messageGroups.length - 1
-                  ? intersectingElement
-                  : undefined
-              }
-              {...messageGroup}
-              sentByMe={isSentByMe}
-              sender_detail={sender_details}
-              isGroupMessage={chatDetails.is_group}
-            />
-          );
-        })}
-      </CurrentUserIdProvider>
+        return (
+          <MessageGroup
+            key={messageGroup.messages[0].uuid}
+            intersectionRef={
+              index === messageGroups.length - 1
+                ? intersectingElement
+                : undefined
+            }
+            {...messageGroup}
+            sentByMe={isSentByMe}
+            sender_detail={sender_details}
+            isGroupMessage={chatDetails.is_group}
+          />
+        );
+      })}
       {isFetchingNextPage && (
         <MessageLoading className="my-4 flex justify-center w-full" />
       )}
