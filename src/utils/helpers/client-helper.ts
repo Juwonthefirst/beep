@@ -1,5 +1,3 @@
-import "client-only";
-
 import type { Message, PaginatedResponse } from "../types/server-response.type";
 import type { MessageGroup } from "../types/client.type";
 import axios from "axios";
@@ -149,5 +147,22 @@ export const uploadFileToUrl = async (file: File, uploadURL: string) => {
     },
   });
 };
-
-export const muteTrack = () => {};
+export const stringifyResponseErrorStatusCode = (
+  status: number,
+  error?: string
+) => {
+  switch (status) {
+    case 400:
+      return error || "Something went wrong, try again later";
+    case 401:
+      return "You are not authenticated";
+    case 403:
+      return "You are not allowed here";
+    case 500:
+      return "Something went wrong at our end";
+    case 600:
+      return "Unable to connect to our server";
+    default:
+      return "Something went wrong, try again later";
+  }
+};

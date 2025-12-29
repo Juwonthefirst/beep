@@ -45,6 +45,7 @@ export interface GroupMember {
   role: string | null;
   profile_picture: string;
   hex_color: string;
+  role_hex: string;
 }
 
 export interface Message {
@@ -85,7 +86,7 @@ export interface ErrorResponse {
 export type AuthResponse = ErrorResponse | AuthSuccessResponse;
 export type UsernameExist = { exists: boolean } | ErrorResponse;
 
-export type FormResponse<ReturnType = unknown> =
+export type ServerResponse<ReturnType = unknown> =
   | { status: "success"; data: ReturnType }
   | { status: "error"; error: string }
   | { status: "idle" };

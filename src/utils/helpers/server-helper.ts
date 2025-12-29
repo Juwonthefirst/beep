@@ -81,23 +81,3 @@ export const getORfetchAccessToken = async () => {
   if (responseCookies)
     return SetCookie.parse(responseCookies, { map: true }).access_token.value;
 };
-
-export const stringifyResponseErrorStatusCode = (
-  status: number,
-  data: ErrorResponse | undefined
-) => {
-  switch (status) {
-    case 400:
-      return data?.error || "Something went wrong, try again later";
-    case 401:
-      return "You are not authenticated";
-    case 403:
-      return "You are not allowed here";
-    case 500:
-      return "Something went wrong at our end";
-    case 600:
-      return "Unable to connect to our server";
-    default:
-      return "Something went wrong, try again later";
-  }
-};

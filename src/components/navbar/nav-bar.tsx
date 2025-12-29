@@ -60,9 +60,9 @@ export const NavBar = ({ className }: { className?: string }) => {
         Friends
       </NavLink>
       <NavLink
-        href="/thoughts"
+        href="/calls"
         Icon={PhoneCall}
-        isCurrent={pathName.startsWith("/thoughts")}
+        isCurrent={pathName.startsWith("/calls")}
       >
         Thoughts
       </NavLink>
@@ -71,6 +71,12 @@ export const NavBar = ({ className }: { className?: string }) => {
   );
 };
 
-export const MobileNavBar = () => (
-  <NavBar className="md:hidden fixed bg-black/5 bottom-10 flex justify-between items-center self-center gap-4 w-9/10 max-w-sm backdrop-blur-sm backdrop-saturate-200 py-2 px-4 rounded-full *:text-black border border-black/10 /bg-black/3 *:data-[current=true]:text-theme" />
-);
+export const MobileNavBar = () => {
+  const pathName = usePathname();
+
+  return (
+    !pathName.startsWith("/chat") && (
+      <NavBar className="md:hidden fixed bg-black/5 bottom-10 flex justify-between items-center gap-4 w-9/10 max-w-sm backdrop-blur-sm backdrop-saturate-200 py-2 px-4 rounded-full *:text-black border border-black/10  *:data-[current=true]:text-theme" />
+    )
+  );
+};

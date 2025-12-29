@@ -11,7 +11,7 @@ const CallButtons = ({
   callerInfo,
   className,
 }: {
-  iconSize: number;
+  iconSize?: number;
   callerInfo: CallerInfo;
   className?: string;
 }) => {

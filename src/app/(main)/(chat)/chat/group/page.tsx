@@ -2,6 +2,8 @@
 import { Camera } from "lucide-react";
 import { useMemo, useState } from "react";
 import Image from "next/image";
+import { useQueryClient } from "@tanstack/react-query";
+import { redirect } from "next/navigation";
 
 import FileUpload from "@/components/form/file-upload";
 import Form, { FormError } from "@/components/form/form";
@@ -11,9 +13,7 @@ import SubmitBtn from "@/components/form/submit-btn";
 import { createGroup } from "@/utils/actions";
 import { uploadFileToUrl } from "@/utils/helpers/client-helper";
 import { isGroupCreateResponseData } from "@/utils/types/server-response.type";
-import { useQueryClient } from "@tanstack/react-query";
 import { chatListQueryOption } from "@/utils/queryOptions";
-import { redirect } from "next/navigation";
 
 const Page = () => {
   const [avatar, setAvatar] = useState<File | null>(null);
@@ -23,7 +23,7 @@ const Page = () => {
   );
   const queryClient = useQueryClient();
   return (
-    <section className="py-8 w-full h-dvh overflow-y-auto">
+    <section className="py-8 flex-1 h-dvh overflow-y-auto">
       <div className="flex flex-col gap-2 items-center  mb-8">
         <FormHeader className="text-2xl">Create a group</FormHeader>
         <FormDescription className="max-w-xs leading-5">
@@ -38,7 +38,7 @@ const Page = () => {
             queryKey: chatListQueryOption.queryKey,
             exact: true,
           });
-          redirect(`/chat/${data.room_name}`);
+          redirect(`/chat/${data.room_name}/members/add`);
         }}
         action={createGroup}
       >
@@ -67,6 +67,7 @@ const Page = () => {
         />
         <InputField
           label="Description"
+          maxLength={200}
           name="description"
           placeholder="Enter your group description"
           required={false}

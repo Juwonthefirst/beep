@@ -6,21 +6,19 @@ import type {
   AuthResponse,
   AuthSuccessResponse,
   CallAccessToken,
-  FormResponse,
+  ServerResponse,
   GroupCreateResponse,
   SignupResponse,
 } from "./types/server-response.type";
 import { request } from "./request-client";
-import {
-  getORfetchAccessToken,
-  stringifyResponseErrorStatusCode,
-} from "./helpers/server-helper";
+import { getORfetchAccessToken } from "./helpers/server-helper";
+import { stringifyResponseErrorStatusCode } from "./helpers/client-helper";
 import { CallState } from "./types/client.type";
 
 export const login = async (
   prevState: AuthResponse | undefined,
   formData: FormData
-): Promise<FormResponse> => {
+): Promise<ServerResponse> => {
   const identification = formData.get("identification");
   const password = formData.get("password");
 
@@ -41,7 +39,7 @@ export const login = async (
       status: "error",
       error: stringifyResponseErrorStatusCode(
         response.error?.status || 600,
-        response.error?.data
+        response.error?.data.error
       ),
     };
   }
@@ -51,7 +49,7 @@ export const login = async (
 export const getOtp = async (
   prevState: AuthResponse | undefined,
   formData: FormData
-): Promise<FormResponse> => {
+): Promise<ServerResponse> => {
   const email = formData.get("email");
   if (!email) return { status: "error", error: "Enter a valid email" };
   const response = await request<AuthSuccessResponse>({
@@ -67,7 +65,7 @@ export const getOtp = async (
       status: "error",
       error: stringifyResponseErrorStatusCode(
         response.error?.status || 600,
-        response.error?.data
+        response.error?.data.error
       ),
     };
   }
@@ -77,7 +75,7 @@ export const getOtp = async (
 export const verifyOtp = async (
   prevState: AuthResponse | undefined,
   formData: FormData
-): Promise<FormResponse> => {
+): Promise<ServerResponse> => {
   const cookieStore = await cookies();
 
   const otp = formData.get("otp");
@@ -101,7 +99,7 @@ export const verifyOtp = async (
       status: "error",
       error: stringifyResponseErrorStatusCode(
         response.error?.status || 600,
-        response.error?.data
+        response.error?.data.error
       ),
     };
   }
@@ -111,7 +109,7 @@ export const verifyOtp = async (
 export const signup = async (
   prevState: AuthResponse | undefined,
   formData: FormData
-): Promise<FormResponse> => {
+): Promise<ServerResponse> => {
   const cookieStore = await cookies();
 
   if (!formData.has("username"))
@@ -146,7 +144,7 @@ export const signup = async (
       status: "error",
       error: stringifyResponseErrorStatusCode(
         response.error?.status || 600,
-        response.error?.data
+        response.error?.data.error
       ),
     };
   }
@@ -164,7 +162,7 @@ export const googleAuthenicate = async (code: unknown) => {
     return {
       error: stringifyResponseErrorStatusCode(
         response.error?.status || 600,
-        response.error?.data
+        response.error?.data.error
       ),
     };
   }
@@ -177,9 +175,9 @@ export const getAccessToken = async () => {
 };
 
 export const createGroup = async (
-  prevState: FormResponse | undefined,
+  prevState: ServerResponse | undefined,
   formData: FormData
-): Promise<FormResponse<GroupCreateResponse>> => {
+): Promise<ServerResponse<GroupCreateResponse>> => {
   if (!formData.has("name")) {
     return {
       status: "error",
@@ -203,7 +201,7 @@ export const createGroup = async (
       status: "error",
       error: stringifyResponseErrorStatusCode(
         response.error?.status || 600,
-        response.error?.data
+        response.error?.data.error
       ),
     };
   }
@@ -216,7 +214,7 @@ export const fetchCallAccessToken = async ({
   startedCall,
   callId,
   callType,
-}: CallState): Promise<FormResponse<CallAccessToken>> => {
+}: CallState): Promise<ServerResponse<CallAccessToken>> => {
   const accessToken = await getORfetchAccessToken();
   const config = {
     headers: {
@@ -244,7 +242,7 @@ export const fetchCallAccessToken = async ({
       status: "error",
       error: stringifyResponseErrorStatusCode(
         response.error?.status || 600,
-        response.error?.data
+        response.error?.data.error
       ),
     };
   }
@@ -255,7 +253,7 @@ export const fetchCallAccessToken = async ({
 export const addGroupMembers = async (
   groupId: number,
   memberIds: number[]
-): Promise<FormResponse<{ status: string }>> => {
+): Promise<ServerResponse<{ status: string }>> => {
   const accessToken = await getORfetchAccessToken();
   const config = {
     headers: {
@@ -273,7 +271,35 @@ export const addGroupMembers = async (
       status: "error",
       error: stringifyResponseErrorStatusCode(
         response.error?.status || 600,
-        response.error?.data
+        response.error?.data.error
+      ),
+    };
+  }
+
+  return { status: "success", data: response.data };
+};
+
+export const leaveGroup = async (
+  groupId: number
+): Promise<ServerResponse<{ status: string }>> => {
+  const accessToken = await getORfetchAccessToken();
+  const config = {
+    headers: {
+      Authorization: `Bearer ${accessToken || ""}`,
+    },
+  };
+  const response = await request<{ status: string }>({
+    method: "delete",
+    path: `/groups/${groupId}/leave/`,
+    config,
+  });
+
+  if ("error" in response) {
+    return {
+      status: "error",
+      error: stringifyResponseErrorStatusCode(
+        response.error?.status || 600,
+        response.error?.data.error
       ),
     };
   }

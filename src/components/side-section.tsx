@@ -1,15 +1,14 @@
 import { cn } from "@/lib/utils";
-import Logo from "../logo";
-import SearchBar from "../search-bar";
-import ChatList from "./chat-list";
-import { MobileNavBar } from "../navbar/nav-bar";
-import Menu from "../menu";
-import Link from "next/link";
 import { Users } from "lucide-react";
+import ChatList from "./chat/chat-list";
+import Logo from "./logo";
+import Menu from "./menu";
+import SearchBar from "./search-bar";
+import Link from "next/link";
 
 const ChatSection = ({ className }: { className?: string }) => {
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn(className)}>
       <div className="flex flex-col gap-3 mb-6">
         <div className="flex justify-between items-center">
           <Logo className="self-start ml-2" />
@@ -25,7 +24,6 @@ const ChatSection = ({ className }: { className?: string }) => {
 
       <h2 className="text-xl font-semibold -my-4 ml-2">Chats</h2>
       <ChatList />
-      <MobileNavBar />
     </div>
   );
 };

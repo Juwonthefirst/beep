@@ -10,7 +10,7 @@ const api = axios.create({
   withCredentials: true,
 });
 
-interface RequestProp {
+export interface RequestProp {
   method?: ApiMethods;
   path: string;
   data?: unknown;
@@ -25,7 +25,7 @@ export const request = async <
 >({
   method = "post",
   path,
-  data,
+  data = {},
   config,
 }: RequestProp) => {
   try {
@@ -38,8 +38,8 @@ export const request = async <
     };
 
     const response =
-      method === "get"
-        ? await api.get<ResponseSuccessType>(path, requestConfig)
+      method === "get" || method === "delete"
+        ? await api[method]<ResponseSuccessType>(path, requestConfig)
         : await api[method]<ResponseSuccessType>(path, data, requestConfig);
 
     await getAndSetCookies(response.headers["set-cookie"] || []);

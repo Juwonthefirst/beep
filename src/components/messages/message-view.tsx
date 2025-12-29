@@ -63,7 +63,7 @@ const MessaageView = () => {
   return (
     <div
       ref={messageViewRef}
-      className="flex-1 flex flex-col-reverse gap-6 py-4 px-4 md:px-8 overflow-y-auto"
+      className="flex-1 flex flex-col-reverse gap-6 p-4 md:px-6 overflow-y-auto"
     >
       <TypingIndicator />
       {messageGroups.map((messageGroup, index) => {

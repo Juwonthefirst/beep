@@ -9,6 +9,7 @@ import axios from "axios";
 import { queryclient } from "@/components/providers/query.provider";
 import {
   CurrentUser,
+  ServerResponse,
   Friend,
   GroupChatRoom,
   GroupMember,
@@ -16,7 +17,11 @@ import {
   PaginatedResponse,
   UserChatRoom,
 } from "./types/server-response.type";
-import { addGroupMembers } from "./actions";
+import { addGroupMembers, leaveGroup } from "./actions";
+
+const handleServerRequestError = (
+  serverAction: (...args: unknown[]) => Promise<ServerResponse<unknown>>
+) => serverAction().then();
 
 const api = axios.create({
   timeout: 5000,
@@ -24,7 +29,7 @@ const api = axios.create({
 });
 
 interface CursorPaginationQueryOptionParam {
-  queryKey: string[];
+  queryKey: unknown[];
   path: string;
 }
 
@@ -117,10 +122,10 @@ export const friendsQueryOption = (searchKeyword: string) =>
     getNextPageParam: (lastPage) => {
       if (lastPage.next) {
         const nextPageUrl = new URL(lastPage.next);
-        return nextPageUrl.searchParams.get("page") || "1";
+        return nextPageUrl.searchParams.get("page") || "";
       }
     },
-    initialPageParam: "1",
+    initialPageParam: "",
   });
 
 export const addMemberMutationOption = mutationOptions({
@@ -131,11 +136,22 @@ export const addMemberMutationOption = mutationOptions({
     roomName: string;
     groupId: number;
     memberIds: number[];
-  }) => addGroupMembers(groupId, memberIds),
+  }) =>
+    addGroupMembers(groupId, memberIds).then((res) => {
+      if (res.status === "error") throw new Error(res.error);
+      return res;
+    }),
 
   onSuccess(data, variables, onMutateResult, context) {
     context.client.invalidateQueries({
-      queryKey: ["chats", variables.groupId],
+      queryKey: ["chats", variables.roomName],
     });
   },
+});
+export const leaveGroupMutationOption = mutationOptions({
+  mutationFn: ({ groupId }: { groupId: number }) =>
+    leaveGroup(groupId).then((res) => {
+      if (res.status === "error") throw new Error(res.error);
+      return res;
+    }),
 });

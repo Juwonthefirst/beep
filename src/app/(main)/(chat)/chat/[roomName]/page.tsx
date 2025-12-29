@@ -12,7 +12,7 @@ export default async function Page({
 }) {
   const { roomName } = await params;
   return (
-    <section className="flex flex-col h-dvh w-full md:w-10/16">
+    <section className="flex flex-col h-dvh flex-1 md:w-2/3">
       <ChatroomProvider roomName={roomName}>
         <Suspense fallback={<ChatHeaderSkeleton />}>
           <ChatHeader />

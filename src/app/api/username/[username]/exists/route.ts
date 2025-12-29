@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { request } from "@/utils/request-client";
 import type { ErrorResponse } from "@/utils/types/server-response.type";
-import { stringifyResponseErrorStatusCode } from "@/utils/helpers/server-helper";
+import { stringifyResponseErrorStatusCode } from "@/utils/helpers/client-helper";
 
 export async function GET(
   req: Request,

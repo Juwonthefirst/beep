@@ -3,8 +3,8 @@
 import {
   type ReactNode,
   useState,
-  type ChangeEventHandler,
   type RefObject,
+  InputHTMLAttributes,
 } from "react";
 import { Eye, EyeClosed } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -12,21 +12,16 @@ import { cn } from "@/lib/utils";
 const className =
   "text-sm transistion-all duration-200  rounded-md py-2 px-4 bg-neutral-100 shadow-xs has-focus:bg-white has-focus:ring-4 has-focus:ring-offset-2 has-focus:outline-2  ring-neutral-500/20 has-focus:outline-black text-black *:placeholder:text-sm";
 
-interface InputFieldPropType {
-  required?: boolean;
+interface InputFieldPropType extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   fieldClassName?: string;
   inputClassName?: string;
-  name?: string;
-  placeholder?: string;
   ref?: RefObject<HTMLInputElement>;
   error?: string;
   inputType?: string;
-  value?: string | number;
   validation?: (
     value: string
   ) => string | undefined | Promise<string | undefined>;
-  onChange?: ChangeEventHandler<HTMLInputElement>;
   elementInField?: ReactNode;
 }
 
@@ -38,21 +33,22 @@ const InputField = ({
   name,
   placeholder,
   inputType = "text",
-  value,
   onChange,
   required = true,
   error,
   validation,
   elementInField,
+  ...inputProps
 }: InputFieldPropType) => {
-  const [isInitialValidation, setIsInitialValidation] = useState(true);
+  const [validateOnChange, setValidateOnChange] = useState(false);
   const [validationError, setValidationError] = useState("");
   const validateField = async (value: string) => {
-    if (isInitialValidation) setIsInitialValidation(false);
+    if (!validateOnChange) setValidateOnChange(true);
     const error = await validation?.(value);
     if (error) setValidationError(error);
     else setValidationError("");
   };
+  const [wordCount, setWordCount] = useState(0);
 
   return (
     <div className={cn("flex flex-col gap-2 items-center", fieldClassName)}>
@@ -74,27 +70,31 @@ const InputField = ({
         )}
       >
         <input
+          {...inputProps}
           ref={ref}
           name={name || label}
           id={label + "-input"}
           className="focus:outline-0 grow"
           type={inputType}
-          value={value}
           onChange={(event) => {
             const value = event.target.value;
+            setWordCount(value.length);
             onChange?.(event);
-            if (!isInitialValidation) validateField(value);
+            if (validateOnChange) validateField(value);
           }}
           required={required}
           placeholder={placeholder}
           onBlur={(event) => {
             const value = event.target.value;
             if (!value) return;
-            if (isInitialValidation) validateField(value);
+            if (!validateOnChange) validateField(value);
           }}
         />
         {elementInField}
       </div>
+      {inputProps.maxLength && (
+        <p className="text-xs ml-auto mr-1 opacity-70 text-black">{`${wordCount}/${inputProps.maxLength} characters`}</p>
+      )}
       {(error || validationError) && (
         <p className="text-red-500 text-xs text-center -mt-1 w-full">
           {error || validationError}

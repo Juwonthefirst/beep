@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import type { FormResponse } from "@/utils/types/server-response.type";
+import type { ServerResponse } from "@/utils/types/server-response.type";
 import {
   createContext,
   FormEventHandler,
@@ -15,9 +15,9 @@ import {
 
 interface Props {
   action: (
-    prevState: FormResponse | undefined,
+    prevState: ServerResponse | undefined,
     formData: FormData
-  ) => Promise<FormResponse | undefined>;
+  ) => Promise<ServerResponse | undefined>;
   children: ReactNode;
   onSuccess?: (data: unknown) => void;
   className?: string;
@@ -53,7 +53,7 @@ const Form = ({
   className = "",
   onSubmit,
 }: Props) => {
-  const initialState: FormResponse = { status: "idle" };
+  const initialState: ServerResponse = { status: "idle" };
   const [state, formAction, isSubmitting] = useActionState(
     action,
     initialState

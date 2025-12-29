@@ -36,14 +36,14 @@ const CallView = ({ callState, setCallState, setIsInCall }: Props) => {
         },
       })
   );
-  const [globalState, setglobalState] = useState<
+  const [globalState, setGlobalState] = useState<
     "success" | "error" | "loading" | "idle"
   >("idle");
 
   useEffect(() => {
     if (!callState) return;
-
     (async () => {
+      setGlobalState("loading");
       const data = await withRetry({
         func: () => fetchCallAccessToken(callState),
       });
@@ -51,6 +51,7 @@ const CallView = ({ callState, setCallState, setIsInCall }: Props) => {
         await room.connect(data.data.room_url, data.data.token);
         await room.localParticipant.setMicrophoneEnabled(true);
         setIsInCall(true);
+        setGlobalState("success");
 
         room.on("disconnected", () => {
           setCallState(null);
@@ -59,14 +60,13 @@ const CallView = ({ callState, setCallState, setIsInCall }: Props) => {
         const roomMetaData: RoomMetadata | null = room.metadata
           ? JSON.parse(room.metadata)
           : null;
-        const roomIsVideoCall = roomMetaData
-          ? roomMetaData.is_video_call
-          : callState.callType;
 
-        if (roomIsVideoCall) {
+        if (roomMetaData?.is_video_call) {
           room.localParticipant.setCameraEnabled(true);
         }
       }
+
+      if (data.status === "error") setGlobalState("error");
     })();
 
     return () => {
@@ -80,10 +80,9 @@ const CallView = ({ callState, setCallState, setIsInCall }: Props) => {
       <div
         data-isminimized={isMinimized}
         className={cn(
-          "group fixed top-0 right-0 z-50 w-full h-full bg-black transition-all duration-300 text-white flex flex-col items-center",
+          "group fixed top-0 right-0 z-99 w-full h-full bg-black transition-all duration-300 text-white flex flex-col items-center",
           {
-            "w-54 h-54 md:w-68 md:scale-30 rounded-lg top-4 right-4":
-              isMinimized,
+            "w-54 h-54  md:w-68 rounded-lg top-4 right-4": isMinimized,
           }
         )}
       >
