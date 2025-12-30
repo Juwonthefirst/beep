@@ -7,15 +7,17 @@ import ChatListSkeleton from "./chat-list-skeleton";
 import NoChatRoom from "./no-chat-room";
 import { useParams } from "next/navigation";
 import InifinteDataView from "../infinite-data-view";
+import useSearchParams from "@/hooks/useSearchParams.hook";
 
 const ChatList = () => {
   const intersectingElementRef = useRef<HTMLAnchorElement | null>(null);
   const { roomName } = useParams();
+  const { searchParams } = useSearchParams();
 
   return (
     <InifinteDataView
       className="flex flex-col gap-4 px-1"
-      queryOption={chatListQueryOption}
+      queryOption={chatListQueryOption(searchParams.search)}
       triggerElementRef={intersectingElementRef}
       emptyFallback={<NoChatRoom />}
       loadingFallback={<ChatListSkeleton />}

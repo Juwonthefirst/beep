@@ -30,7 +30,7 @@ const Notifications = ({ children }: { children: React.ReactNode }) => {
     };
 
     notificationSocket.onChatNotification = (notification) => {
-      queryClient.setQueryData(chatListQueryOption.queryKey, (old) => {
+      queryClient.setQueryData(chatListQueryOption().queryKey, (old) => {
         if (!old) return old;
         const [updatedPages, filteredChatRoom] = filterOutObjectFromResponse<
           UserChatRoom | GroupChatRoom
@@ -38,8 +38,7 @@ const Notifications = ({ children }: { children: React.ReactNode }) => {
 
         if (!filteredChatRoom) {
           queryClient.invalidateQueries({
-            queryKey: chatListQueryOption.queryKey,
-            exact: true,
+            queryKey: chatListQueryOption().queryKey,
           });
           return old;
         }
@@ -100,9 +99,10 @@ const Notifications = ({ children }: { children: React.ReactNode }) => {
     };
 
     notificationSocket.onCallNotification = (notification) => {
-      toast.custom((toastId) => (
-        <CallNotification {...notification} toastId={toastId} />
-      ), {duration: Infinity});
+      toast.custom(
+        (toastId) => <CallNotification {...notification} toastId={toastId} />,
+        { duration: Infinity }
+      );
     };
 
     (async () => {

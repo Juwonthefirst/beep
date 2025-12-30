@@ -20,6 +20,7 @@ export interface Friend {
   id: number;
   username: string;
   profile_picture: string;
+  room_name: string | null;
 }
 
 export interface User extends BaseUser {

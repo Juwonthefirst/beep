@@ -9,7 +9,6 @@ import axios from "axios";
 import { queryclient } from "@/components/providers/query.provider";
 import {
   CurrentUser,
-  ServerResponse,
   Friend,
   GroupChatRoom,
   GroupMember,
@@ -19,32 +18,39 @@ import {
 } from "./types/server-response.type";
 import { addGroupMembers, leaveGroup } from "./actions";
 
-const handleServerRequestError = (
-  serverAction: (...args: unknown[]) => Promise<ServerResponse<unknown>>
-) => serverAction().then();
+const SEARCH_QUERY_GC_TIME = 2.5 * 60 * 1000;
 
 const api = axios.create({
   timeout: 5000,
   withCredentials: true,
 });
 
-interface CursorPaginationQueryOptionParam {
+interface PaginationQueryOptionParam {
   queryKey: unknown[];
   path: string;
+  searchParam?: Record<string, string>;
+  extraParams?: Record<string, string | number | undefined>;
 }
 
 const cursorPaginationQueryOption = <Type>({
   queryKey,
   path,
-}: CursorPaginationQueryOptionParam) =>
-  infiniteQueryOptions({
+  extraParams,
+  searchParam,
+}: PaginationQueryOptionParam) => {
+  const params = new URLSearchParams(searchParam);
+
+  return infiniteQueryOptions({
+    ...extraParams,
     queryKey,
-    queryFn: ({ pageParam }) =>
-      api
-        .get<PaginatedResponse<Type>>(
-          path + (pageParam ? `?cursor=${pageParam}` : "")
-        )
-        .then((res) => res.data),
+    queryFn: async ({ pageParam }) => {
+      if (pageParam) params.set("cursor", pageParam);
+
+      const res = await api.get<PaginatedResponse<Type>>(
+        path + "?" + params.toString()
+      );
+      return res.data;
+    },
     getNextPageParam: (lastPage) => {
       if (lastPage.next) {
         const url = new URL(lastPage.next);
@@ -53,6 +59,36 @@ const cursorPaginationQueryOption = <Type>({
     },
     initialPageParam: "",
   });
+};
+
+const pagePaginationQueryOption = <Type>({
+  queryKey,
+  path,
+  extraParams,
+  searchParam,
+}: PaginationQueryOptionParam) => {
+  const params = new URLSearchParams(searchParam);
+
+  return infiniteQueryOptions({
+    ...extraParams,
+    queryKey,
+    queryFn: async ({ pageParam }) => {
+      if (pageParam) params.set("page", pageParam);
+
+      const res = await api.get<PaginatedResponse<Type>>(
+        path + "?" + params.toString()
+      );
+      return res.data;
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.next) {
+        const url = new URL(lastPage.next);
+        return url.searchParams.get("page") || "";
+      }
+    },
+    initialPageParam: "",
+  });
+};
 
 export const currentUserQueryOption = queryOptions({
   queryKey: ["currentuser"],
@@ -60,16 +96,19 @@ export const currentUserQueryOption = queryOptions({
     api.get<CurrentUser>("/api/auth/user/").then((res) => res.data),
 });
 
-export const chatListQueryOption = cursorPaginationQueryOption<
-  UserChatRoom | GroupChatRoom
->({
-  queryKey: ["chatrooms"],
-  path: "/api/auth/user/rooms",
-});
+export const chatListQueryOption = (searchKeyword = "") =>
+  cursorPaginationQueryOption<UserChatRoom | GroupChatRoom>({
+    queryKey: ["chatrooms", { search: searchKeyword }],
+    path: "/api/auth/user/rooms/",
+    searchParam: { search: searchKeyword },
+    extraParams: {
+      gcTime: searchKeyword === "" ? undefined : SEARCH_QUERY_GC_TIME,
+    },
+  });
 
 export const chatQueryOption = (roomName: string) =>
   queryOptions({
-    queryKey: ["chats", roomName],
+    queryKey: ["chatrooms", roomName],
     queryFn: () =>
       api
         .get<UserChatRoom | GroupChatRoom>(`/api/auth/user/rooms/${roomName}`)
@@ -77,7 +116,7 @@ export const chatQueryOption = (roomName: string) =>
     initialData: () => {
       const chatList = queryclient.getQueryData<
         InfiniteData<PaginatedResponse<UserChatRoom | GroupChatRoom>>
-      >(chatListQueryOption.queryKey);
+      >(chatListQueryOption().queryKey);
       if (!chatList) return chatList;
 
       let chatRoomObject: UserChatRoom | GroupChatRoom | undefined;
@@ -105,28 +144,22 @@ export const chatQueryOption = (roomName: string) =>
 
 export const messageQueryOption = (roomName: string) =>
   cursorPaginationQueryOption<Message>({
-    queryKey: ["chats", roomName, "messages"],
+    queryKey: ["chatrooms", roomName, "messages"],
     path: `/api/chats/${roomName}/messages`,
   });
 
-export const friendsQueryOption = (searchKeyword: string) =>
-  infiniteQueryOptions({
-    queryKey: ["friends", searchKeyword],
-    queryFn: ({ pageParam }) =>
-      api
-        .get<PaginatedResponse<Friend>>(
-          `/api/auth/user/friends?page=${pageParam}&search=${searchKeyword}`
-        )
-
-        .then((res) => res.data),
-    getNextPageParam: (lastPage) => {
-      if (lastPage.next) {
-        const nextPageUrl = new URL(lastPage.next);
-        return nextPageUrl.searchParams.get("page") || "";
-      }
+export const friendListQueryOption = (searchKeyword = "") =>
+  pagePaginationQueryOption<Friend>({
+    queryKey: ["friends", { search: searchKeyword }],
+    path: "/api/auth/user/friends",
+    searchParam: { search: searchKeyword },
+    extraParams: {
+      gcTime: searchKeyword === "" ? undefined : SEARCH_QUERY_GC_TIME,
     },
-    initialPageParam: "",
   });
+
+export const retrieveUserQueryOption = (username: string) =>
+  queryOptions({ queryKey: ["users", username] });
 
 export const addMemberMutationOption = mutationOptions({
   mutationFn: ({
@@ -144,7 +177,7 @@ export const addMemberMutationOption = mutationOptions({
 
   onSuccess(data, variables, onMutateResult, context) {
     context.client.invalidateQueries({
-      queryKey: ["chats", variables.roomName],
+      queryKey: chatQueryOption(variables.roomName).queryKey,
     });
   },
 });

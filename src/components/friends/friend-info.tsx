@@ -4,7 +4,7 @@ import Link from "next/link";
 import CallButtons from "../call/call-buttons";
 import { CallerInfo } from "@/utils/types/client.type";
 import { CurrentRoomNameContext } from "../providers/chatroom-state.provider";
-import ExpandableText from "./expandable-text";
+import ExpandableText from "../expandable-text";
 
 interface Props {
   avatar: string;

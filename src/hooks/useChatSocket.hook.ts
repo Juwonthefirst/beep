@@ -21,7 +21,7 @@ const useChatSocket = (room_name: string) => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    queryClient.setQueryData(chatListQueryOption.queryKey, (old) => {
+    queryClient.setQueryData(chatListQueryOption().queryKey, (old) => {
       if (!old) return old;
 
       const updatedPages = old.pages.map((response) => ({
@@ -60,14 +60,14 @@ const useChatSocket = (room_name: string) => {
           }
         );
 
-        queryClient.setQueryData(chatListQueryOption.queryKey, (old) => {
+        queryClient.setQueryData(chatListQueryOption().queryKey, (old) => {
           if (!old) return old;
           const [updatedPages, outdatedChatRoom] = filterOutObjectFromResponse<
             UserChatRoom | GroupChatRoom
           >(newMessage.room, "id", old.pages);
           if (!outdatedChatRoom) {
             queryClient.invalidateQueries({
-              queryKey: chatListQueryOption.queryKey,
+              queryKey: chatListQueryOption().queryKey,
               exact: true,
             });
             return old;

@@ -76,7 +76,7 @@ export const MobileNavBar = () => {
 
   return (
     !pathName.startsWith("/chat") && (
-      <NavBar className="md:hidden fixed bg-black/5 bottom-10 flex justify-between items-center gap-4 w-9/10 max-w-sm backdrop-blur-sm backdrop-saturate-200 py-2 px-4 rounded-full *:text-black border border-black/10  *:data-[current=true]:text-theme" />
+      <NavBar className="md:hidden fixed bg-black/5 bottom-10 flex justify-between justify-self-center items-center gap-4 w-9/10 max-w-sm backdrop-blur-sm backdrop-saturate-200 py-2 px-4 rounded-full *:text-black border border-black/10  *:data-[current=true]:text-theme" />
     )
   );
 };
