@@ -4,12 +4,12 @@ import ParticipantTile from "./participant-tile";
 
 type Props = {};
 
-const GroupCall = (props: Props) => {
-  return (
-    <GridLayout tracks={}>
-      <ParticipantTile />
-    </GridLayout>
-  );
-};
+// const GroupCall = (props: Props) => {
+//   return (
+//     <GridLayout tracks={}>
+//       <ParticipantTile />
+//     </GridLayout>
+//   );
+// };
 
 export default GroupCall;
