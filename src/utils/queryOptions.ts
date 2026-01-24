@@ -9,14 +9,17 @@ import axios from "axios";
 import { queryclient } from "@/components/providers/query.provider";
 import {
   CurrentUser,
-  Friend,
+  BaseFriend,
   GroupChatRoom,
   GroupMember,
   Message,
   PaginatedResponse,
   UserChatRoom,
+  User,
+  BaseUser,
 } from "./types/server-response.type";
-import { addGroupMembers, leaveGroup } from "./actions";
+import { addFriend, addGroupMembers, leaveGroup, unFriend } from "./actions";
+import { findObjectInResponse } from "./helpers/client-helper";
 
 const SEARCH_QUERY_GC_TIME = 2.5 * 60 * 1000;
 
@@ -47,7 +50,7 @@ const cursorPaginationQueryOption = <Type>({
       if (pageParam) params.set("cursor", pageParam);
 
       const res = await api.get<PaginatedResponse<Type>>(
-        path + "?" + params.toString()
+        path + "?" + params.toString(),
       );
       return res.data;
     },
@@ -76,7 +79,7 @@ const pagePaginationQueryOption = <Type>({
       if (pageParam) params.set("page", pageParam);
 
       const res = await api.get<PaginatedResponse<Type>>(
-        path + "?" + params.toString()
+        path + "?" + params.toString(),
       );
       return res.data;
     },
@@ -119,23 +122,16 @@ export const chatQueryOption = (roomName: string) =>
       >(chatListQueryOption().queryKey);
       if (!chatList) return chatList;
 
-      let chatRoomObject: UserChatRoom | GroupChatRoom | undefined;
-
-      for (const response of chatList.pages) {
-        const chatRoom = response.results.find(
-          (chatRoom) => chatRoom.name === roomName
-        );
-        if (chatRoom) {
-          chatRoomObject = chatRoom;
-          break;
-        }
-      }
-      return chatRoomObject;
+      return findObjectInResponse<UserChatRoom | GroupChatRoom>(
+        roomName,
+        "name",
+        chatList.pages,
+      );
     },
     select: (data) => {
       if (data.is_group) {
         data.group.mappedMembers = new Map<number, GroupMember>(
-          data.group.members.map((member) => [member.id, member])
+          data.group.members.map((member) => [member.id, member]),
         );
       }
       return data;
@@ -149,7 +145,7 @@ export const messageQueryOption = (roomName: string) =>
   });
 
 export const friendListQueryOption = (searchKeyword = "") =>
-  pagePaginationQueryOption<Friend>({
+  pagePaginationQueryOption<BaseFriend>({
     queryKey: ["friends", { search: searchKeyword }],
     path: "/api/auth/user/friends",
     searchParam: { search: searchKeyword },
@@ -157,9 +153,6 @@ export const friendListQueryOption = (searchKeyword = "") =>
       gcTime: searchKeyword === "" ? undefined : SEARCH_QUERY_GC_TIME,
     },
   });
-
-export const retrieveUserQueryOption = (username: string) =>
-  queryOptions({ queryKey: ["users", username] });
 
 export const addMemberMutationOption = mutationOptions({
   mutationFn: ({
@@ -187,4 +180,66 @@ export const leaveGroupMutationOption = mutationOptions({
       if (res.status === "error") throw new Error(res.error);
       return res;
     }),
+  onSuccess(data, variables, onMutateResult, context) {
+    context.client.invalidateQueries({
+      queryKey: chatListQueryOption().queryKey,
+    });
+  },
+});
+
+export const unFriendMutationOption = mutationOptions({
+  mutationFn: ({ friendId }: { friendId: number }) =>
+    unFriend(friendId).then((res) => {
+      if (res.status === "error") throw new Error(res.error);
+      return res;
+    }),
+});
+
+export const usersQueryOption = (searchKeyword = "") =>
+  pagePaginationQueryOption<BaseUser>({
+    queryKey: ["users", { search: searchKeyword }],
+    path: "/api/users/",
+    searchParam: { search: searchKeyword },
+    extraParams: {
+      gcTime: searchKeyword === "" ? undefined : SEARCH_QUERY_GC_TIME,
+    },
+  });
+
+export const userQueryOption = (username: string) =>
+  queryOptions({
+    queryKey: ["users", username],
+    queryFn: () =>
+      api.get<User>(`/api/auth/user/${username}`).then((res) => res.data),
+    initialData: () => {
+      const chatList = queryclient.getQueryData<
+        InfiniteData<PaginatedResponse<UserChatRoom | GroupChatRoom>>
+      >(chatListQueryOption().queryKey);
+      if (!chatList) return chatList;
+
+      let user: User | undefined;
+
+      for (const response of chatList.pages) {
+        const requestedChatroom = response.results.find(
+          (result) => result.friend?.username === username,
+        );
+        if (requestedChatroom && requestedChatroom.friend) {
+          user = requestedChatroom.friend;
+          break;
+        }
+      }
+
+      return user;
+    },
+  });
+
+export const sendFriendRequestMutationOption = mutationOptions({
+  mutationFn: ({ userId }: { userId: number }) =>
+    addFriend(userId).then((res) => {
+      if (res.status === "error") throw new Error(res.error);
+      return res;
+    }),
+
+  onSuccess(data, variables, onMutateResult, context) {
+    context.client.invalidateQueries({ queryKey: usersQueryOption().queryKey });
+  },
 });

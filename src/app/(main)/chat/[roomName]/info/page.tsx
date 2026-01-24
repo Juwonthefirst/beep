@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import FriendInfo from "@/components/friends/friend-info";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import {
@@ -9,10 +9,10 @@ import {
 } from "@/utils/queryOptions";
 import { Group } from "@/utils/types/server-response.type";
 import Link from "next/link";
-import { Dot, LogOut, UserPlus } from "lucide-react";
+import { Dot, LoaderCircle, LogOut, UserPlus } from "lucide-react";
 import ProfilePicture from "@/components/profile-picture";
 import Menu from "@/components/menu";
-import Popup from "@/components/popup";
+import Popup from "@/components/popups/popup";
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -23,9 +23,15 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const GroupInfo = ({ group }: { group: Group }) => {
-  const { mutate, error, status, isPending } = useMutation(
-    leaveGroupMutationOption
-  );
+  const router = useRouter();
+
+  const { mutate, error, status } = useMutation({
+    ...leaveGroupMutationOption,
+    onSuccess() {
+      router.push("/");
+    },
+  });
+
   return (
     <>
       <section className="w-full  border border-neutral-200 rounded-xl whitespace-nowrap">
@@ -103,8 +109,13 @@ const GroupInfo = ({ group }: { group: Group }) => {
             onClick={() => {
               mutate({ groupId: group.id });
             }}
+            disabled={status === "pending"}
           >
-            Leave
+            {status === "pending" ? (
+              <LoaderCircle size={18} className="animate-spin" />
+            ) : (
+              "Leave"
+            )}
           </AlertDialogAction>
         </AlertDialogFooter>
       </Popup>
@@ -117,9 +128,9 @@ const Page = () => {
   const { data } = useSuspenseQuery(chatQueryOption(roomName));
 
   return (
-    <section className="flex flex-col flex-1 pt-10 gap-8 p-6 overflow-y-auto">
+    <section className="flex flex-col flex-1 pt-10 gap-8 p-6 h-full overflow-y-auto">
       <FriendInfo
-        roomName={roomName}
+        room_name={roomName}
         avatar={data.is_group ? data.group.avatar : data.friend.profile_picture}
         description={data.group?.description}
         username={data.is_group ? data.group.name : data.friend.username}

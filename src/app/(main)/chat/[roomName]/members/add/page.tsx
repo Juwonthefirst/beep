@@ -4,22 +4,26 @@ import { FormDescription } from "@/components/form/form-sematics";
 import SubmitBtn from "@/components/form/submit-btn";
 import ProfilePicture from "@/components/profile-picture";
 import SearchBar from "@/components/search-bar";
+import StatusCard from "@/components/status-card";
 import { cn } from "@/lib/utils";
 import { watchElementIntersecting } from "@/utils/helpers/client-helper";
 import {
   addMemberMutationOption,
   chatQueryOption,
-  friendsQueryOption,
+  friendListQueryOption,
 } from "@/utils/queryOptions";
-import { ErrorResponse, Friend } from "@/utils/types/server-response.type";
+import type {
+  ErrorResponse,
+  BaseFriend,
+} from "@/utils/types/server-response.type";
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
-import { Check, X } from "lucide-react";
+import { Check, LoaderCircle, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { redirect, useParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-const SelectedUser = (props: Friend & { onClick: () => void }) => {
+const SelectedUser = (props: BaseFriend & { onClick: () => void }) => {
   return (
     <motion.div layout className="flex flex-col gap-2 max-w-20 items-center">
       <div className="relative shrink-0 size-12 rounded-full">
@@ -46,12 +50,9 @@ const SelectedUser = (props: Friend & { onClick: () => void }) => {
 
 const Page = () => {
   const { roomName } = useParams();
+  const router = useRouter();
   const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedUsersId, setSelectedUsersId] = useState<number[]>([]);
-
-  const { mutate, error, isPending, isSuccess } = useMutation(
-    addMemberMutationOption
-  );
 
   const {
     data: friendQueryData,
@@ -60,17 +61,27 @@ const Page = () => {
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
-  } = useInfiniteQuery(friendsQueryOption(searchKeyword));
+    refetch: refetchFriendQuery,
+  } = useInfiniteQuery(friendListQueryOption(searchKeyword));
+
   const {
     data: roomQueryData,
     error: roomQueryError,
     isPending: isRoomQueryPending,
+    refetch: refetchRoomQuery,
   } = useQuery(chatQueryOption(roomName as string));
+
+  const { mutate, error, isPending } = useMutation({
+    ...addMemberMutationOption,
+    onSuccess() {
+      router.push(`/chat/${roomQueryData?.name || ""}`);
+    },
+  });
   const friends = useMemo(() => {
-    const friendsMap = new Map<number, Friend>();
+    const friendsMap = new Map<number, BaseFriend>();
 
     friendQueryData?.pages.forEach((response) =>
-      response.results.forEach((friend) => friendsMap.set(friend.id, friend))
+      response.results.forEach((friend) => friendsMap.set(friend.id, friend)),
     );
     return friendsMap;
   }, [friendQueryData?.pages]);
@@ -83,15 +94,22 @@ const Page = () => {
       intersectingElement.current,
       () => {
         fetchNextPage();
-      }
+      },
     );
     return () => observer?.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage, isFriendQueryPending]);
 
-  if (isSuccess && roomQueryData) redirect(`/chat/${roomQueryData.name}`);
-
   const LIMIT = 5;
-
+  if (isFriendQueryPending || isRoomQueryPending)
+    return <LoaderCircle className="animate-spin mt-6 mx-auto opacity-70" />;
+  if (roomQueryError && isAxiosError(roomQueryError) && roomQueryError.response)
+    return (
+      <StatusCard
+        status={roomQueryError.response.status}
+        onRetry={() => refetchRoomQuery()}
+        withRetry
+      />
+    );
   if (!roomQueryData?.is_group) return <p>Invalid room</p>;
 
   return (
@@ -128,8 +146,8 @@ const Page = () => {
                     onClick={() =>
                       setSelectedUsersId((prev) =>
                         prev.filter(
-                          (selectedUserId) => userId !== selectedUserId
-                        )
+                          (selectedUserId) => userId !== selectedUserId,
+                        ),
                       )
                     }
                   />
@@ -163,7 +181,7 @@ const Page = () => {
               onClick={() => {
                 if (selectedUsersId.includes(friend.id))
                   return setSelectedUsersId(
-                    selectedUsersId.filter((id) => id !== friend.id)
+                    selectedUsersId.filter((id) => id !== friend.id),
                   );
                 setSelectedUsersId([friend.id, ...selectedUsersId]);
               }}
@@ -173,7 +191,7 @@ const Page = () => {
                 "flex gap-2 items-center w-full px-2 py-1 rounded-lg hover:bg-black/5 transition-all duration-200",
                 {
                   "bg-theme/3!": isSelected,
-                }
+                },
               )}
             >
               <div className="relative size-11 rounded-full">
@@ -193,6 +211,16 @@ const Page = () => {
             </button>
           );
         })}
+        {friendQueryError &&
+          isAxiosError(friendQueryError) &&
+          friendQueryError.response && (
+            <StatusCard
+              status={friendQueryError.response?.status || 404}
+              onRetry={() => refetchFriendQuery()}
+              withRetry
+              className="scale-85"
+            />
+          )}
       </section>
       <SubmitBtn
         disabled={isPending || selectedUsersId.length <= 0}

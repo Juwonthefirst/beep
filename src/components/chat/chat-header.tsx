@@ -59,7 +59,7 @@ const ChatHeader = () => {
       username,
       avatar,
     }),
-    [username, avatar]
+    [username, avatar],
   );
 
   return (
@@ -87,10 +87,10 @@ const ChatHeader = () => {
               {typingUsers.length > 0
                 ? "typing..."
                 : data.friend.is_online
-                ? "online"
-                : `last seen: ${parseDateString({
-                    dateString: data.friend.last_online,
-                  })}`}
+                  ? "online"
+                  : `last seen: ${parseDateString({
+                      dateString: data.friend.last_online!,
+                    })}`}
             </p>
           )}
         </div>

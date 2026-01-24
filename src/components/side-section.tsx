@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Users } from "lucide-react";
-import Logo from "./logo";
+import Logo from "./logos/logo";
 import Menu from "./menu";
 import { SearchBarWithParam } from "./search-bar";
 import Link from "next/link";
@@ -8,7 +8,7 @@ import CurrentPageListView from "./current-page-list-view";
 
 const SideSection = ({ className }: { className?: string }) => {
   return (
-    <section className={cn(className)}>
+    <section className={cn(className, "relative")}>
       <div className="flex flex-col gap-3 mb-6">
         <div className="flex justify-between items-center">
           <Logo className="self-start ml-2" />

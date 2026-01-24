@@ -34,11 +34,12 @@ const CallView = ({ callState, setCallState, setIsInCall }: Props) => {
         videoCaptureDefaults: {
           resolution: VideoPresets.h360.resolution,
         },
-      })
+      }),
   );
   const [globalState, setGlobalState] = useState<
     "success" | "error" | "loading" | "idle"
   >("idle");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!callState) return;
@@ -82,8 +83,8 @@ const CallView = ({ callState, setCallState, setIsInCall }: Props) => {
         className={cn(
           "group fixed top-0 right-0 z-99 w-full h-full bg-black transition-all duration-300 text-white flex flex-col items-center",
           {
-            "w-54 h-54  md:w-68 rounded-lg top-4 right-4": isMinimized,
-          }
+            "w-54 h-54 md:w-68 rounded-lg top-4 right-4": isMinimized,
+          },
         )}
       >
         <button

@@ -89,14 +89,24 @@ export const parseDateString = ({
       : date.toLocaleDateString("en-GB");
 };
 
+export const nestedObjectedLookup = <ObjectType extends object>(
+  object: ObjectType,
+  lookupKeys: readonly string[]
+) => {
+  return lookupKeys.reduce<unknown>((currentObject, currentValue) => {
+    if (typeof currentObject !== "object") return currentObject;
+    return (currentObject as Record<string, unknown>)?.[currentValue];
+  }, object);
+};
+
 export const filterOutObjectFromResponse = <ObjectType>(
   object_property: unknown,
   lookup_property: keyof ObjectType,
-  apiResponse: PaginatedResponse<ObjectType>[]
+  apiResponses: PaginatedResponse<ObjectType>[]
 ): [PaginatedResponse<ObjectType>[], ObjectType | undefined] => {
   let removedObject: ObjectType | undefined;
 
-  const filteredResponse = apiResponse.map((response) => ({
+  const filteredResponse = apiResponses.map((response) => ({
     ...response,
     results: response.results.filter((result) => {
       if (result[lookup_property] === object_property) {
@@ -108,6 +118,28 @@ export const filterOutObjectFromResponse = <ObjectType>(
   }));
 
   return [filteredResponse, removedObject];
+};
+
+// function for getting an object from a list of responses (returns immediately the object is found)
+
+export const findObjectInResponse = <ObjectType>(
+  object_property: unknown,
+  lookup_property: keyof ObjectType,
+  apiResponses: PaginatedResponse<ObjectType>[]
+): ObjectType | undefined => {
+  let object: ObjectType | undefined;
+
+  for (const response of apiResponses) {
+    const requestedObject = response.results.find(
+      (result) => result[lookup_property] === object_property
+    );
+    if (requestedObject) {
+      object = requestedObject;
+      break;
+    }
+  }
+
+  return object;
 };
 
 export const createMessageGroups = (messages: Message[]) => {
@@ -158,6 +190,8 @@ export const stringifyResponseErrorStatusCode = (
       return "You are not authenticated";
     case 403:
       return "You are not allowed here";
+    case 404:
+      return "Sorry, we can't find what you are looking for";
     case 500:
       return "Something went wrong at our end";
     case 600:

@@ -7,7 +7,7 @@ import { getOtp } from "@/utils/actions";
 import type { SignupStepsProps } from "@/utils/types/client.type";
 import AuthForm, { FormError } from "@/components/form/form";
 import { FormDescription, FormHeader } from "@/components/form/form-sematics";
-import Logo from "@/components/logo";
+import Logo from "@/components/logos/logo";
 import SubmitBtn from "@/components/form/submit-btn";
 import GoogleLoginBtn from "@/components/auth-form/google-login-btn";
 

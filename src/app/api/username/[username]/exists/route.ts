@@ -6,7 +6,7 @@ import { stringifyResponseErrorStatusCode } from "@/utils/helpers/client-helper"
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ username: string }> }
+  { params }: { params: Promise<{ username: string }> },
 ) {
   const { username } = await params;
   const response = await request<{ exists: boolean }, ErrorResponse>({
@@ -21,10 +21,10 @@ export async function GET(
       {
         error: stringifyResponseErrorStatusCode(
           errorStatus || 600,
-          response.error?.data
+          response.error?.data.error,
         ),
       },
-      { status: errorStatus || 500 }
+      { status: errorStatus || 500 },
     );
   }
   return NextResponse.json(response.data);

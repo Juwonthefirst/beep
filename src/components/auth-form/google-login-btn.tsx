@@ -7,7 +7,7 @@ import { use, useState } from "react";
 import { cn } from "@/lib/utils";
 import { FormContext } from "../form/form";
 import { googleAuthenicate } from "@/utils/actions";
-import GoogleLogo from "../google-logo";
+import GoogleLogo from "../logos/google-logo";
 
 const GoogleLoginBtn = () => {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
@@ -29,7 +29,7 @@ const GoogleLoginBtn = () => {
 
     onError: (errorResponse) => {
       formControls.setError?.(
-        errorResponse.error_description || "Google login failed"
+        errorResponse.error_description || "Google login failed",
       );
       setLoginState(false);
     },
@@ -51,7 +51,7 @@ const GoogleLoginBtn = () => {
       disabled={formControls.isDisabled}
       className={cn(
         "flex gap-2 bg-orange-400 rounded-md py-1 px-3 text-white text-sm items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed transition-all",
-        { "cursor-wait!": isAuthenticating }
+        { "cursor-wait!": isAuthenticating },
       )}
     >
       <GoogleLogo />

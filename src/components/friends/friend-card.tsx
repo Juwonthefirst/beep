@@ -1,4 +1,4 @@
-import { Friend } from "@/utils/types/server-response.type";
+import { BaseFriend } from "@/utils/types/server-response.type";
 import { RefObject } from "react";
 import ProfilePicture from "../profile-picture";
 import Link from "next/link";
@@ -8,7 +8,7 @@ import { CurrentRoomNameContext } from "../providers/chatroom-state.provider";
 import { CallerInfo } from "@/utils/types/client.type";
 import { cn } from "@/lib/utils";
 
-interface Props extends Friend {
+interface Props extends BaseFriend {
   ref?: RefObject<HTMLDivElement | null>;
   isCurrentFriend: boolean;
 }
@@ -29,13 +29,13 @@ const FriendCard = ({
         "flex items-center p-2 rounded-lg transition-all duration-200 hover:bg-black/3",
         {
           "bg-black/5!": isCurrentFriend,
-        }
+        },
       )}
       ref={ref}
     >
       <Link
         className="flex items-center gap-3 text-sm"
-        href={`/friends/${username}`}
+        href={`/users/${username}`}
       >
         <div className="relative size-12">
           <ProfilePicture
@@ -49,7 +49,7 @@ const FriendCard = ({
       </Link>
 
       <div className="flex gap-2 text-theme *:hover:scale-110 *:hover:bg-theme/10 *:rounded-full *:p-2   ml-auto">
-        <Link href={`/chat/${room_name}`} type="button">
+        <Link href={`/chat/${room_name}`}>
           <MessageCircle size={20} />
         </Link>
         <CurrentRoomNameContext value={room_name}>

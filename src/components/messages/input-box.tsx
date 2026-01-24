@@ -6,6 +6,7 @@ import throttle from "lodash.throttle";
 import FileUpload from "../form/file-upload";
 import AttachmentPreview from "./attachment-preview";
 import { ChatSocketControlsContext } from "../providers/chatroom-state.provider";
+import TextArea from "../form/text-area";
 
 const InputBox = () => {
   const chatsocketControls = use(ChatSocketControlsContext);
@@ -42,7 +43,7 @@ const InputBox = () => {
         }}
         className="flex items-center rounded-xl py-0.5 px-2 text-sm bg-neutral-100 border border-neutral-500/10"
       >
-        <textarea
+        <TextArea
           name="chat-message-input"
           ref={inputRef}
           value={inputValue}
@@ -51,11 +52,7 @@ const InputBox = () => {
             throttle(() => {
               chatsocketControls?.typing();
             }, 1000)();
-            event.target.style.height = "auto";
-            event.target.style.height = event.target.scrollHeight + "px";
           }}
-          className="focus:outline-0 w-full resize-none overflow-y-auto max-h-30"
-          rows={1}
         />
         <div className="flex gap-1 md:gap-2 self-end items-center *:p-2 *:[&:hover,&:active]:text-theme *:[&:hover,&:active]:scale-110 *:rounded-full *:transition-all">
           <FileUpload

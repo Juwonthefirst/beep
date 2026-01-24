@@ -22,16 +22,16 @@ const NavLink = ({ href, isCurrent, Icon, children }: NavLinkProps) => {
         "group flex md:flex-col gap-2 items-center text-sm md:text-xs rounded-full text-white p-2 md:p-3 transition-all duration-300 ",
         {
           " text-white font-semibold text-base": isCurrent,
-        }
+        },
       )}
     >
       <Icon className="" size={22} />
       <p
         className={cn(
-          "md:hidden max-w-0 opacity-0 overflow-hidden transition-all duration-700 ease-in-out whitespace-nowrap",
+          "md:hidden max-w-0 opacity-0 overflow-hidden transition-all duration-300 ease-in-out whitespace-nowrap",
           {
             "max-w-xs opacity-100": isCurrent,
-          }
+          },
         )}
       >
         {children}
@@ -55,7 +55,9 @@ export const NavBar = ({ className }: { className?: string }) => {
       <NavLink
         href="/friends"
         Icon={Users}
-        isCurrent={pathName.startsWith("/friends")}
+        isCurrent={
+          pathName.startsWith("/friends") || pathName.startsWith("/users")
+        }
       >
         Friends
       </NavLink>
@@ -76,7 +78,7 @@ export const MobileNavBar = () => {
 
   return (
     !pathName.startsWith("/chat") && (
-      <NavBar className="md:hidden fixed bg-black/5 bottom-10 flex justify-between justify-self-center items-center gap-4 w-9/10 max-w-sm backdrop-blur-sm backdrop-saturate-200 py-2 px-4 rounded-full *:text-black border border-black/10  *:data-[current=true]:text-theme" />
+      <NavBar className="md:hidden fixed bg-black/5 bottom-10 flex justify-between items-center gap-4 w-9/10 max-w-sm backdrop-blur-sm backdrop-saturate-200 py-2 px-4 rounded-full *:text-black border border-black/10  *:data-[current=true]:text-theme" />
     )
   );
 };

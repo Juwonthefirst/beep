@@ -2,13 +2,42 @@ import "server-only";
 
 import axios, { type AxiosRequestConfig, isAxiosError } from "axios";
 import type { ApiMethods } from "./types/client.type";
-import { getAndSetCookies, getCookieString } from "./helpers/server-helper";
+import {
+  getAndSetCookies,
+  getCookieString,
+  retrieveAccessToken,
+} from "./helpers/server-helper";
+import { refreshAccessToken } from "./actions";
 
 const api = axios.create({
   baseURL: process.env.BACKEND_URL,
   timeout: 5000,
   withCredentials: true,
 });
+
+let isRefreshing = false;
+
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      let newAccessToken: string | undefined;
+
+      originalRequest._retry = true;
+      if (!isRefreshing) {
+        isRefreshing = true;
+        newAccessToken = await refreshAccessToken();
+        isRefreshing = false;
+      }
+
+      originalRequest.headers.Authorization = `Bearer ${newAccessToken ?? (await retrieveAccessToken())}`;
+      return api(originalRequest);
+    }
+    return Promise.reject(error);
+  },
+);
 
 export interface RequestProp {
   method?: ApiMethods;
@@ -21,7 +50,7 @@ export const request = async <
   ResponseSuccessType,
   ResponseErrorType = {
     error: string;
-  }
+  },
 >({
   method = "post",
   path,

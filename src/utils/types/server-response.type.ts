@@ -3,31 +3,36 @@ import { UUID } from "crypto";
 export interface CurrentUser {
   id: number;
   username: string;
-  email: string;
   profile_picture: string;
 }
 
-export interface BaseUser {
-  id: number;
-  username: string;
-  email: string;
-  profile_picture: string;
-  is_online: boolean;
-  last_online: string;
-}
-
-export interface Friend {
+export interface BaseFriend {
   id: number;
   username: string;
   profile_picture: string;
-  room_name: string | null;
+  room_name: string;
 }
 
-export interface User extends BaseUser {
+export interface BaseUser extends CurrentUser {
   is_following_me: boolean;
   is_followed_by_me: boolean;
-  is_online: boolean;
 }
+
+export type User = BaseUser &
+  (
+    | {
+        is_friend: true;
+        is_online: boolean;
+        last_online: string;
+        room_name: string;
+      }
+    | {
+        is_friend: false;
+        is_online: null;
+        last_online: null;
+        room_name: null;
+      }
+  );
 
 export interface Group {
   id: number;
@@ -170,7 +175,7 @@ interface ChatRoom {
 
 export interface UserChatRoom extends ChatRoom {
   is_group: false;
-  friend: BaseUser;
+  friend: User;
   group: null;
 }
 
@@ -193,7 +198,7 @@ export const isSignupResponseData = (data: unknown): data is SignupResponse => {
 };
 
 export const isGroupCreateResponseData = (
-  data: unknown
+  data: unknown,
 ): data is GroupCreateResponse => {
   return (
     typeof data === "object" &&
@@ -214,6 +219,6 @@ export interface RoomMetadata {
   is_group: boolean;
 }
 
-export interface ParticipantMetaData extends Friend {
+export interface ParticipantMetaData extends BaseFriend {
   role: string;
 }

@@ -4,7 +4,7 @@ import { login } from "@/utils/actions";
 import InputField, { PasswordField } from "@/components/form/input";
 import AuthForm, { FormError } from "@/components/form/form";
 import { FormDescription } from "@/components/form/form-sematics";
-import Logo from "@/components/logo";
+import Logo from "@/components/logos/logo";
 import GoogleLoginBtn from "@/components/auth-form/google-login-btn";
 import SubmitBtn from "@/components/form/submit-btn";
 

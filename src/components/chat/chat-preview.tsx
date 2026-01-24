@@ -31,7 +31,7 @@ const ChatPreview = ({
       ref={ref}
       className={cn(
         "hover:bg-black/3 p-2 rounded-lg  flex items-center gap-3 transition-all duration-200",
-        { "bg-black/5!": isCurrentRoom }
+        { "bg-black/5!": isCurrentRoom },
       )}
     >
       <div className="relative size-13 rounded-full shrink-0">
@@ -65,8 +65,8 @@ const ChatPreview = ({
             {!last_message
               ? `Start a chat with ${chatParentName}`
               : is_group
-              ? `${last_message.sender_username}:  ${last_message.body}`
-              : last_message.body}
+                ? `${last_message.sender_username}:  ${last_message.body}`
+                : last_message.body}
           </p>
           {unread_message_count > 0 && (
             <p className="text-xs bg-theme rounded-full shrink-0 w-5 h-5 text-white items-center justify-center flex ">

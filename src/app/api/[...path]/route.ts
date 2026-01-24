@@ -2,16 +2,16 @@ import { NextResponse } from "next/server";
 
 import { request } from "@/utils/request-client";
 import type { ErrorResponse } from "@/utils/types/server-response.type";
-import { getORfetchAccessToken } from "@/utils/helpers/server-helper";
+import { getOrFetchAccessToken } from "@/utils/helpers/server-helper";
 import { stringifyResponseErrorStatusCode } from "@/utils/helpers/client-helper";
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ path: string[] }> }
+  { params }: { params: Promise<{ path: string[] }> },
 ) {
   const { path } = await params;
   const { searchParams } = new URL(req.url);
-  const accessToken = await getORfetchAccessToken();
+  const accessToken = await getOrFetchAccessToken();
   const response = await request<unknown, ErrorResponse>({
     method: "get",
     path: path.join("/") + "/?" + searchParams.toString(),
@@ -29,10 +29,10 @@ export async function GET(
       {
         error: stringifyResponseErrorStatusCode(
           errorStatus || 600,
-          response.error?.data
+          response.error?.data.error,
         ),
       },
-      { status: errorStatus || 500 }
+      { status: errorStatus || 500 },
     );
   }
   return NextResponse.json(response.data);

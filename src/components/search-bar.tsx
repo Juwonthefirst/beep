@@ -23,7 +23,7 @@ const SearchBar = ({ setSearchKeyword, intialValue }: Props) => {
           if (timeoutIdRef.current) clearTimeout(timeoutIdRef.current);
           timeoutIdRef.current = setTimeout(
             () => setSearchKeyword(event.target.value),
-            300
+            300,
           );
         }}
       />
@@ -45,7 +45,7 @@ export const SearchBarWithParam = () => {
         return { ...prev, search: value };
       });
     },
-    [setSearchPrams]
+    [setSearchPrams],
   );
 
   return (

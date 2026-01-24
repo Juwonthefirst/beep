@@ -11,12 +11,12 @@ import useSearchParams from "@/hooks/useSearchParams.hook";
 
 const FriendList = () => {
   const intersectingElementRef = useRef<HTMLDivElement | null>(null);
-  const { username } = useParams();
+  const { username } = useParams<{ username: string }>();
   const { searchParams } = useSearchParams();
 
   return (
     <InifinteDataView
-      className="flex flex-col gap-2 px-1"
+      className="relative flex flex-col gap-2 px-1"
       queryOption={friendListQueryOption(searchParams.search)}
       triggerElementRef={intersectingElementRef}
       emptyFallback={<NoFriendsFallback />}

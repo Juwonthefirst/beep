@@ -14,6 +14,7 @@ import { createGroup } from "@/utils/actions";
 import { uploadFileToUrl } from "@/utils/helpers/client-helper";
 import { isGroupCreateResponseData } from "@/utils/types/server-response.type";
 import { chatListQueryOption } from "@/utils/queryOptions";
+import TextArea from "@/components/form/text-area";
 
 const Page = () => {
   const [avatar, setAvatar] = useState<File | null>(null);
@@ -35,7 +36,7 @@ const Page = () => {
           if (!isGroupCreateResponseData(data)) return;
           if (avatar) uploadFileToUrl(avatar, data.avatar_upload_link);
           queryClient.invalidateQueries({
-            queryKey: chatListQueryOption.queryKey,
+            queryKey: chatListQueryOption().queryKey,
             exact: true,
           });
           redirect(`/chat/${data.room_name}/members/add`);
@@ -65,12 +66,13 @@ const Page = () => {
           name="name"
           placeholder="Enter your group name"
         />
-        <InputField
+        <TextArea
           label="Description"
           maxLength={200}
           name="description"
           placeholder="Enter your group description"
           required={false}
+          className="max-h-18 text-sm transistion-all duration-200  rounded-md py-2 px-4 bg-neutral-100 shadow-xs has-focus:bg-white has-focus:ring-4 has-focus:ring-offset-2 has-focus:outline-2  ring-neutral-500/20 has-focus:outline-black text-black *:placeholder:text-sm"
         />
         <SubmitBtn>Submit</SubmitBtn>
         <FormError />

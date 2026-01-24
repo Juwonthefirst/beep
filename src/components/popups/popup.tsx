@@ -3,7 +3,7 @@ import {
   AlertDialog,
   AlertDialogContent,
   AlertDialogTrigger,
-} from "./ui/alert-dialog";
+} from "../ui/alert-dialog";
 
 interface Props {
   children: ReactNode;

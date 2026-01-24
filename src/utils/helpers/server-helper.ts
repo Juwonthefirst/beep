@@ -3,8 +3,7 @@ import "server-only";
 import { cookies } from "next/headers";
 import SetCookie from "set-cookie-parser";
 import sharp from "sharp";
-import { request } from "../request-client";
-import { ErrorResponse } from "../types/server-response.type";
+import { refreshAccessToken } from "../actions";
 
 export const processFile = async (file: File) => {
   const bytes = await file.arrayBuffer();
@@ -24,7 +23,7 @@ export const processFile = async (file: File) => {
     "profile_picture.webp",
     {
       type: "image/webp",
-    }
+    },
   );
 };
 
@@ -57,27 +56,15 @@ export const getCookieString = async () => {
   return cookieStrings.join("; ");
 };
 
-export const getORfetchAccessToken = async () => {
+export const retrieveAccessToken = async () => {
   const cookieStore = await cookies();
   const accessTokenCookie = cookieStore.get("access_token");
-  if (accessTokenCookie) return accessTokenCookie.value;
+  return accessTokenCookie?.value;
+};
 
-  const response = await request<undefined>({
-    path: "/auth/token/refresh/",
-    config: {
-      headers: {
-        "X-CSRFToken": cookieStore.get("csrftoken")?.value,
-      },
-    },
-  });
+export const getOrFetchAccessToken = async () => {
+  const accessToken = await retrieveAccessToken();
+  if (accessToken) return accessToken;
 
-  if ("error" in response) {
-    if (typeof response.error !== "string" && response.error?.status === 401) {
-      cookieStore.delete("refresh_token");
-    }
-    return;
-  }
-  const responseCookies = response.headers["set-cookie"];
-  if (responseCookies)
-    return SetCookie.parse(responseCookies, { map: true }).access_token.value;
+  return await refreshAccessToken();
 };

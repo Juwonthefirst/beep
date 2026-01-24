@@ -33,9 +33,7 @@ const StatusCard = ({
       : RadioTower;
 
   return (
-    <div
-      className={cn("flex flex-col items-center text-md gap-2 mt-5", className)}
-    >
+    <div className={cn("flex flex-col items-center gap-2 mt-5", className)}>
       <StatusIcon className={cn("p-4 rounded-full", iconColor)} size="72" />
       <p className="text-center">{statusMessage}</p>
       {withRetry && (

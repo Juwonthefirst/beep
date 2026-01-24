@@ -35,7 +35,7 @@ const Menu = ({
             exit={{ y: -30, opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.15 }}
             className={cn(
-              "text-sm absolute top-8 right-2 z-50 bg-neutral-50 p-1 border border-black/5 rounded-lg flex flex-col gap-1 shadow-lg *:whitespace-nowrap *:px-3 *:py-1.5 *:rounded-md *:hover:bg-black/5",
+              "text-sm absolute top-8 right-2 z-50 bg-neutral-50 p-1 border border-black/5 rounded-lg flex flex-col gap-1 shadow-lg *:whitespace-nowrap *:px-3 *:py-1.5 *:rounded-md *:hover:bg-black/2 *:transition-all",
               className
             )}
           >
