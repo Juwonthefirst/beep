@@ -1,8 +1,8 @@
-import { GridLayout } from "@livekit/components-react";
-import React from "react";
-import ParticipantTile from "./participant-tile";
+// import { GridLayout } from "@livekit/components-react";
+// import React from "react";
+// import ParticipantTile from "./participant-tile";
 
-type Props = {};
+//type Props = {};
 
 // const GroupCall = (props: Props) => {
 //   return (
