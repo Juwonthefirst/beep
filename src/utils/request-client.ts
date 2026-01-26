@@ -61,6 +61,7 @@ export const request = async <
     const requestConfig: AxiosRequestConfig = {
       ...config,
       headers: {
+        Referer: process.env.DOMAIN_ADDRESS,
         Cookie: await getCookieString(),
         ...config?.headers,
       },
