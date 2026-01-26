@@ -2,13 +2,13 @@ import Image from "next/image";
 
 const SplashScreen = () => {
   return (
-    <div className="relative w-dvh h-dvh">
+    <div className="relative w-dvh h-dvh flex items-center justify-center bg-white">
       <Image
         src="/splash.png"
         alt="Splash Screen"
         fill
         sizes="100vw"
-        className="object-cover/"
+        className="object-cover"
       />
     </div>
   );
