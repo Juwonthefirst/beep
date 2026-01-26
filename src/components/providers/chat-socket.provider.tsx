@@ -10,7 +10,6 @@ import {
   useState,
   useMemo,
 } from "react";
-import SplashScreen from "../splash-screen";
 
 const chatSocket = new ChatSocket({ getAccessToken });
 
@@ -49,7 +48,8 @@ const ChatSocketProvider = ({ children }: { children: ReactNode }) => {
     [connectionState, currentRoom],
   );
 
-  if (connectionState === "connecting") return <SplashScreen />;
+  if (!(connectionState === "connected" || connectionState === "reconnected"))
+    return <p>{connectionState}</p>;
   return (
     <ChatSocketContext value={chatSocketContextValue}>
       {children}
