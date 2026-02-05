@@ -67,7 +67,10 @@ const CallView = ({ callState, setCallState, setIsInCall }: Props) => {
         }
       }
 
-      if (data.status === "error") setGlobalState("error");
+      if (data.status === "error") {
+        setGlobalState("error");
+        setError(data.error || "Failed to connect to the call.");
+      }
     })();
 
     return () => {
@@ -105,6 +108,7 @@ const CallView = ({ callState, setCallState, setIsInCall }: Props) => {
           <ControlBar setCallState={setCallState} />
           <RoomAudioRenderer />
         </RoomContext>
+        {error && <p className="text-red-500 text-sm">{error}</p>}
       </div>
     )
   );
