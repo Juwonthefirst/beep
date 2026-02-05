@@ -49,14 +49,19 @@ const CallView = ({ callState, setCallState, setIsInCall }: Props) => {
         func: () => fetchCallAccessToken(callState),
       });
       if (data.status === "success") {
-        await room.connect(data.data.room_url, data.data.token);
-        await room.localParticipant.setMicrophoneEnabled(true);
-        setIsInCall(true);
-        setGlobalState("success");
+        try {
+          await room.connect(data.data.room_url, data.data.token);
+          await room.localParticipant.setMicrophoneEnabled(true);
+          setIsInCall(true);
+          setGlobalState("success");
 
-        room.on("disconnected", () => {
-          setCallState(null);
-        });
+          room.on("disconnected", () => {
+            setCallState(null);
+          });
+        } catch (error) {
+          setGlobalState("error");
+          setError("Failed to connect to the call.");
+        }
 
         const roomMetaData: RoomMetadata | null = room.metadata
           ? JSON.parse(room.metadata)
@@ -108,7 +113,9 @@ const CallView = ({ callState, setCallState, setIsInCall }: Props) => {
           <ControlBar setCallState={setCallState} />
           <RoomAudioRenderer />
         </RoomContext>
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {globalState === "error" && (
+          <p className="text-red-500 text-sm">{error}</p>
+        )}
       </div>
     )
   );
