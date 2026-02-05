@@ -77,15 +77,16 @@ function InifinteDataView<DataType, TQueryKey extends unknown[], TPageParam>({
             children(
               result,
               data.pageParams.length * pageSize - limit ===
-                currentPageParamIndex * pageSize + index
-            )
-          )
+                currentPageParamIndex * pageSize + index,
+            ),
+          ),
         )}
       {(isPending || isFetchingNextPage) && loadingFallback}
       {(isError || isFetchNextPageError) &&
         isAxiosError<ErrorResponse>(error) &&
         error.response && (
           <StatusCard
+            className="scale-85"
             status={error.response?.status}
             onRetry={() => refetch()}
             withRetry

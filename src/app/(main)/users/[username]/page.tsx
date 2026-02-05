@@ -34,13 +34,13 @@ const Page = () => {
       </section>
     );
   return (
-    <section className="flex flex-col pt-10 w-full">
+    <section className="flex flex-col pt-10 w-full h-screen">
       <FriendInfo {...data} />
 
       <Popup
         trigger={
           <button
-            className="text-red-500 flex items-center gap-1.5  p-6 border-t border-neutral-200"
+            className="text-red-500 flex items-center gap-1.5  p-6 border-t border-neutral-200 mt-auto"
             type="button"
           >
             Unfriend

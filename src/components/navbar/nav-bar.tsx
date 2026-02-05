@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { LucideIcon, MessageCircle, PhoneCall, Users } from "lucide-react";
+import { LucideIcon, MessageCircle, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ProfileLink from "./profile-link";
@@ -61,13 +61,7 @@ export const NavBar = ({ className }: { className?: string }) => {
       >
         Friends
       </NavLink>
-      <NavLink
-        href="/calls"
-        Icon={PhoneCall}
-        isCurrent={pathName.startsWith("/calls")}
-      >
-        Thoughts
-      </NavLink>
+
       <ProfileLink />
     </nav>
   );

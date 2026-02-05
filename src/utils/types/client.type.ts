@@ -40,19 +40,19 @@ export type WebSocketConnectionState =
   | WebSocketConnectionFailedState;
 
 export const isWebSocketLoadingState = (
-  value: string
+  value: string,
 ): value is WebSocketConnectionLoadingState => {
   return value === "reconnecting" || value === "connecting";
 };
 
 export const isWebSocketSuccessState = (
-  value: string
+  value: string,
 ): value is WebSocketConnectionSuccessState => {
   return value === "reconnected" || value === "connected";
 };
 
 export const isWebSocketFailedState = (
-  value: string
+  value: string,
 ): value is WebSocketConnectionSuccessState => {
   return value === "disconnected" || value === "reconnection_failed";
 };
@@ -60,7 +60,7 @@ export const isWebSocketFailedState = (
 export type ChatSocketSend = (
   message: string,
   attachment?: Attachment,
-  uuid?: UUID
+  uuid?: UUID,
 ) => void;
 
 export type ChatSocketTyping = () => void;
@@ -85,3 +85,5 @@ export type CallState = {
   | { startedCall: true; callId: null }
   | { startedCall: false; callId: string }
 );
+
+export type FriendListType = "friend" | "friend request" | "sent request";

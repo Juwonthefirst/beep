@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import ChatList from "./chat/chat-list";
 import FriendList from "./friends/friend-list";
-import AddFriendBtn from "./friends/add-friend-btn";
+import AddFriendBtn from "./friends/buttons/add-friend-btn";
 
 const CurrentPageListView = () => {
   const pathName = usePathname();

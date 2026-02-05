@@ -45,7 +45,7 @@ const FriendCard = ({
             sizes="96px"
           />
         </div>
-        <p className="font-medium">{username}</p>
+        <p className="font-medium line-clamp-1">{username}</p>
       </Link>
 
       <div className="flex gap-2 text-theme *:hover:scale-110 *:hover:bg-theme/10 *:rounded-full *:p-2   ml-auto">

@@ -370,6 +370,34 @@ export const addFriend = async (
 
   return { status: "success", data: response.data };
 };
+export const cancelFriendRequest = async (
+  friendId: number,
+): Promise<ServerResponse<{ status: string }>> => {
+  const accessToken = await retrieveAccessToken();
+  const config = {
+    headers: {
+      Authorization: `Bearer ${accessToken || ""}`,
+    },
+  };
+  const response = await request<{ status: string }>({
+    method: "post",
+    path: "/auth/user/friends/requests/send/",
+    data: { friend_id: friendId },
+    config,
+  });
+
+  if ("error" in response) {
+    return {
+      status: "error",
+      error: stringifyResponseErrorStatusCode(
+        response.error?.status || 600,
+        response.error?.data.error,
+      ),
+    };
+  }
+
+  return { status: "success", data: response.data };
+};
 
 export const refreshAccessToken = async () => {
   const cookieStore = await cookies();

@@ -154,6 +154,26 @@ export const friendListQueryOption = (searchKeyword = "") =>
     },
   });
 
+export const friendRequestListQueryOption = (searchKeyword = "") =>
+  pagePaginationQueryOption<BaseUser>({
+    queryKey: ["friend request", { search: searchKeyword }],
+    path: "/api/auth/user/friends/requests/receive",
+    searchParam: { search: searchKeyword },
+    extraParams: {
+      gcTime: searchKeyword === "" ? undefined : SEARCH_QUERY_GC_TIME,
+    },
+  });
+
+export const sentFriendRequestListQueryOption = (searchKeyword = "") =>
+  pagePaginationQueryOption<BaseUser>({
+    queryKey: ["sent request", { search: searchKeyword }],
+    path: "/api/auth/user/friends/requests/sent",
+    searchParam: { search: searchKeyword },
+    extraParams: {
+      gcTime: searchKeyword === "" ? undefined : SEARCH_QUERY_GC_TIME,
+    },
+  });
+
 export const addMemberMutationOption = mutationOptions({
   mutationFn: ({
     groupId,
@@ -233,6 +253,17 @@ export const userQueryOption = (username: string) =>
   });
 
 export const sendFriendRequestMutationOption = mutationOptions({
+  mutationFn: ({ userId }: { userId: number }) =>
+    addFriend(userId).then((res) => {
+      if (res.status === "error") throw new Error(res.error);
+      return res;
+    }),
+
+  onSuccess(data, variables, onMutateResult, context) {
+    context.client.invalidateQueries({ queryKey: usersQueryOption().queryKey });
+  },
+});
+export const cancelFriendRequestMutationOption = mutationOptions({
   mutationFn: ({ userId }: { userId: number }) =>
     addFriend(userId).then((res) => {
       if (res.status === "error") throw new Error(res.error);

@@ -49,7 +49,7 @@ const SelectedUser = (props: BaseFriend & { onClick: () => void }) => {
 };
 
 const Page = () => {
-  const { roomName } = useParams();
+  const { roomName } = useParams<{ roomName: string }>();
   const router = useRouter();
   const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedUsersId, setSelectedUsersId] = useState<number[]>([]);
@@ -69,7 +69,7 @@ const Page = () => {
     error: roomQueryError,
     isPending: isRoomQueryPending,
     refetch: refetchRoomQuery,
-  } = useQuery(chatQueryOption(roomName as string));
+  } = useQuery(chatQueryOption(roomName));
 
   const { mutate, error, isPending } = useMutation({
     ...addMemberMutationOption,
@@ -100,7 +100,7 @@ const Page = () => {
   }, [fetchNextPage, hasNextPage, isFetchingNextPage, isFriendQueryPending]);
 
   const LIMIT = 5;
-  if (isFriendQueryPending || isRoomQueryPending)
+  if (isRoomQueryPending)
     return <LoaderCircle className="animate-spin mt-6 mx-auto opacity-70" />;
   if (roomQueryError && isAxiosError(roomQueryError) && roomQueryError.response)
     return (
