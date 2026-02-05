@@ -260,7 +260,9 @@ export const sendFriendRequestMutationOption = mutationOptions({
     }),
 
   onSuccess(data, variables, onMutateResult, context) {
-    context.client.invalidateQueries({ queryKey: usersQueryOption().queryKey });
+    context.client.invalidateQueries({
+      queryKey: friendListQueryOption().queryKey,
+    });
   },
 });
 export const cancelFriendRequestMutationOption = mutationOptions({
