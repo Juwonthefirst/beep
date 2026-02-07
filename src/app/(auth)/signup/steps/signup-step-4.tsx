@@ -35,7 +35,7 @@ const SignupStep4 = ({
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const profilePicturePreview = useMemo(
     () => profilePicture && URL.createObjectURL(profilePicture),
-    [profilePicture]
+    [profilePicture],
   );
   return (
     <section className="mt-18 mx-auto">
@@ -67,8 +67,10 @@ const SignupStep4 = ({
             isSignupResponseData(response.data) &&
             profilePicture
           ) {
-            alert("Uploading profile picture");
-            uploadFileToUrl(profilePicture, response.data.avatar_upload_link);
+            await uploadFileToUrl(
+              profilePicture,
+              response.data.avatar_upload_link,
+            );
           }
           return response;
         }}

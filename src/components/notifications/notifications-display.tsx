@@ -55,7 +55,11 @@ const Notifications = ({ children }: { children: React.ReactNode }) => {
       });
       toast.custom((toastId) => (
         <NotificationCard
-          profilePictureURL={notification.sender_profile_picture}
+          profilePictureURL={
+            notification.is_group
+              ? notification.group_name
+              : notification.sender_profile_picture
+          }
           toastId={toastId}
           header={notification.sender_username}
           description={
@@ -94,14 +98,14 @@ const Notifications = ({ children }: { children: React.ReactNode }) => {
           newData.friend.is_online = message.status;
           newData.friend.last_online = message.last_online;
           return newData;
-        }
+        },
       );
     };
 
     notificationSocket.onCallNotification = (notification) => {
       toast.custom(
         (toastId) => <CallNotification {...notification} toastId={toastId} />,
-        { duration: Infinity }
+        { duration: Infinity },
       );
     };
 
