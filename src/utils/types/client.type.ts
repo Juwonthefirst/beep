@@ -61,7 +61,7 @@ export type ChatSocketSend = (
   message: string,
   attachment?: Attachment,
   uuid?: UUID,
-) => void;
+) => UUID;
 
 export type ChatSocketTyping = () => void;
 

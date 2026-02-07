@@ -53,7 +53,7 @@ const MessageGroup = ({
           {messages.map((message, index) => (
             <MessageCard
               key={message.uuid}
-              {...message}
+              message={message}
               ref={
                 intersectionRef && index === Math.max(0, messages.length - 4)
                   ? intersectionRef

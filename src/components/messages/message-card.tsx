@@ -1,10 +1,16 @@
 import { cn } from "@/lib/utils";
-import type { Message, ReplyMessage } from "@/utils/types/server-response.type";
-import { Reply } from "lucide-react";
+import {
+  isPendingMessage,
+  isSentMessage,
+  type Message,
+  type ReplyMessage,
+} from "@/utils/types/server-response.type";
+import { Clock, Reply } from "lucide-react";
 import Attachment from "./attachment";
 import { type RefObject } from "react";
 
-interface MessageCardProps extends Message {
+interface MessageCardProps {
+  message: Message;
   ref?: RefObject<HTMLDivElement | null>;
   sentByMe: boolean;
   isFirst: boolean;
@@ -34,11 +40,8 @@ const ReplyToMessageCard = ({ id, body, attachment, sender }: ReplyMessage) => {
 };
 
 const MessageCard = ({
-  id,
   ref,
-  body,
-  reply_to,
-  attachment,
+  message,
   sentByMe,
   isFirst,
   isLast,
@@ -50,10 +53,10 @@ const MessageCard = ({
         "self-end ": sentByMe,
       })}
     >
-      {reply_to && <ReplyToMessageCard {...reply_to} />}
+      {message.reply_to && <ReplyToMessageCard {...message.reply_to} />}
 
       <div
-        className={cn("flex flex-col px-3 py-1.5 w-fit text-left", {
+        className={cn("flex px-3 py-1.5 w-fit text-left gap-1", {
           "bg-theme/90 rounded-l-2xl rounded-r-[6px]  text-white ml-auto":
             sentByMe,
           " bg-neutral-100 rounded-r-2xl rounded-l-[6px] text-black": !sentByMe,
@@ -62,12 +65,21 @@ const MessageCard = ({
         })}
         role="log"
       >
-        <p className="whitespace-pre-wrap wrap-anywhere">{body}</p>
+        <p className="whitespace-pre-wrap wrap-anywhere">{message.body}</p>
+        {isPendingMessage(message) && (
+          <Clock
+            className={cn(
+              "shrink-0 justify-end",
+              sentByMe ? "self-end" : "self-start",
+            )}
+            size={12}
+          />
+        )}
       </div>
-      {attachment && (
+      {isSentMessage(message) && message.attachment && (
         <Attachment
-          {...attachment}
-          message_id={String(id)}
+          {...message.attachment}
+          message_id={String(message.id)}
           className="overflow-hidden rounded-lg w-44 h-48 ml-auto shadow-md mt-0.5 mb-2"
           imageSizes="352px"
         />

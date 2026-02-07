@@ -5,15 +5,22 @@ import { use, useRef, useState } from "react";
 import throttle from "lodash.throttle";
 import FileUpload from "../form/file-upload";
 import AttachmentPreview from "./attachment-preview";
-import { ChatSocketControlsContext } from "../providers/chatroom-state.provider";
+import {
+  ChatSocketControlsContext,
+  CurrentRoomNameContext,
+} from "../providers/chatroom-state.provider";
 import TextArea from "../form/text-area";
+import { useQueryClient } from "@tanstack/react-query";
+import { messageQueryOption } from "@/utils/queryOptions";
 
 const InputBox = () => {
-  const chatsocketControls = use(ChatSocketControlsContext);
+  const chatsocketControls = use(ChatSocketControlsContext)!;
 
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
+  const queryClient = useQueryClient();
+  const roomName = use(CurrentRoomNameContext);
 
   return (
     <div className="flex flex-col gap-4 py-2 px-6 md:px-8">
@@ -24,7 +31,7 @@ const InputBox = () => {
             attachment={attachmentFile}
             onRemove={() => {
               setAttachmentFiles((prev) =>
-                prev.filter((file) => file !== attachmentFile)
+                prev.filter((file) => file !== attachmentFile),
               );
             }}
           />
@@ -34,7 +41,28 @@ const InputBox = () => {
         onSubmit={(event) => {
           event.preventDefault();
           if (!inputValue) return;
-          chatsocketControls?.send(inputValue);
+          const uuid = chatsocketControls.send(inputValue);
+          queryClient.setQueryData(
+            messageQueryOption(roomName).queryKey,
+            (old) => {
+              if (!old) return old;
+              const newData = structuredClone(old);
+
+              newData.pages[0].results = [
+                {
+                  body: inputValue,
+                  uuid,
+                  attachment: null,
+                  reply_to: null,
+                  created_at: new Date().toString(),
+                },
+                ...newData.pages[0].results,
+              ];
+
+              return newData;
+            },
+          );
+
           setInputValue("");
           if (inputRef.current) {
             inputRef.current.focus();

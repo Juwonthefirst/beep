@@ -54,7 +54,7 @@ export interface GroupMember {
   role_hex: string;
 }
 
-export interface Message {
+interface BaseMessage {
   id: number;
   uuid: UUID;
   body: string;
@@ -66,13 +66,36 @@ export interface Message {
   is_deleted: boolean;
   is_edited: boolean;
 }
+export type PendingMessage = Omit<
+  BaseMessage,
+  "id" | "sender" | "is_deleted" | "is_edited" | "room"
+>;
+
+export const isPendingMessage = (value: Message): value is PendingMessage => {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    !("id" in value) &&
+    !("sender" in value)
+  );
+};
+export const isSentMessage = (value: Message): value is BaseMessage => {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "id" in value &&
+    "sender" in value
+  );
+};
+
+export type Message = BaseMessage | PendingMessage;
 
 export type ReplyMessage = Omit<
-  Message,
+  BaseMessage,
   "uuid" | "reply_to" | "created_at" | "is_edited" | "room" | "sender"
 > & { sender: string };
 
-export type LastMessage = Message & { sender_username: string };
+export type LastMessage = BaseMessage & { sender_username: string };
 
 export interface Attachment {
   id: number;

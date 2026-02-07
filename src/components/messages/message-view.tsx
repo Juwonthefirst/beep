@@ -33,8 +33,11 @@ const MessaageView = () => {
 
   const messageGroups = useMemo(
     () =>
-      createMessageGroups(data.pages.flatMap((response) => response.results)),
-    [data]
+      createMessageGroups(
+        data.pages.flatMap((response) => response.results),
+        currentUser.id,
+      ),
+    [data, currentUser],
   );
 
   useEffect(() => {
@@ -44,7 +47,7 @@ const MessaageView = () => {
       intersectingElement.current,
       () => {
         void fetchNextPage();
-      }
+      },
     );
     return () => observer?.disconnect();
   }, [isFetchingNextPage, hasNextPage, fetchNextPage]);

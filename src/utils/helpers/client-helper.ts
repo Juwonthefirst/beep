@@ -1,4 +1,8 @@
-import type { Message, PaginatedResponse } from "../types/server-response.type";
+import {
+  isSentMessage,
+  type Message,
+  type PaginatedResponse,
+} from "../types/server-response.type";
 import type { MessageGroup } from "../types/client.type";
 import axios from "axios";
 
@@ -33,7 +37,7 @@ export const withRetry = async <Type>({
 
 export const watchElementIntersecting = (
   target: HTMLElement | null,
-  onIntersecting: () => void
+  onIntersecting: () => void,
 ) => {
   if (!target) return;
   const observer = new IntersectionObserver((entries) => {
@@ -91,7 +95,7 @@ export const parseDateString = ({
 
 export const nestedObjectedLookup = <ObjectType extends object>(
   object: ObjectType,
-  lookupKeys: readonly string[]
+  lookupKeys: readonly string[],
 ) => {
   return lookupKeys.reduce<unknown>((currentObject, currentValue) => {
     if (typeof currentObject !== "object") return currentObject;
@@ -102,7 +106,7 @@ export const nestedObjectedLookup = <ObjectType extends object>(
 export const filterOutObjectFromResponse = <ObjectType>(
   object_property: unknown,
   lookup_property: keyof ObjectType,
-  apiResponses: PaginatedResponse<ObjectType>[]
+  apiResponses: PaginatedResponse<ObjectType>[],
 ): [PaginatedResponse<ObjectType>[], ObjectType | undefined] => {
   let removedObject: ObjectType | undefined;
 
@@ -125,13 +129,13 @@ export const filterOutObjectFromResponse = <ObjectType>(
 export const findObjectInResponse = <ObjectType>(
   object_property: unknown,
   lookup_property: keyof ObjectType,
-  apiResponses: PaginatedResponse<ObjectType>[]
+  apiResponses: PaginatedResponse<ObjectType>[],
 ): ObjectType | undefined => {
   let object: ObjectType | undefined;
 
   for (const response of apiResponses) {
     const requestedObject = response.results.find(
-      (result) => result[lookup_property] === object_property
+      (result) => result[lookup_property] === object_property,
     );
     if (requestedObject) {
       object = requestedObject;
@@ -142,25 +146,29 @@ export const findObjectInResponse = <ObjectType>(
   return object;
 };
 
-export const createMessageGroups = (messages: Message[]) => {
+export const createMessageGroups = (
+  messages: Message[],
+  currentUserId: number,
+) => {
   const groups: MessageGroup[] = [];
   let lastUserId: number | undefined;
   let lastTime: number | undefined;
   const timeDifferenceLimit = 60 * 30 * 1000;
   messages.forEach((message) => {
+    const sender = isSentMessage(message) ? message.sender : currentUserId;
     const messageTimeInSeconds = new Date(message.created_at).getTime();
     const hasSurpassedTimeDifference =
       !lastTime || lastTime - messageTimeInSeconds > timeDifferenceLimit;
 
-    if (lastUserId !== message.sender || hasSurpassedTimeDifference) {
+    if (lastUserId !== sender || hasSurpassedTimeDifference) {
       if (hasSurpassedTimeDifference) lastTime = messageTimeInSeconds;
       groups.push({
         type: "message",
-        userId: message.sender,
+        userId: sender,
         hasDateHeader: hasSurpassedTimeDifference,
         messages: [message],
       });
-      lastUserId = message.sender;
+      lastUserId = sender;
       return;
     }
     const lastGroup = groups.at(-1);
@@ -181,7 +189,7 @@ export const uploadFileToUrl = async (file: File, uploadURL: string) => {
 };
 export const stringifyResponseErrorStatusCode = (
   status: number,
-  error?: string
+  error?: string,
 ) => {
   switch (status) {
     case 400:

@@ -7,7 +7,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   Attachment,
   GroupChatRoom,
-  Message,
   TypingUsers,
   UserChatRoom,
 } from "@/utils/types/server-response.type";
@@ -43,21 +42,35 @@ const useChatSocket = (room_name: string) => {
           messageQueryOption(room_name).queryKey,
           (old) => {
             if (!old) return old;
-            const [updatedPages, removedMessage] =
-              filterOutObjectFromResponse<Message>(
-                newMessage.uuid,
-                "uuid",
-                old.pages
-              );
+            let isMessageInQueryData = false;
+            let messageResultIndex: number | null = null;
+            const updatedPages = structuredClone(old.pages);
 
-            if (!removedMessage && newMessage.event === "chat")
+            const messageResponseIndex = old.pages.findIndex((response) => {
+              messageResultIndex = response.results.findIndex(
+                (result) => result.uuid === newMessage.uuid,
+              );
+              if (messageResultIndex !== -1) {
+                isMessageInQueryData = true;
+                return true;
+              }
+            });
+            if (!isMessageInQueryData && newMessage.event === "chat")
               updatedPages[0].results = [
                 newMessage,
                 ...updatedPages[0].results,
               ];
+            else if (
+              isMessageInQueryData &&
+              messageResultIndex !== null &&
+              newMessage.event === "chat"
+            ) {
+              updatedPages[messageResponseIndex].results[messageResultIndex] =
+                newMessage;
+            }
 
             return { ...old, pages: updatedPages };
-          }
+          },
         );
 
         queryClient.setQueryData(chatListQueryOption().queryKey, (old) => {
@@ -92,12 +105,12 @@ const useChatSocket = (room_name: string) => {
           if (prev.includes(username)) return prev;
           setTimeout(() => {
             setTypingUsers((current) =>
-              current.filter((user) => user !== username)
+              current.filter((user) => user !== username),
             );
           }, 1500);
           return [...prev, username];
         });
-      }
+      },
     );
     return () => {
       chatSocket.leaveGroup();
@@ -113,7 +126,7 @@ const useChatSocket = (room_name: string) => {
         chatSocket.typing();
       },
     }),
-    [chatSocket, typingUsers]
+    [chatSocket, typingUsers],
   );
 };
 
