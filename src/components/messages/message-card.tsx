@@ -3,12 +3,12 @@ import {
   isPendingMessage,
   isSentMessage,
   type Message,
-  type ReplyMessage,
 } from "@/utils/types/server-response.type";
-import { Clock, Reply } from "lucide-react";
+import { Clock } from "lucide-react";
 import Attachment from "./attachment";
 import { type RefObject } from "react";
 import MessageMenu from "./message-menu";
+import ReplyMessageCard from "./reply-message-card";
 
 interface MessageCardProps {
   message: Message;
@@ -17,28 +17,6 @@ interface MessageCardProps {
   isFirst: boolean;
   isLast: boolean;
 }
-
-const ReplyToMessageCard = ({ id, body, attachment, sender }: ReplyMessage) => {
-  return (
-    <div className="flex gap-2 items-center w-fit mb-1 mt-2">
-      <Reply size={18} className="rotate-y-180" />
-      <div className="flex gap-1 bg-neutral-100 text-black p-0.5 items-center rounded-lg ">
-        {attachment && (
-          <Attachment
-            {...attachment}
-            message_id={String(id)}
-            className="min-w-9 min-h-9 rounded-sm overflow-hidden"
-            imageSizes="72px"
-          />
-        )}
-        <div className={cn("flex flex-col text-xs py-1 px-2")}>
-          <p>{sender}</p>
-          <p className="line-clamp-1 opacity-70 ">{body}</p>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const MessageCard = ({
   ref,
@@ -54,7 +32,7 @@ const MessageCard = ({
         "self-end": sentByMe,
       })}
     >
-      {message.reply_to && <ReplyToMessageCard {...message.reply_to} />}
+      {message.reply_to && <ReplyMessageCard {...message.reply_to} />}
 
       <div
         className={cn(

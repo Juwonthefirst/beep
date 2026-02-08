@@ -44,7 +44,7 @@ class Socket {
     | null;
 
   private readonly updateConnectionState: (
-    connectionState: WebSocketConnectionState
+    connectionState: WebSocketConnectionState,
   ) => void;
 
   constructor({ url, getAccessToken }: SocketConstructor) {
@@ -57,7 +57,7 @@ class Socket {
     this.onConnectionStateChange = null;
     this.onSocketEvent = null;
     this.updateConnectionState = (
-      connectionState: WebSocketConnectionState
+      connectionState: WebSocketConnectionState,
     ) => {
       this.connectionState = connectionState;
       this.onConnectionStateChange?.(connectionState);
@@ -67,7 +67,7 @@ class Socket {
   private async createWebsocketConnection(
     successState: WebSocketConnectionSuccessState,
     loadingState: WebSocketConnectionLoadingState,
-    failedState: WebSocketConnectionFailedState
+    failedState: WebSocketConnectionFailedState,
   ) {
     if (this.connectionState === loadingState) return;
     this.updateConnectionState(loadingState);
@@ -77,7 +77,7 @@ class Socket {
           const accessToken = await this.getAccessToken();
           await new Promise<void>((resolve, reject) => {
             this.socket = new WebSocket(
-              this.url + `?token=${accessToken || ""}`
+              this.url + `?token=${accessToken || ""}`,
             );
             this.socket.onopen = () => {
               this.updateConnectionState(successState);
@@ -101,7 +101,7 @@ class Socket {
     await this.createWebsocketConnection(
       "connected",
       "connecting",
-      "disconnected"
+      "disconnected",
     );
   }
 
@@ -109,7 +109,7 @@ class Socket {
     await this.createWebsocketConnection(
       "reconnected",
       "reconnecting",
-      "reconnection_failed"
+      "reconnection_failed",
     );
   }
 
@@ -176,7 +176,7 @@ export class ChatSocket extends Socket {
   joinGroup(
     groupName: string,
     onMessage: (message: ChatSocketMessage) => void,
-    onTyping: (sender_username: string) => void
+    onTyping: (sender_username: string) => void,
   ) {
     const status = this.send({ action: "group_join", room_name: groupName });
     this.updateCurrentRoom(groupName);
@@ -198,9 +198,15 @@ export class ChatSocket extends Socket {
     return this.send({ action: "typing" });
   }
 
-  chat(message: string, attachment?: Attachment) {
+  chat(message: string, attachment?: Attachment, replyToId?: number) {
     const uuid = uuidV4() as UUID;
-    this.send({ action: "chat", message, uuid, attachment });
+    this.send({
+      action: "chat",
+      message,
+      uuid,
+      attachment,
+      reply_to: replyToId,
+    });
     return uuid;
   }
 

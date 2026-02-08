@@ -47,12 +47,12 @@ const MessageMenu = ({ message, sentByMe }: Props) => {
             {isMenuOpened && (
               <div
                 className={cn(
-                  "absolute z-10 flex flex-col gap-2 text-sm bg-neutral-50 bottom-0  p-2 rounded-md min-w-42 shadow-lg",
+                  "absolute z-10 flex flex-col gap-2 text-sm bg-stone-50 bottom-0  p-2 rounded-md min-w-42 shadow-lg",
                   { "left-8": !sentByMe, "right-8": sentByMe },
                 )}
               >
                 <div className="flex gap-1 text-xs opacity-85">
-                  <p className="">
+                  <p>
                     {parseDateString({
                       dateString: message.created_at,
                       fullDate: true,

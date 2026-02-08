@@ -24,6 +24,7 @@ export type WebsocketMessage =
       message: string;
       uuid: UUID;
       attachment?: Attachment;
+      reply_to?: number;
     }
   | { action: "call_decline"; call_id: string };
 
@@ -57,11 +58,15 @@ export const isWebSocketFailedState = (
   return value === "disconnected" || value === "reconnection_failed";
 };
 
-export type ChatSocketSend = (
-  message: string,
-  attachment?: Attachment,
-  uuid?: UUID,
-) => UUID;
+export type ChatSocketSend = ({
+  message,
+  attachment,
+  replyToId,
+}: {
+  message: string;
+  attachment?: Attachment;
+  replyToId?: number;
+}) => UUID;
 
 export type ChatSocketTyping = () => void;
 

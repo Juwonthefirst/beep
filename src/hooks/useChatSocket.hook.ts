@@ -120,8 +120,15 @@ const useChatSocket = (room_name: string) => {
   return useMemo(
     () => ({
       typingUsers,
-      send: (message: string, attachment?: Attachment) =>
-        chatSocket.chat(message, attachment),
+      send: ({
+        message,
+        attachment,
+        replyToId,
+      }: {
+        message: string;
+        attachment?: Attachment;
+        replyToId?: number;
+      }) => chatSocket.chat(message, attachment, replyToId),
       typing: () => {
         chatSocket.typing();
       },
