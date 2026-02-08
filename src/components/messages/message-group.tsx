@@ -32,7 +32,7 @@ const MessageGroup = ({
         </p>
       )}
 
-      <div className="relative flex items-end gap-2">
+      <div className="/relative flex items-end gap-2">
         {!sentByMe && isGroupMessage && sender_detail && (
           <div className="size-8 relative">
             <ProfilePicture

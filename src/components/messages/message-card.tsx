@@ -8,6 +8,7 @@ import {
 import { Clock, Reply } from "lucide-react";
 import Attachment from "./attachment";
 import { type RefObject } from "react";
+import MessageMenu from "./message-menu";
 
 interface MessageCardProps {
   message: Message;
@@ -49,20 +50,24 @@ const MessageCard = ({
   return (
     <div
       ref={ref}
-      className={cn("max-w-3/4 ", {
-        "self-end ": sentByMe,
+      className={cn("w-4/5 relative group", {
+        "self-end": sentByMe,
       })}
     >
       {message.reply_to && <ReplyToMessageCard {...message.reply_to} />}
 
       <div
-        className={cn("flex px-3 py-1.5 w-fit text-left gap-1", {
-          "bg-theme/90 rounded-l-2xl rounded-r-[6px]  text-white ml-auto":
-            sentByMe,
-          " bg-neutral-100 rounded-r-2xl rounded-l-[6px] text-black": !sentByMe,
-          "rounded-t-2xl!": isLast,
-          "rounded-b-2xl!": isFirst,
-        })}
+        className={cn(
+          "flex px-3 py-1.5 w-fit text-left gap-1 max-w-3/4 relative",
+          {
+            "bg-theme/90 rounded-l-2xl rounded-r-[6px]  text-white ml-auto":
+              sentByMe,
+            " bg-neutral-100 rounded-r-2xl rounded-l-[6px] text-black":
+              !sentByMe,
+            "rounded-t-2xl!": isLast,
+            "rounded-b-2xl!": isFirst,
+          },
+        )}
         role="log"
       >
         <p className="whitespace-pre-wrap wrap-anywhere">{message.body}</p>
@@ -75,6 +80,7 @@ const MessageCard = ({
             size={12}
           />
         )}
+        <MessageMenu message={message} sentByMe={sentByMe} />
       </div>
       {isSentMessage(message) && message.attachment && (
         <Attachment

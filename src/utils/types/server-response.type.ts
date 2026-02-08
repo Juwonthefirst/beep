@@ -54,7 +54,7 @@ export interface GroupMember {
   role_hex: string;
 }
 
-interface BaseMessage {
+export interface BaseMessage {
   id: number;
   uuid: UUID;
   body: string;
