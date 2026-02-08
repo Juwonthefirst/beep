@@ -74,7 +74,10 @@ const InputBox = () => {
                     body: inputValue,
                     uuid,
                     attachment: null,
-                    reply_to: null,
+                    reply_to:
+                      chatState.mode === "reply"
+                        ? { ...chatState.messageObject!, sender: "You" }
+                        : null,
                     created_at: new Date().toString(),
                   },
                   ...newData.pages[0].results,

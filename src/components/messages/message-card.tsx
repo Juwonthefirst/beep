@@ -32,7 +32,12 @@ const MessageCard = ({
         "self-end": sentByMe,
       })}
     >
-      {message.reply_to && <ReplyMessageCard {...message.reply_to} />}
+      {message.reply_to && (
+        <ReplyMessageCard
+          {...message.reply_to}
+          className={sentByMe ? "ml-auto" : "mr-auto"}
+        />
+      )}
 
       <div
         className={cn(
