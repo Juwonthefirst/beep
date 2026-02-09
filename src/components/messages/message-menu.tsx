@@ -21,7 +21,7 @@ const MessageMenu = ({ message, sentByMe }: Props) => {
   const iconSize = 18;
   const DELETE_GRACE_PERIOD = 60 * 30 * 1000;
   console.log(
-    new Date(message.created_at).getTime() >
+    new Date(message.created_at).getTime() <
       new Date().getTime() - DELETE_GRACE_PERIOD,
   );
   const [isMenuOpened, setIsMenuOpened] = useState(false);
@@ -81,7 +81,7 @@ const MessageMenu = ({ message, sentByMe }: Props) => {
                     chatControls?.delete(message.uuid);
                   }}
                   disabled={
-                    new Date(message.created_at).getTime() >
+                    new Date(message.created_at).getTime() <
                     new Date().getTime() - DELETE_GRACE_PERIOD
                   }
                   type="button"
