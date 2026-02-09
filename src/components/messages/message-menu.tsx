@@ -70,34 +70,41 @@ const MessageMenu = ({ message, sentByMe }: Props) => {
                   {isPendingMessage(message) && <p>Sending</p>}
                 </div>
 
-                <div className="flex flex-col gap-0.5 py-1 border-y border-neutral-300 *:flex *:items-center *:justify-between *:hover:bg-black/6 *:py-1.5 *:px-3 *:rounded-md *:disabled:opacity-60">
-                  <button
-                    onClick={() => {
-                      setChatState({ mode: "edit", messageObject: message });
-                      setIsMenuOpened(false);
-                    }}
-                    type="button"
-                    className=""
-                    disabled={hasSurpassedGracePeriod}
-                  >
-                    Edit <Pen size={iconSize} />
-                  </button>
-                  <button
-                    onClick={() => {
-                      chatControls?.delete(message.uuid);
-                      setIsMenuOpened(false);
-                    }}
-                    disabled={hasSurpassedGracePeriod}
-                    type="button"
-                    className="text-red-500"
-                  >
-                    Delete <Trash2 size={iconSize} />
-                  </button>
-                </div>
+                {sentByMe && (
+                  <>
+                    <div className="flex flex-col gap-0.5 py-1 border-y border-neutral-300 *:flex *:items-center *:justify-between *:hover:bg-black/6 *:py-1.5 *:px-3 *:rounded-md *:disabled:opacity-60">
+                      <button
+                        onClick={() => {
+                          setChatState({
+                            mode: "edit",
+                            messageObject: message,
+                          });
+                          setIsMenuOpened(false);
+                        }}
+                        type="button"
+                        className=""
+                        disabled={hasSurpassedGracePeriod}
+                      >
+                        Edit <Pen size={iconSize} />
+                      </button>
+                      <button
+                        onClick={() => {
+                          chatControls?.delete(message.uuid);
+                          setIsMenuOpened(false);
+                        }}
+                        disabled={hasSurpassedGracePeriod}
+                        type="button"
+                        className="text-red-500"
+                      >
+                        Delete <Trash2 size={iconSize} />
+                      </button>
+                    </div>
 
-                <p className=" text-[10px] opacity-60 self-center text-center">
-                  * messages cannot be deleted or edited after 30 minutes
-                </p>
+                    <p className=" text-[10px] opacity-60 self-center text-center">
+                      * messages cannot be deleted or edited after 30 minutes
+                    </p>
+                  </>
+                )}
               </div>
             )}
           </div>
