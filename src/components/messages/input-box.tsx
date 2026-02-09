@@ -14,6 +14,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { messageQueryOption } from "@/utils/queryOptions";
 import { ChatStateContext } from "../providers/chat-state.provider";
 import { ReplyMessageCardWithCancel } from "./reply-message-card";
+import EditMessageCard from "./edit-message-card";
+import { UUID } from "crypto";
 
 const InputBox = () => {
   const chatsocketControls = use(ChatSocketControlsContext)!;
@@ -50,18 +52,31 @@ const InputBox = () => {
             sender="You"
             onCancel={() => setChatState({ mode: "chat", messageObject: null })}
           />
-        ) : chatState.mode === "edit" && chatState.messageObject ? null : null}
+        ) : chatState.mode === "edit" && chatState.messageObject ? (
+          <EditMessageCard
+            body={chatState.messageObject.body}
+            onCancel={() => setChatState({ mode: "chat", messageObject: null })}
+          />
+        ) : null}
         <form
           onSubmit={(event) => {
             event.preventDefault();
             if (!inputValue) return;
-            const uuid = chatsocketControls.send({
-              message: inputValue,
-              replyToId:
-                chatState.mode === "reply"
-                  ? chatState.messageObject?.id
-                  : undefined,
-            });
+            let uuid: UUID;
+            if (chatState.mode == "edit" && chatState.messageObject) {
+              chatsocketControls.update(
+                chatState.messageObject.uuid,
+                inputValue,
+              );
+            } else {
+              uuid = chatsocketControls.send({
+                message: inputValue,
+                replyToId:
+                  chatState.mode === "reply"
+                    ? chatState.messageObject?.id
+                    : undefined,
+              });
+            }
             setChatState({ mode: "chat", messageObject: null });
             queryClient.setQueryData(
               messageQueryOption(roomName).queryKey,
@@ -69,19 +84,20 @@ const InputBox = () => {
                 if (!old) return old;
                 const newData = structuredClone(old);
 
-                newData.pages[0].results = [
-                  {
-                    body: inputValue,
-                    uuid,
-                    attachment: null,
-                    reply_to:
-                      chatState.mode === "reply"
-                        ? { ...chatState.messageObject!, sender: "You" }
-                        : null,
-                    created_at: new Date().toString(),
-                  },
-                  ...newData.pages[0].results,
-                ];
+                if (chatState.mode !== "edit")
+                  newData.pages[0].results = [
+                    {
+                      body: inputValue,
+                      uuid,
+                      attachment: null,
+                      reply_to:
+                        chatState.mode === "reply"
+                          ? { ...chatState.messageObject!, sender: "You" }
+                          : null,
+                      created_at: new Date().toString(),
+                    },
+                    ...newData.pages[0].results,
+                  ];
 
                 return newData;
               },
