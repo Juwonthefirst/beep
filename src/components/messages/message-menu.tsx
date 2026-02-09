@@ -19,6 +19,11 @@ interface Props {
 
 const MessageMenu = ({ message, sentByMe }: Props) => {
   const iconSize = 18;
+  const DELETE_GRACE_PERIOD = 60 * 30 * 1000;
+  console.log(
+    new Date(message.created_at).getTime() >
+      new Date().getTime() - DELETE_GRACE_PERIOD,
+  );
   const [isMenuOpened, setIsMenuOpened] = useState(false);
   const { setChatState } = use(ChatStateContext);
   const chatControls = use(ChatSocketControlsContext);
@@ -75,8 +80,12 @@ const MessageMenu = ({ message, sentByMe }: Props) => {
                   onClick={() => {
                     chatControls?.delete(message.uuid);
                   }}
+                  disabled={
+                    new Date(message.created_at).getTime() >
+                    new Date().getTime() - DELETE_GRACE_PERIOD
+                  }
                   type="button"
-                  className="text-red-500 py-1.5 flex items-center justify-between hover:bg-black/6 px-3 rounded-md"
+                  className="text-red-500 py-1.5 flex items-center justify-between hover:bg-black/6 px-3 rounded-md disabled:opacity-75"
                 >
                   Delete <Trash2 size={iconSize} />
                 </button>

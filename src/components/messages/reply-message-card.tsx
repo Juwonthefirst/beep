@@ -47,7 +47,7 @@ const ReplyMessageCard = ({
   return (
     <div className={cn("flex gap-2 items-center w-fit mb-1 mt-2", className)}>
       <Reply size={18} className="rotate-y-180" />
-      <div className="flex gap-1 bg-neutral-100 text-black p-0.5 items-center rounded-lg ">
+      <div className="flex gap-1 bg-neutral-50 border border-black/2 text-black p-0.5 items-center rounded-lg ">
         {attachment && (
           <Attachment
             {...attachment}
