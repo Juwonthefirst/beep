@@ -26,7 +26,9 @@ export type WebsocketMessage =
       attachment?: Attachment;
       reply_to?: number;
     }
-  | { action: "call_decline"; call_id: string };
+  | { action: "call_decline"; call_id: string }
+  | { action: "update"; uuid: UUID; message: string }
+  | { action: "delete"; uuid: UUID };
 
 export type WebSocketConnectionSuccessState = "connected" | "reconnected";
 
@@ -67,6 +69,9 @@ export type ChatSocketSend = ({
   attachment?: Attachment;
   replyToId?: number;
 }) => UUID;
+export type ChatSocketUpdate = (uuid: UUID, message: string) => void;
+
+export type ChatSocketDelete = (uuid: UUID) => void;
 
 export type ChatSocketTyping = () => void;
 

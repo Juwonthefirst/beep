@@ -210,6 +210,14 @@ export class ChatSocket extends Socket {
     return uuid;
   }
 
+  update(uuid: UUID, message: string) {
+    this.send({ action: "update", uuid, message });
+  }
+  
+  delete(uuid: UUID) {
+    this.send({ action: "delete", uuid });
+  }
+
   declineCall(call_id: string) {
     return this.send({ action: "call_decline", call_id });
   }

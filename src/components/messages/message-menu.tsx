@@ -10,6 +10,7 @@ import {
 import { EllipsisVertical, Pen, Reply, Trash2 } from "lucide-react";
 import { useState, use } from "react";
 import { ChatStateContext } from "../providers/chat-state.provider";
+import { ChatSocketControlsContext } from "../providers/chatroom-state.provider";
 
 interface Props {
   message: Message;
@@ -20,6 +21,7 @@ const MessageMenu = ({ message, sentByMe }: Props) => {
   const iconSize = 18;
   const [isMenuOpened, setIsMenuOpened] = useState(false);
   const { setChatState } = use(ChatStateContext);
+  const chatControls = use(ChatSocketControlsContext);
   if (isSentMessage(message))
     return (
       <>
@@ -70,6 +72,9 @@ const MessageMenu = ({ message, sentByMe }: Props) => {
                   </button>
                 </div>
                 <button
+                  onClick={() => {
+                    chatControls?.delete(message.uuid);
+                  }}
                   type="button"
                   className="text-red-500 py-1.5 flex items-center justify-between hover:bg-black/6 px-3 rounded-md"
                 >

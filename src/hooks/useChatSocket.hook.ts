@@ -12,6 +12,7 @@ import {
 } from "@/utils/types/server-response.type";
 import { chatListQueryOption, messageQueryOption } from "@/utils/queryOptions";
 import { filterOutObjectFromResponse } from "@/utils/helpers/client-helper";
+import { UUID } from "crypto";
 
 const useChatSocket = (room_name: string) => {
   // rework typing to use user id
@@ -45,6 +46,14 @@ const useChatSocket = (room_name: string) => {
             let isMessageInQueryData = false;
             let messageResultIndex: number | null = null;
             const updatedPages = structuredClone(old.pages);
+            if (newMessage.event === "delete") {
+              const [filteredPages] = filterOutObjectFromResponse(
+                newMessage.uuid,
+                "uuid",
+                updatedPages,
+              );
+              return { ...old, pages: filteredPages };
+            }
 
             const messageResponseIndex = old.pages.findIndex((response) => {
               messageResultIndex = response.results.findIndex(
@@ -131,6 +140,12 @@ const useChatSocket = (room_name: string) => {
       }) => chatSocket.chat(message, attachment, replyToId),
       typing: () => {
         chatSocket.typing();
+      },
+      delete: (uuid: UUID) => {
+        chatSocket.delete(uuid);
+      },
+      update: (uuid: UUID, message: string) => {
+        chatSocket.update(uuid, message);
       },
     }),
     [chatSocket, typingUsers],
