@@ -124,17 +124,6 @@ export const signup = async (
   if (!formData.has("password"))
     return { status: "error", error: "Enter a password" };
 
-  // const profilePicture = formData.get("profile_picture");
-  // formData.delete("profile_picture");
-  // if (
-  //   profilePicture &&
-  //   profilePicture instanceof Blob &&
-  //   profilePicture.size &&
-  //   profilePicture.type
-  // )
-  //   formData.set("profile_picture", await processFile(profilePicture));
-  // else return { status: "error", error: "profile picture requires" };
-
   const response = await request<SignupResponse>({
     method: "post",
     path: "/auth/signup/",

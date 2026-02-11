@@ -1,10 +1,11 @@
 import {
+  Attachment,
   isSentMessage,
   type Message,
   type PaginatedResponse,
 } from "../types/server-response.type";
 import type { MessageGroup } from "../types/client.type";
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 
 export const delay = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
@@ -180,13 +181,59 @@ export const createMessageGroups = (
 
 export const uploadFileToUrl = async (file: File, uploadURL: string) => {
   return await withRetry({
-    func: async () => {
-      return await axios.put(uploadURL, file, {
+    func: () => {
+      return axios.put(uploadURL, file, {
         headers: { "Content-Type": file.type },
       });
     },
   });
 };
+
+export const uploadAttachment = async (
+  file: File,
+  onComplete: (attachmentId: number) => void,
+  onError: (errorMessage: string) => void,
+) => {
+  try {
+    const response = await withRetry<Attachment>({
+      func: () =>
+        axios
+          .post<Attachment>("/api/upload/attachment", {
+            filename: file.name,
+            mime_type: file.type,
+            size: file.size,
+          })
+          .then((res) => res.data),
+    });
+    try {
+      await uploadFileToUrl(file, response.upload_url!);
+      onComplete(response.id);
+    } catch (e) {
+      if (isAxiosError(e)) {
+        await withRetry({
+          func: () => axios.delete(`/api/upload/attachment/${response.id}`),
+        });
+      }
+
+      throw new Error();
+    }
+  } catch {
+    onError("Something went wrong, try again later");
+  }
+};
+
+export const removeAttachment = async (
+  attachmentId: number,
+  asBeacon = false,
+) => {
+  if (asBeacon) {
+    navigator.sendBeacon();
+  }
+  const response = await withRetry({
+    func: () => axios.delete(`/api/upload/attachment/${attachmentId}`),
+  });
+};
+
 export const stringifyResponseErrorStatusCode = (
   status: number,
   error?: string,

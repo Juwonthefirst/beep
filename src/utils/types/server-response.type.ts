@@ -97,12 +97,6 @@ export type ReplyMessage = Omit<
 
 export type LastMessage = BaseMessage & { sender_username: string };
 
-export interface Attachment {
-  id: number;
-  file: string;
-  content_type: string;
-}
-
 export interface AuthSuccessResponse {
   user?: CurrentUser;
   status?: string;
@@ -244,4 +238,16 @@ export interface RoomMetadata {
 
 export interface ParticipantMetaData extends BaseFriend {
   role: string;
+}
+
+export interface Attachment {
+  id: number;
+  filename: string;
+  path: string;
+  url: string;
+  upload_url?: string;
+  mime_type: string;
+  kind: "image" | "video" | "audio" | "document";
+  size: number;
+  uploaded_at: string;
 }
