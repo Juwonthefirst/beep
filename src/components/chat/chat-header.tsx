@@ -5,7 +5,7 @@ import ProfilePicture from "../profile-picture";
 import { chatQueryOption } from "@/utils/queryOptions";
 import { cn } from "@/lib/utils";
 import { parseDateString } from "@/utils/helpers/client-helper";
-import { EllipsisVertical, LoaderCircle, Phone, Video } from "lucide-react";
+import { LoaderCircle, Phone, Video } from "lucide-react";
 import useSocketState from "@/hooks/useSocketState.hook";
 import { Skeleton } from "../ui/skeleton";
 import {
@@ -32,9 +32,6 @@ export const ChatHeaderSkeleton = () => (
       </button>
       <button>
         <Video size={extraIconsSize} />
-      </button>
-      <button>
-        <EllipsisVertical size={extraIconsSize} />
       </button>
     </div>
   </div>

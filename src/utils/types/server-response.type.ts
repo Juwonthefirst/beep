@@ -58,7 +58,7 @@ export interface BaseMessage {
   id: number;
   uuid: UUID;
   body: string;
-  attachment: Attachment | null;
+  attachments: Attachment[] | null;
   created_at: string;
   sender: number;
   reply_to: ReplyMessage | null;

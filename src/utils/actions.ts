@@ -9,6 +9,7 @@ import type {
   ServerResponse,
   GroupCreateResponse,
   SignupResponse,
+  Attachment,
 } from "./types/server-response.type";
 import { request } from "./request-client";
 import {
@@ -416,4 +417,60 @@ export const refreshAccessToken = async () => {
 
     return;
   }
+};
+
+export const createAttachment = async (
+  filename: string,
+  size: number,
+  mime_type: string,
+): Promise<ServerResponse<Attachment>> => {
+  const accessToken = await retrieveAccessToken();
+  const config = {
+    headers: {
+      Authorization: `Bearer ${accessToken || ""}`,
+    },
+  };
+  const response = await request<Attachment>({
+    path: "/uploads/attachment/",
+    data: { filename, mime_type, size },
+    config,
+  });
+
+  if ("error" in response) {
+    return {
+      status: "error",
+      error: stringifyResponseErrorStatusCode(
+        response.error?.status || 600,
+        response.error?.data.error,
+      ),
+    };
+  }
+
+  return { status: "success", data: response.data };
+};
+
+export const deleteAttachment = async (attachmentIds: number[]) => {
+  const accessToken = await retrieveAccessToken();
+  const config = {
+    headers: {
+      Authorization: `Bearer ${accessToken || ""}`,
+    },
+  };
+  const response = await request<{ status: "ok" }>({
+    path: "/uploads/attachment/delete/",
+    data: { attachment_ids: attachmentIds },
+    config,
+  });
+
+  if ("error" in response) {
+    return {
+      status: "error",
+      error: stringifyResponseErrorStatusCode(
+        response.error?.status || 600,
+        response.error?.data.error,
+      ),
+    };
+  }
+
+  return { status: "success", data: response.data };
 };

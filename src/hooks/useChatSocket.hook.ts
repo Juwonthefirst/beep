@@ -5,7 +5,6 @@ import { useState, useEffect, use, useMemo } from "react";
 import { ChatSocketContext } from "@/components/providers/chat-socket.provider";
 import { useQueryClient } from "@tanstack/react-query";
 import {
-  Attachment,
   GroupChatRoom,
   TypingUsers,
   UserChatRoom,
@@ -131,13 +130,13 @@ const useChatSocket = (room_name: string) => {
       typingUsers,
       send: ({
         message,
-        attachment,
+        attachmentsId,
         replyToId,
       }: {
         message: string;
-        attachment?: Attachment;
+        attachmentsId?: number[];
         replyToId?: number;
-      }) => chatSocket.chat(message, attachment, replyToId),
+      }) => chatSocket.chat(message, attachmentsId, replyToId),
       typing: () => {
         chatSocket.typing();
       },

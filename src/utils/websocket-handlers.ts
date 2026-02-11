@@ -11,7 +11,6 @@ import {
   type WebsocketMessage,
 } from "./types/client.type";
 import type {
-  Attachment,
   CallNotification,
   ChatNotification,
   ChatSocketMessage,
@@ -198,13 +197,13 @@ export class ChatSocket extends Socket {
     return this.send({ action: "typing" });
   }
 
-  chat(message: string, attachment?: Attachment, replyToId?: number) {
+  chat(message: string, attachmentsId?: number[], replyToId?: number) {
     const uuid = uuidV4() as UUID;
     this.send({
       action: "chat",
       message,
       uuid,
-      attachment,
+      attachmentsId,
       reply_to: replyToId,
     });
     return uuid;
@@ -213,7 +212,7 @@ export class ChatSocket extends Socket {
   update(uuid: UUID, message: string) {
     this.send({ action: "update", uuid, message });
   }
-  
+
   delete(uuid: UUID) {
     this.send({ action: "delete", uuid });
   }

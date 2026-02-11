@@ -17,7 +17,10 @@ import { ReplyMessageCardWithCancel } from "./reply-message-card";
 import EditMessageCard from "./edit-message-card";
 import { UUID } from "crypto";
 import useSocketState from "@/hooks/useSocketState.hook";
-import { uploadAttachment } from "@/utils/helpers/client-helper";
+import {
+  removeAttachment,
+  uploadAttachment,
+} from "@/utils/helpers/client-helper";
 
 type AttachmentState = {
   file: File;
@@ -38,7 +41,29 @@ const InputBox = () => {
   const { chatState, setChatState } = use(ChatStateContext);
   const iconSize = 22;
 
-  useEffect(() => {});
+  const getAttachmentsId = (attachments: AttachmentState[]) => {
+    const attachmentIds: number[] = [];
+    attachments.forEach((attachment) => {
+      if (attachment.uploadStatus === "success") {
+        attachmentIds.push(attachment.attachmentId);
+      }
+    });
+    return attachmentIds;
+  };
+
+  useEffect(() => {
+    const beforeWindowUnloadHandler = (event: BeforeUnloadEvent) => {
+      const uploadedAttachmentIds = getAttachmentsId(attachments);
+      removeAttachment(uploadedAttachmentIds, true);
+      event.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", beforeWindowUnloadHandler);
+    return () => {
+      window.removeEventListener("beforeunload", beforeWindowUnloadHandler);
+    };
+  }, [attachments]);
+
   return (
     <div className="flex flex-col gap-4 py-2 px-6 md:px-8">
       {attachments.length > 0 && (
@@ -47,9 +72,15 @@ const InputBox = () => {
             <AttachmentPreview
               key={attachment.file.lastModified}
               attachment={attachment.file}
+              uploadStatus={attachment.uploadStatus}
               onRemove={() => {
+                if (attachment.uploadStatus === "success")
+                  removeAttachment([attachment.attachmentId]);
+
                 setAttachments((prev) =>
-                  prev.filter((file) => file !== attachmentFile),
+                  prev.filter(
+                    (prevAttachment) => prevAttachment.file !== attachment.file,
+                  ),
                 );
               }}
             />
@@ -87,9 +118,13 @@ const InputBox = () => {
                   chatState.mode === "reply"
                     ? chatState.messageObject?.id
                     : undefined,
+                attachmentsId: getAttachmentsId(attachments),
               });
             }
             setChatState({ mode: "chat", messageObject: null });
+            setAttachments([]);
+            setInputValue("");
+
             queryClient.setQueryData(
               messageQueryOption(roomName).queryKey,
               (old) => {
@@ -100,7 +135,7 @@ const InputBox = () => {
                     {
                       body: inputValue,
                       uuid,
-                      attachment: null,
+                      attachments: null,
                       reply_to:
                         chatState.mode === "reply"
                           ? { ...chatState.messageObject!, sender: "You" }
@@ -114,7 +149,6 @@ const InputBox = () => {
               },
             );
 
-            setInputValue("");
             if (inputRef.current) {
               inputRef.current.focus();
               inputRef.current.style.height = "auto";
@@ -174,27 +208,25 @@ const InputBox = () => {
               labelChildren={<Paperclip size={iconSize} />}
               multiple
             />
-            {socketState.is_connecting ? (
-              <LoaderCircle
-                className="animate-spin opacity-75"
-                size={iconSize}
-              />
-            ) : (
-              <button
-                disabled={
-                  !socketState.is_connected ||
-                  attachments.some(
-                    (attachment) =>
-                      attachment.uploadStatus === "pending" ||
-                      attachment.uploadStatus === "error",
-                  )
-                }
-                type="submit"
-                className="disabled:opacity-60"
-              >
+
+            <button
+              disabled={
+                !socketState.is_connected ||
+                attachments.some(
+                  (attachment) =>
+                    attachment.uploadStatus === "pending" ||
+                    attachment.uploadStatus === "error",
+                )
+              }
+              type="submit"
+              className="disabled:opacity-60"
+            >
+              {socketState.is_connecting ? (
+                <LoaderCircle className="animate-spin" size={iconSize} />
+              ) : (
                 <Send size={iconSize} />
-              </button>
-            )}
+              )}
+            </button>
           </div>
         </form>
       </div>

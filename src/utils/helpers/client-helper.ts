@@ -6,6 +6,7 @@ import {
 } from "../types/server-response.type";
 import type { MessageGroup } from "../types/client.type";
 import axios, { isAxiosError } from "axios";
+import { createAttachment, deleteAttachment } from "../actions";
 
 export const delay = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
@@ -197,21 +198,30 @@ export const uploadAttachment = async (
   try {
     const response = await withRetry<Attachment>({
       func: () =>
-        axios
-          .post<Attachment>("/api/upload/attachment", {
-            filename: file.name,
-            mime_type: file.type,
-            size: file.size,
-          })
-          .then((res) => res.data),
+        createAttachment(file.name, file.size, file.type).then((res) => {
+          if (res.status === "success") return res.data;
+          throw new Error(
+            res.status === "error" ? res.error : "Something went wrong",
+          );
+        }),
     });
     try {
-      await uploadFileToUrl(file, response.upload_url!);
-      onComplete(response.id);
+      (async () => {
+        const uploadResponse = await uploadFileToUrl(
+          file,
+          response.upload_url!,
+        );
+        if (uploadResponse.status > 299)
+          throw new Error("Failed to upload file");
+        onComplete(response.id);
+      })();
     } catch (e) {
       if (isAxiosError(e)) {
         await withRetry({
-          func: () => axios.delete(`/api/upload/attachment/${response.id}`),
+          func: () =>
+            deleteAttachment([response.id]).then((res) => {
+              if (res.status === "error") throw new Error(res.error);
+            }),
         });
       }
 
@@ -223,14 +233,20 @@ export const uploadAttachment = async (
 };
 
 export const removeAttachment = async (
-  attachmentId: number,
+  attachmentIds: number[],
   asBeacon = false,
 ) => {
-  if (asBeacon) {
-    navigator.sendBeacon();
-  }
-  const response = await withRetry({
-    func: () => axios.delete(`/api/upload/attachment/${attachmentId}`),
+  if (asBeacon)
+    return navigator.sendBeacon(
+      `/api/upload/attachment/delete`,
+      JSON.stringify({ attachment_ids: attachmentIds }),
+    );
+
+  await withRetry({
+    func: () =>
+      deleteAttachment(attachmentIds).then((res) => {
+        if (res.status === "error") throw new Error(res.error);
+      }),
   });
 };
 

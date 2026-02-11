@@ -65,14 +65,20 @@ const MessageCard = ({
         )}
         <MessageMenu message={message} sentByMe={sentByMe} />
       </div>
-      {isSentMessage(message) && message.attachment && (
-        <Attachment
-          {...message.attachment}
-          message_id={String(message.id)}
-          className="overflow-hidden rounded-lg w-44 h-48 ml-auto shadow-md mt-0.5 mb-2"
-          imageSizes="352px"
-        />
-      )}
+      {isSentMessage(message) &&
+        message.attachments &&
+        message.attachments.map((attachment) => (
+          <Attachment
+            key={attachment.id}
+            {...attachment}
+            message_id={String(message.id)}
+            className={cn(
+              "overflow-hidden rounded-lg w-44 h-48  shadow-md mt-0.5 mb-2",
+              { "mr-auto": !sentByMe, "ml-auto": sentByMe },
+            )}
+            imageSizes="352px"
+          />
+        ))}
     </div>
   );
 };

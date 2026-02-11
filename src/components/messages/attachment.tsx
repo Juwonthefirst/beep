@@ -10,24 +10,24 @@ interface AttachmentProps extends Attachment {
 
 const Attachment = ({
   message_id,
-  file,
-  content_type,
+  kind,
+  url,
   className,
   imageSizes,
 }: AttachmentProps) => {
   return (
     <div className={cn("relative", className)}>
-      {content_type.startsWith("image/") ? (
+      {kind === "image" ? (
         <Image
-          src={file}
+          src={url}
           alt={`attachment for message ${message_id}`}
           fill
           sizes={imageSizes}
           className="object-cover"
         />
-      ) : content_type.startsWith("video/") ? (
+      ) : kind === "video" ? (
         <video
-          src={file}
+          src={url}
           controls
           playsInline
           className="w-full h-full"

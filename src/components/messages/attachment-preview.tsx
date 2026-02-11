@@ -1,4 +1,4 @@
-import { Play, X } from "lucide-react";
+import { LoaderCircle, Play, X } from "lucide-react";
 import { motion } from "motion/react";
 import Image from "next/image";
 import { useMemo } from "react";
@@ -6,19 +6,24 @@ import { useMemo } from "react";
 interface Props {
   attachment: File;
   onRemove: () => void;
+  uploadStatus: "pending" | "error" | "success";
 }
 
-const AttachmentPreview = ({ attachment, onRemove }: Props) => {
+const AttachmentPreview = ({ attachment, uploadStatus, onRemove }: Props) => {
   const previewURL = useMemo(
     () => URL.createObjectURL(attachment),
-    [attachment]
+    [attachment],
   );
 
   return (
     <motion.div
       layout
-      className="w-18 h-18 rounded-md relative overflow-hidden shrink-0 shadow-md"
+      className="w-18 h-18 rounded-md relative overflow-hidden shrink-0 shadow-md flex items-center justify-center text-white"
     >
+      {uploadStatus === "pending" && (
+        <LoaderCircle className="animate-spin absolute z-10" />
+      )}
+      {uploadStatus === "error" && <X className="text-red-500 absolute z-10" />}
       <button
         className="absolute top-0 right-0 p-0.5 bg-white rounded-full text-black z-10 shadow-lg"
         type="button"

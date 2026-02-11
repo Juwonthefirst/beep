@@ -1,5 +1,5 @@
 import type { UUID } from "crypto";
-import { Attachment, Message } from "./server-response.type";
+import { Message } from "./server-response.type";
 
 export type ApiMethods = "get" | "post" | "patch" | "put" | "delete";
 
@@ -23,7 +23,7 @@ export type WebsocketMessage =
       action: "chat";
       message: string;
       uuid: UUID;
-      attachment?: Attachment;
+      attachmentsId?: number[];
       reply_to?: number;
     }
   | { action: "call_decline"; call_id: string }
@@ -62,11 +62,11 @@ export const isWebSocketFailedState = (
 
 export type ChatSocketSend = ({
   message,
-  attachment,
+  attachmentsId,
   replyToId,
 }: {
   message: string;
-  attachment?: Attachment;
+  attachmentsId?: number[];
   replyToId?: number;
 }) => UUID;
 export type ChatSocketUpdate = (uuid: UUID, message: string) => void;
