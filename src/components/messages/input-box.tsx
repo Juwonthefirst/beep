@@ -21,6 +21,7 @@ import {
   removeAttachment,
   uploadAttachment,
 } from "@/utils/helpers/client-helper";
+import { Attachment } from "@/utils/types/server-response.type";
 
 type AttachmentState = {
   file: File;
@@ -130,17 +131,33 @@ const InputBox = () => {
               (old) => {
                 if (!old) return old;
                 const newData = structuredClone(old);
+                const now = new Date().toString();
                 if (chatState.mode !== "edit")
                   newData.pages[0].results = [
                     {
                       body: inputValue,
                       uuid,
-                      attachments: null,
+                      attachments: attachments.map((attachment) => {
+                        const kind = attachment.file.type.split("/")[0];
+                        return {
+                          id: 0,
+                          filename: attachment.file.name,
+                          path: "",
+                          url: URL.createObjectURL(attachment.file),
+                          mime_type: attachment.file.type,
+                          size: attachment.file.size,
+                          kind:
+                            kind in ["image", "audio", "video"]
+                              ? (kind as Attachment["kind"])
+                              : "document",
+                          uploaded_at: now,
+                        };
+                      }),
                       reply_to:
                         chatState.mode === "reply"
                           ? { ...chatState.messageObject!, sender: "You" }
                           : null,
-                      created_at: new Date().toString(),
+                      created_at: now,
                     },
                     ...newData.pages[0].results,
                   ];

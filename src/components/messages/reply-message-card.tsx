@@ -22,15 +22,16 @@ export const ReplyMessageCardWithCancel = ({
       </button>
       <div className="flex gap-1 bg-neutral-100 text-black p-0.5 items-center rounded-lg w-full">
         {attachments.length > 0 && (
-          <div className="relative flex items-center ">
+          <div className="relative flex items-center">
             <Attachment
               key={id}
               {...attachments[0]}
               message_id={String(id)}
-              className="min-w-9 min-h-9 rounded-md overflow-hidden"
+              className="w-9 h-9 rounded-md overflow-hidden"
               imageSizes="72px"
+              isReplyAttachment
             />
-            {attachments.length > 0 && (
+            {attachments.length > 1 && (
               <p className="absolute z-10 w-full h-full text-sm flex items-center justify-center text-white bg-black/10">
                 {attachments.length}
               </p>
@@ -56,18 +57,19 @@ const ReplyMessageCard = ({
   return (
     <div className={cn("flex gap-2 items-center w-fit mb-1 mt-2", className)}>
       <Reply size={18} className="rotate-y-180" />
-      <div className="flex gap-1 bg-neutral-50 border border-black/2 text-black p-0.5 items-center rounded-lg ">
+      <div className="flex gap-1 bg-neutral-50 border border-black/2 text-black p-0.5 items-center rounded-lg">
         {attachments.length > 0 && (
-          <div className="relative flex items-center bg-black/10">
+          <div className="relative flex items-center">
             <Attachment
               key={id}
               {...attachments[0]}
               message_id={String(id)}
-              className="min-w-9 min-h-9 rounded-sm overflow-hidden absolute -z-10"
+              className="w-9 h-9 rounded-md overflow-hidden"
               imageSizes="72px"
+              isReplyAttachment
             />
             {attachments.length > 1 && (
-              <p className="absolute z-10 w-full h-full text-sm">
+              <p className="absolute z-10 w-full h-full text-sm flex items-center justify-center text-white bg-black/10">
                 {attachments.length}
               </p>
             )}
@@ -75,7 +77,7 @@ const ReplyMessageCard = ({
         )}
         <div className={cn("flex flex-col text-xs py-1 px-2")}>
           <p>{sender}</p>
-          <p className="line-clamp-1 opacity-70 ">{body}</p>
+          <p className="line-clamp-1 opacity-70">{body}</p>
         </div>
       </div>
     </div>

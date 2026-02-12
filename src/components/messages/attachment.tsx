@@ -7,6 +7,7 @@ interface AttachmentProps extends Attachment {
   className: string;
   imageSizes?: string;
   key: string | number;
+  isReplyAttachment?: boolean;
 }
 
 const Attachment = ({
@@ -15,6 +16,7 @@ const Attachment = ({
   url,
   className,
   imageSizes,
+  isReplyAttachment = false,
 }: AttachmentProps) => {
   return kind === "audio" ? (
     <audio src={url} controls className={className} />
@@ -31,9 +33,12 @@ const Attachment = ({
       ) : kind === "video" ? (
         <video
           src={url}
-          controls
+          controls={!isReplyAttachment}
           playsInline
-          className="w-full h-full object-contain"
+          className={cn(
+            "w-full h-full",
+            isReplyAttachment ? "object-cover" : "object-contain",
+          )}
           preload="auto"
         />
       ) : (
