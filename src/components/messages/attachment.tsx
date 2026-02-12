@@ -6,6 +6,7 @@ interface AttachmentProps extends Attachment {
   message_id: string;
   className: string;
   imageSizes?: string;
+  key: string | number;
 }
 
 const Attachment = ({
@@ -15,7 +16,9 @@ const Attachment = ({
   className,
   imageSizes,
 }: AttachmentProps) => {
-  return (
+  return kind === "audio" ? (
+    <audio src={url} controls className={className} />
+  ) : (
     <div className={cn("relative", className)}>
       {kind === "image" ? (
         <Image
@@ -30,8 +33,8 @@ const Attachment = ({
           src={url}
           controls
           playsInline
-          className="w-full h-full"
-          preload="metadata"
+          className="w-full h-full object-contain"
+          preload="auto"
         />
       ) : (
         <p>Hello</p>

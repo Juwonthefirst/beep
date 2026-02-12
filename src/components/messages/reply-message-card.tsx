@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 export const ReplyMessageCardWithCancel = ({
   id,
   body,
-  attachment,
+  attachments,
   sender,
   onCancel,
 }: ReplyMessage & { onCancel: () => void }) => {
@@ -21,13 +21,21 @@ export const ReplyMessageCardWithCancel = ({
         <X size={16} strokeWidth={2.5} />
       </button>
       <div className="flex gap-1 bg-neutral-100 text-black p-0.5 items-center rounded-lg w-full">
-        {attachment && (
-          <Attachment
-            {...attachment}
-            message_id={String(id)}
-            className="min-w-9 min-h-9 rounded-sm overflow-hidden"
-            imageSizes="72px"
-          />
+        {attachments.length > 0 && (
+          <div className="relative flex items-center ">
+            <Attachment
+              key={id}
+              {...attachments[0]}
+              message_id={String(id)}
+              className="min-w-9 min-h-9 rounded-md overflow-hidden"
+              imageSizes="72px"
+            />
+            {attachments.length > 0 && (
+              <p className="absolute z-10 w-full h-full text-sm flex items-center justify-center text-white bg-black/10">
+                {attachments.length}
+              </p>
+            )}
+          </div>
         )}
         <div className={cn("flex flex-col gap-1 text-xs py-1 px-2")}>
           <p>{sender}</p>
@@ -41,7 +49,7 @@ export const ReplyMessageCardWithCancel = ({
 const ReplyMessageCard = ({
   id,
   body,
-  attachment,
+  attachments,
   sender,
   className,
 }: ReplyMessage & { className?: string }) => {
@@ -49,13 +57,21 @@ const ReplyMessageCard = ({
     <div className={cn("flex gap-2 items-center w-fit mb-1 mt-2", className)}>
       <Reply size={18} className="rotate-y-180" />
       <div className="flex gap-1 bg-neutral-50 border border-black/2 text-black p-0.5 items-center rounded-lg ">
-        {attachment && (
-          <Attachment
-            {...attachment}
-            message_id={String(id)}
-            className="min-w-9 min-h-9 rounded-sm overflow-hidden"
-            imageSizes="72px"
-          />
+        {attachments.length > 0 && (
+          <div className="relative flex items-center bg-black/10">
+            <Attachment
+              key={id}
+              {...attachments[0]}
+              message_id={String(id)}
+              className="min-w-9 min-h-9 rounded-sm overflow-hidden absolute -z-10"
+              imageSizes="72px"
+            />
+            {attachments.length > 1 && (
+              <p className="absolute z-10 w-full h-full text-sm">
+                {attachments.length}
+              </p>
+            )}
+          </div>
         )}
         <div className={cn("flex flex-col text-xs py-1 px-2")}>
           <p>{sender}</p>

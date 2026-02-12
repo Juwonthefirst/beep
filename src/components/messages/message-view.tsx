@@ -78,7 +78,7 @@ const MessaageView = () => {
 
         return (
           <MessageGroup
-            key={messageGroup.messages[0].uuid}
+            key={messageGroup.messages.at(-1)?.uuid}
             intersectionRef={
               index === messageGroups.length - 1
                 ? intersectingElement

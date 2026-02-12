@@ -57,7 +57,7 @@ const MessageMenu = ({ message, sentByMe }: Props) => {
                   { "left-8": !sentByMe, "right-8": sentByMe },
                 )}
               >
-                <div className="flex gap-1 text-xs opacity-85 whitespace-nowrap">
+                <div className="flex gap-1 text-xs opacity-85 whitespace-nowrap px-1">
                   <p>
                     {parseDateString({
                       dateString: message.created_at,
