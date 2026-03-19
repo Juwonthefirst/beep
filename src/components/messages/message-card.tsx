@@ -5,7 +5,7 @@ import {
   type Message,
 } from "@/utils/types/server-response.type";
 import { Clock } from "lucide-react";
-import Attachment from "./attachment";
+import Attachment from "../attachments/attachment";
 import { type RefObject } from "react";
 import MessageMenu from "./message-menu";
 import ReplyMessageCard from "./reply-message-card";
@@ -41,7 +41,7 @@ const MessageCard = ({
 
       <div
         className={cn(
-          "flex px-3 py-1.5 w-fit text-left gap-1 max-w-3/4 relative",
+          "flex px-3 py-1.5 w-fit min-h-8 text-left gap-1 max-w-3/4 relative",
           {
             "bg-theme/90 rounded-l-2xl rounded-r-[6px]  text-white ml-auto":
               sentByMe,
@@ -49,6 +49,7 @@ const MessageCard = ({
               !sentByMe,
             "rounded-t-2xl!": isLast,
             "rounded-b-2xl!": isFirst,
+            "bg-transparent": !message.body,
           },
         )}
         role="log"
@@ -65,6 +66,7 @@ const MessageCard = ({
         )}
         <MessageMenu message={message} sentByMe={sentByMe} />
       </div>
+
       {isSentMessage(message) &&
         message.attachments.map((attachment) => (
           <Attachment

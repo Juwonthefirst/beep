@@ -11,7 +11,7 @@ import { FormDescription, FormHeader } from "@/components/form/form-sematics";
 import InputField from "@/components/form/input";
 import SubmitBtn from "@/components/form/submit-btn";
 import { createGroup } from "@/utils/actions";
-import { uploadFileToUrl } from "@/utils/helpers/client-helper";
+import { uploadFileToUrl } from "@/utils/helpers/client-helpers/generics.helper";
 import { isGroupCreateResponseData } from "@/utils/types/server-response.type";
 import { chatListQueryOption } from "@/utils/queryOptions";
 import TextArea from "@/components/form/text-area";
@@ -20,7 +20,7 @@ const Page = () => {
   const [avatar, setAvatar] = useState<File | null>(null);
   const profilePicturePreview = useMemo(
     () => avatar && URL.createObjectURL(avatar),
-    [avatar]
+    [avatar],
   );
   const queryClient = useQueryClient();
   return (

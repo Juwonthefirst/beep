@@ -1,5 +1,5 @@
 import ChatHeader, { ChatHeaderSkeleton } from "@/components/chat/chat-header";
-import InputBox from "@/components/messages/input-box";
+import InputBox from "@/components/messages/input-box/input-box";
 import MessageLoading from "@/components/messages/message-loading";
 import MessaageView from "@/components/messages/message-view";
 import ChatStateProvider from "@/components/providers/chat-state.provider";

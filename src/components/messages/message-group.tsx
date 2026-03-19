@@ -3,7 +3,7 @@ import { RefObject } from "react";
 import MessageCard from "./message-card";
 import { GroupMember } from "@/utils/types/server-response.type";
 import { cn } from "@/lib/utils";
-import { parseDateString } from "@/utils/helpers/client-helper";
+import { parseDateString } from "@/utils/helpers/client-helpers/generics.helper";
 import ProfilePicture from "../profile-picture";
 
 interface MessageGroupProps extends Omit<MessageGroup, "userId"> {

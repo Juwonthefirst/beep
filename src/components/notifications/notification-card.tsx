@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import ProfilePicture from "../profile-picture";
-import { parseDateString } from "@/utils/helpers/client-helper";
+import { parseDateString } from "@/utils/helpers/client-helpers/generics.helper";
 
 interface Props {
   toastId: string | number;

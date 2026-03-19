@@ -13,10 +13,8 @@ import {
 } from "@/utils/queryOptions";
 
 import MessageLoading from "./message-loading";
-import {
-  createMessageGroups,
-  watchElementIntersecting,
-} from "@/utils/helpers/client-helper";
+import { watchElementIntersecting } from "@/utils/helpers/client-helpers/generics.helper";
+import { createMessageGroups } from "@/utils/helpers/client-helpers/messages.helper";
 import MessageGroup from "./message-group";
 import TypingIndicator from "./typing-indicator";
 import { CurrentRoomNameContext } from "../providers/chatroom-state.provider";

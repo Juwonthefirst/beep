@@ -6,7 +6,7 @@ import { CallerInfo } from "@/utils/types/client.type";
 import { CurrentRoomNameContext } from "../providers/chatroom-state.provider";
 import ExpandableText from "../expandable-text";
 import { cn } from "@/lib/utils";
-import { parseDateString } from "@/utils/helpers/client-helper";
+import { parseDateString } from "@/utils/helpers/client-helpers/generics.helper";
 
 interface Props {
   avatar?: string;

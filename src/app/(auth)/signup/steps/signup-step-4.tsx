@@ -16,7 +16,7 @@ import type {
 import SubmitBtn from "@/components/form/submit-btn";
 import { Camera } from "lucide-react";
 import { isSignupResponseData } from "@/utils/types/server-response.type";
-import { uploadFileToUrl } from "@/utils/helpers/client-helper";
+import { uploadFileToUrl } from "@/utils/helpers/client-helpers/generics.helper";
 
 interface Props {
   isGoogleLogin?: boolean;

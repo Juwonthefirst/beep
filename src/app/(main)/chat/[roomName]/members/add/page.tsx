@@ -6,7 +6,7 @@ import ProfilePicture from "@/components/profile-picture";
 import SearchBar from "@/components/search-bar";
 import StatusCard from "@/components/status-card";
 import { cn } from "@/lib/utils";
-import { watchElementIntersecting } from "@/utils/helpers/client-helper";
+import { watchElementIntersecting } from "@/utils/helpers/client-helpers/generics.helper";
 import {
   addMemberMutationOption,
   chatQueryOption,

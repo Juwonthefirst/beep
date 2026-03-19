@@ -1,4 +1,4 @@
-import { parseDateString } from "@/utils/helpers/client-helper";
+import { parseDateString } from "@/utils/helpers/client-helpers/generics.helper";
 import ProfilePicture from "../profile-picture";
 import {
   GroupChatRoom,
@@ -7,6 +7,7 @@ import {
 import Link from "next/link";
 import { RefObject } from "react";
 import { cn } from "@/lib/utils";
+import { ImageIcon } from "lucide-react";
 
 const ChatPreview = ({
   friend,
@@ -61,7 +62,15 @@ const ChatPreview = ({
           }
         </div>
         <div className="flex justify-between items-center">
-          <p className="opacity-70 text-sm line-clamp-1 wrap-anywhere ">
+          <p className="opacity-70 text-sm line-clamp-1 wrap-anywhere flex gap-1 items-center">
+            {last_message && last_message.attachments.length > 0 && (
+              <>
+                <ImageIcon size={14} />
+                {!last_message.body &&
+                  `${last_message.sender_username} sent an attachment`}
+              </>
+            )}
+
             {!last_message
               ? `Start a chat with ${chatParentName}`
               : is_group

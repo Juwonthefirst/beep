@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { request } from "@/utils/request-client";
 import type { ErrorResponse } from "@/utils/types/server-response.type";
 import { getOrFetchAccessToken } from "@/utils/helpers/server-helper";
-import { stringifyResponseErrorStatusCode } from "@/utils/helpers/client-helper";
+import { stringifyResponseErrorStatusCode } from "@/utils/helpers/client-helpers/generics.helper";
 
 export async function GET(
   req: Request,

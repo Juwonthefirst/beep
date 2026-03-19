@@ -18,7 +18,7 @@ import {
   getAndSetCookies,
   getCookieString,
 } from "./helpers/server-helper";
-import { stringifyResponseErrorStatusCode } from "./helpers/client-helper";
+import { stringifyResponseErrorStatusCode } from "./helpers/client-helpers/generics.helper";
 import { CallState } from "./types/client.type";
 import SetCookie from "set-cookie-parser";
 import axios, { isAxiosError } from "axios";

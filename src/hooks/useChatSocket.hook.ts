@@ -10,7 +10,7 @@ import {
   UserChatRoom,
 } from "@/utils/types/server-response.type";
 import { chatListQueryOption, messageQueryOption } from "@/utils/queryOptions";
-import { filterOutObjectFromResponse } from "@/utils/helpers/client-helper";
+import { filterOutObjectFromResponse } from "@/utils/helpers/client-helpers/generics.helper";
 import { UUID } from "crypto";
 
 const useChatSocket = (room_name: string) => {
@@ -42,7 +42,7 @@ const useChatSocket = (room_name: string) => {
           messageQueryOption(room_name).queryKey,
           (old) => {
             if (!old) return old;
-            let isMessageInQueryData = false;
+            let isMessageInQueryData: boolean = false;
             let messageResultIndex: number | null = null;
             const updatedPages = structuredClone(old.pages);
             if (newMessage.event === "delete") {
@@ -68,11 +68,7 @@ const useChatSocket = (room_name: string) => {
                 newMessage,
                 ...updatedPages[0].results,
               ];
-            else if (
-              isMessageInQueryData &&
-              messageResultIndex !== null &&
-              newMessage.event === "chat"
-            ) {
+            else if (isMessageInQueryData && messageResultIndex !== null) {
               updatedPages[messageResponseIndex].results[messageResultIndex] =
                 newMessage;
             }
@@ -81,6 +77,7 @@ const useChatSocket = (room_name: string) => {
           },
         );
 
+        if (newMessage.event === "edit") return;
         queryClient.setQueryData(chatListQueryOption().queryKey, (old) => {
           if (!old) return old;
           const [updatedPages, outdatedChatRoom] = filterOutObjectFromResponse<

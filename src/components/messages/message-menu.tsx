@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { parseDateString } from "@/utils/helpers/client-helper";
+import { parseDateString } from "@/utils/helpers/client-helpers/generics.helper";
 import {
   isPendingMessage,
   isSentMessage,

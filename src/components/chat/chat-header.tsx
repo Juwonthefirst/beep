@@ -4,7 +4,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import ProfilePicture from "../profile-picture";
 import { chatQueryOption } from "@/utils/queryOptions";
 import { cn } from "@/lib/utils";
-import { parseDateString } from "@/utils/helpers/client-helper";
+import { parseDateString } from "@/utils/helpers/client-helpers/generics.helper";
 import { LoaderCircle, Phone, Video } from "lucide-react";
 import useSocketState from "@/hooks/useSocketState.hook";
 import { Skeleton } from "../ui/skeleton";

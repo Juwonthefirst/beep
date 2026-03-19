@@ -14,7 +14,7 @@ import {
   UserChatRoom,
   GroupChatRoom,
 } from "@/utils/types/server-response.type";
-import { filterOutObjectFromResponse } from "@/utils/helpers/client-helper";
+import { filterOutObjectFromResponse } from "@/utils/helpers/client-helpers/generics.helper";
 import CallNotification from "./call-notification";
 
 const notificationSocket = new NotificationSocket({ getAccessToken });

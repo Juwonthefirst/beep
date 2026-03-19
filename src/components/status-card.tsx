@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { stringifyResponseErrorStatusCode } from "@/utils/helpers/client-helper";
+import { stringifyResponseErrorStatusCode } from "@/utils/helpers/client-helpers/generics.helper";
 import { CheckCircle, RadioTower, XCircle } from "lucide-react";
 
 interface Props {
@@ -29,8 +29,8 @@ const StatusCard = ({
     statusCodeGroup === 2
       ? CheckCircle
       : statusCodeGroup === 4
-      ? XCircle
-      : RadioTower;
+        ? XCircle
+        : RadioTower;
 
   return (
     <div className={cn("flex flex-col items-center gap-2 mt-5", className)}>

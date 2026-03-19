@@ -1,6 +1,6 @@
 "use client";
 
-import { watchElementIntersecting } from "@/utils/helpers/client-helper";
+import { watchElementIntersecting } from "@/utils/helpers/client-helpers/generics.helper";
 import {
   ErrorResponse,
   PaginatedResponse,

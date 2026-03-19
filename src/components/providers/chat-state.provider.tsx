@@ -10,7 +10,7 @@ import {
   type ReactNode,
 } from "react";
 
-interface ChatState {
+export interface ChatState {
   mode: "chat" | "edit" | "reply";
   messageObject: BaseMessage | null;
 }

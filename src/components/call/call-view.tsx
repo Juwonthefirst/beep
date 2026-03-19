@@ -11,7 +11,7 @@ import {
 import type { CallState } from "@/utils/types/client.type";
 import type { RoomMetadata } from "@/utils/types/server-response.type";
 import { cn } from "@/lib/utils";
-import { withRetry } from "@/utils/helpers/client-helper";
+import { withRetry } from "@/utils/helpers/client-helpers/generics.helper";
 import { fetchCallAccessToken } from "@/utils/actions";
 import ControlBar from "./control-bar";
 import LocalParticipant from "./local-participant";

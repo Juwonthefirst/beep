@@ -20,7 +20,7 @@ import type {
   NotificationMessage,
   OnlineStatusNotification,
 } from "./types/server-response.type";
-import { withRetry } from "./helpers/client-helper";
+import { withRetry } from "./helpers/client-helpers/generics.helper";
 
 type GetAccessToken = () => Promise<string | undefined>;
 

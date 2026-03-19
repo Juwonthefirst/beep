@@ -97,3 +97,12 @@ export type CallState = {
 );
 
 export type FriendListType = "friend" | "friend request" | "sent request";
+
+export type AttachmentState = {
+  file: File;
+  uuid: UUID;
+} & (
+  | { uploadStatus: "pending" }
+  | { uploadStatus: "success"; attachmentId: number }
+  | { uploadStatus: "error"; errorMessage: string }
+);

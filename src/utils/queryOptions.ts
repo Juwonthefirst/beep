@@ -19,7 +19,7 @@ import {
   BaseUser,
 } from "./types/server-response.type";
 import { addFriend, addGroupMembers, leaveGroup, unFriend } from "./actions";
-import { findObjectInResponse } from "./helpers/client-helper";
+import { findObjectInResponse } from "./helpers/client-helpers/generics.helper";
 
 const SEARCH_QUERY_GC_TIME = 2.5 * 60 * 1000;
 

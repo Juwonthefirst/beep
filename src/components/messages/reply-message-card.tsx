@@ -1,6 +1,6 @@
 import { ReplyMessage } from "@/utils/types/server-response.type";
 import { Reply, X } from "lucide-react";
-import Attachment from "./attachment";
+import Attachment from "../attachments/attachment";
 import { cn } from "@/lib/utils";
 
 export const ReplyMessageCardWithCancel = ({
